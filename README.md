@@ -1,7 +1,11 @@
 # smile 
 
-![npm version](https://img.shields.io/npm/v/@mrjacket/smile)
-![license](https://img.shields.io/npm/l/@mrjacket/smile)
+[![npm version](https://img.shields.io/npm/v/@mrjacket/smile.svg?color=success)](https://www.npmjs.com/package/@mrjacket/smile)
+[![npm downloads](https://img.shields.io/npm/dm/@mrjacket/smile.svg)](https://www.npmjs.com/package/@mrjacket/smile)
+[![node](https://img.shields.io/node/v/@mrjacket/smile.svg)](https://www.npmjs.com/package/@mrjacket/smile)
+[![ci](https://github.com/x-name15/smile/actions/workflows/ci.yml/badge.svg)](https://github.com/x-name15/smile/actions/workflows/ci.yml)
+[![types](https://img.shields.io/npm/types/@mrjacket/smile.svg)](https://www.npmjs.com/package/@mrjacket/smile)
+[![license](https://img.shields.io/npm/l/@mrjacket/smile.svg)](https://github.com/x-name15/smile/blob/main/LICENSE)
 
 **smile** is a strict API contract validator built for Node.js test suites and CI pipelines. 
 
@@ -93,3 +97,6 @@ We are constantly expanding the strictness and capabilities of `smile`. Here is 
 ## License
 
 This project is licensed under the **GPL-3.0 License**. See the [LICENSE](./LICENSE) file for details.
+
+### Author
+- Mr Jacket
