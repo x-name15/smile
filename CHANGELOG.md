@@ -6,6 +6,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.1.2] - 2026-07-27 — CLI Output Accuracy
+
+### Fixed
+- **CLI Descriptions:** Updated the CLI `--help` messages to accurately reflect that `smile` supports and auto-detects 4 formats natively: OpenAPI, AsyncAPI, JSON Schema, and GraphQL (previously it only mentioned OpenAPI/AsyncAPI).
+
+---
+
 ## [1.1.1] - 2026-07-27 — ESM & Bundler Compatibility
 
 ### Fixed

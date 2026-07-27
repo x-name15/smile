@@ -7,12 +7,12 @@ const program = new Command();
 
 program
   .name("smile")
-  .description("Strict API contract validator for OpenAPI/AsyncAPI")
+  .description("Strict API contract validator for OpenAPI, AsyncAPI, JSON Schema, and GraphQL")
   .version(VERSION);
 
 program
   .command("lint <specPath>")
-  .description("Statically lint a spec file — auto-detects OpenAPI or AsyncAPI (YAML or JSON)")
+  .description("Statically lint a spec file — auto-detects OpenAPI, AsyncAPI, JSON Schema, or GraphQL")
   .action(async (specPath: string) => {
     try {
       const { loadConfig } = await import("../core/index.js");
