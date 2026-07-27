@@ -1,6 +1,6 @@
 {
   "name": "@mrjacket/smile",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Strict API contract validator — lints your spec and verifies real responses against it. Passes clean, or shows you the crime scene.",
   "main": "dist/core/index.js",
   "types": "dist/core/index.d.ts",
