@@ -14,6 +14,7 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
+      packages: write # Required to publish to GitHub Packages
       id-token: write # Required for NPM provenance
 
     steps:
@@ -88,7 +89,6 @@ jobs:
           body: |
             ${{ steps.notes.outputs.notes }}
             
-            ---
             ## 📦 Installation
             
             ```bash
@@ -104,3 +104,18 @@ jobs:
         run: npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Setup Node for GitHub Packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@${{ github.repository_owner }}"
+
+      - name: Publish to GitHub Packages
+        run: |
+          # GitHub Packages requires the scope to match the repository owner
+          npm pkg set name="@${{ github.repository_owner }}/smile"
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

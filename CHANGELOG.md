@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.0.2] - 2026-07-27 — Dual Registry Publishing & CI Hardening
+
+### Added
+- **GitHub Packages Support:** Implemented dual-publishing architecture. `smile` is now officially available on both the global NPM registry (`registry.npmjs.org`) and the GitHub Packages registry (`npm.pkg.github.com`).
+- **Enterprise Ready:** This allows enterprise users to consume the library securely via their internal GitHub ecosystems without needing public internet access to NPM.
+
+---
+
 ## [1.0.1] - 2026-07-27 — README Badges & Node 22 CI Update
 
 ### Changed
