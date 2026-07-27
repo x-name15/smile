@@ -1,0 +1,95 @@
+# smile 
+
+![npm version](https://img.shields.io/npm/v/@mrjacket/smile)
+![license](https://img.shields.io/npm/l/@mrjacket/smile)
+
+**smile** is a strict API contract validator built for Node.js test suites and CI pipelines. 
+
+### Why the name "smile"?
+The name is inspired by Red John (from *The Mentalist*). The smiley face is the mark that indicates the execution was perfect for the perpetrator. Applied to backend development, this is a relentless tool that judges whether your API strictly complies with the established contract. If the API lies or breaches the contract, the test fails. When your specification passes perfectly, it signs the output with the *Smiley Face*. When it fails, it isolates and highlights the "crime scene".
+
+It acts as both a static linter (checking your API specification for completeness) and a runtime validation engine (verifying that your live server's responses actually match the contract you wrote).
+
+## Features
+
+- **Multi-format support:** Auto-detects and validates OpenAPI 3.x, AsyncAPI 2.x, JSON Schema, and GraphQL SDL.
+- **Zero dependencies for the CLI:** Run it via `npx` instantly in your CI pipelines.
+- **Library API:** Native Vitest/Jest integration. Import it directly into your tests with full TypeScript support (no subprocesses).
+- **The Breaching Detector:** Point `smile` at your live server and it will fire real HTTP requests against every documented endpoint, validating the runtime response body against the schema.
+- **Built-in Rule Engine:** Opinionated, zero-configuration rules focused on documentation completeness and contract enforceability.
+
+---
+
+## Quick Start
+
+### 1. Static Linting (CLI)
+
+Lint any specification file instantly. `smile` exits with code `1` if violations are found, making it perfect for CI/CD.
+
+```bash
+npx @mrjacket/smile lint ./openapi.yaml
+```
+
+*Supported formats: `.yaml`, `.yml`, `.json`, `.graphql`, `.gql`*
+
+### 2. Runtime Validation (Breaching Detector)
+
+Verify that your live server actually honors the contract:
+
+```bash
+# Smoke test against a live environment
+smile test ./openapi.yaml https://api.staging.myserver.com
+
+# Bundle a modular spec into a single JSON file
+smile bundle ./openapi/main.yaml --out ./dist/api-bundle.json
+```
+> Note: Currently supports `GET` endpoints in OpenAPI specs.
+
+### 3. Programmatic Usage (Vitest / Jest)
+
+Install it as a dev dependency to use inside your integration tests:
+
+```bash
+npm install --save-dev @mrjacket/smile
+```
+
+```ts
+import { validateResponseAgainstSchema } from "@mrjacket/smile";
+
+it("GET /users returns a valid payload according to the spec", async () => {
+  const response = await fetch("http://localhost:3000/users");
+  const body = await response.json();
+  
+  const violations = validateResponseAgainstSchema(userSchema, body, "GET /users");
+  expect(violations).toHaveLength(0);
+});
+```
+
+---
+
+## Documentation
+
+Full documentation is available in the `docs/` directory:
+
+- [Getting Started](./docs/getting-started.md) — CLI usage, CI integration, and exit codes.
+- [Library API](./docs/library.md) — Programmatic usage, Vitest integration, and working with violations.
+- **Rules Reference**:
+  - [OpenAPI](./docs/rules/openapi.md)
+  - [AsyncAPI](./docs/rules/asyncapi.md)
+  - [JSON Schema](./docs/rules/json-schema.md)
+  - [GraphQL](./docs/rules/graphql.md)
+
+* Use at least Node.js v18+.
+* This tool assumes you are parsing JSON or YAML.
+
+## Roadmap (Upcoming Features)
+
+We are constantly expanding the strictness and capabilities of `smile`. Here is what is coming in future versions:
+
+- **gRPC / Protocol Buffers (`.proto`)**: Static linting of service definitions and runtime validation of actual binary payloads against the contract.
+- **Postman Collections**: Extracting implicit API contracts directly from existing Postman collections and enforcing them.
+- **JSON:API / HAL**: Validating hypermedia conventions strictly.
+
+## License
+
+This project is licensed under the **GPL-3.0 License**. See the [LICENSE](./LICENSE) file for details.

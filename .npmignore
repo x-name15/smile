@@ -1,0 +1,25 @@
+# Files included in the npm package are controlled by "files" in package.json.
+# This file explicitly excludes everything else to avoid surprises.
+
+# Source
+src/
+
+# Dev config
+*.config.ts
+tsconfig.json
+vitest.config.ts
+tsup.config.ts
+LOG.md
+
+# Dev tooling
+.github/
+scripts/
+examples/
+
+# Logs and local env
+*.log
+.env
+.env.*
+
+# Build artifacts that shouldn't go in (sourcemaps are fine, these aren't)
+dist/**/*.test.*
