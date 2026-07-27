@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.0.1] - 2026-07-27 — README Badges & Node 22 CI Update
+
+### Changed
+- **Node 22 Enforced:** Bumped engines requirement to Node >=22.12.0 for `commander` and `graphql` compatibility.
+- **Documentation:** Added official dynamic Shields/Badges (NPM version, downloads, Node, TypeScript, and CI Status) to `README.md`.
+
+---
+
 ## [1.0.0] - 2026-07-27 — The Stable Release: JSON Schema, GraphQL & Exact Match Docs
 
 ### Added
