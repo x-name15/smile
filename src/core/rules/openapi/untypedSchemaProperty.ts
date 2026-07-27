@@ -32,7 +32,7 @@ function findUntypedProperties(
     if (!hasType && !hasAlternative) {
       violations.push({
         ruleId: "untyped-schema-property",
-        severity: ESeverity.Warning,
+        severity: ESeverity.Error,
         message: `Property "${propName}" has no declared type`,
         path: `${basePath}.properties.${propName}`,
       });

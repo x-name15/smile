@@ -46,6 +46,10 @@ enum ESpecFormat {
   JsonSchema = "json-schema",
   GraphQL    = "graphql",
 }
+
+interface ISmileConfig {
+  rules?: Record<string, "error" | "warn" | "off">;
+}
 ```
 
 ---
@@ -53,12 +57,19 @@ enum ESpecFormat {
 ## Auto-detect format: `lintSpec`
 
 The simplest way to lint any file. Detects the format automatically and
-dispatches to the right linter — same logic as `smile lint <file>`.
+dispatches to the right linter — same logic as `smile lint <file>`. You can optionally pass a configuration object to downgrade or disable specific rules.
 
 ```ts
 import { lintSpec } from "@mrjacket/smile";
 
-const result = await lintSpec("./openapi.yaml");
+const config = {
+  rules: {
+    "missing-operation-id": "warn",
+    "untyped-property": "off"
+  }
+};
+
+const result = await lintSpec("./api.yaml", config);
 
 if (!result.passed) {
   for (const v of result.violations) {

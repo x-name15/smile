@@ -18,6 +18,18 @@ export enum ESpecFormat {
 }
 
 /**
+ * Severity configuration for rules in config file.
+ */
+export type RuleSeverity = "error" | "warn" | "off";
+
+/**
+ * Smile configuration file interface.
+ */
+export interface ISmileConfig {
+  rules?: Record<string, RuleSeverity>;
+}
+
+/**
  * A single rule violation found while linting a spec.
  */
 export interface IViolation {

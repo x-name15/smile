@@ -21,6 +21,7 @@ It acts as both a static linter (checking your API specification for completenes
 - **Library API:** Native Vitest/Jest integration. Import it directly into your tests with full TypeScript support (no subprocesses).
 - **The Breaching Detector:** Point `smile` at your live server and it will fire real HTTP requests against every documented endpoint, validating the runtime response body against the schema.
 - **Built-in Rule Engine:** Opinionated, zero-configuration rules focused on documentation completeness and contract enforceability.
+- **Incremental Adoption:** Customize rule severities (`error`, `warn`, `off`) via `config.smile.json` without breaking CI/CD.
 
 ---
 
@@ -71,9 +72,27 @@ it("GET /users returns a valid payload according to the spec", async () => {
 
 ---
 
+## Configuration (`config.smile.json`)
+
+By default, `smile` is extremely strict—all rules emit an `Error` and break the CI build.
+For enterprise adoption, you can downgrade or disable rules by creating a configuration file in your project root. 
+The CLI supports the following filenames: `config.smile.json`, `smile.config.json`, `.smilerc.json`, or `smile.json`.
+
+```json
+{
+  "rules": {
+    "missing-operation-id": "warn",
+    "untyped-property": "off"
+  }
+}
+```
+*Rules set to `"warn"` will print yellow alerts in the CLI but will exit with code `0` (Success).*
+
+---
+
 ## Documentation
 
-Full documentation is available in the `docs/` directory:
+Full documentation is available in the [`docs/`](./docs) directory:
 
 - [Getting Started](./docs/getting-started.md) — CLI usage, CI integration, and exit codes.
 - [Library API](./docs/library.md) — Programmatic usage, Vitest integration, and working with violations.

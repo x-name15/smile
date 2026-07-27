@@ -13,7 +13,7 @@ export function ruleJsonSchemaMissingTitle(doc: TJsonSchema): IViolation[] {
   return [
     {
       ruleId: "missing-title",
-      severity: ESeverity.Warning,
+      severity: ESeverity.Error,
       message: "Root schema has no title",
       path: "(root)",
     },

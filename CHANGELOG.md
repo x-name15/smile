@@ -6,6 +6,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.1.0] - 2026-07-27 — Optional Configuration & Strict Engine
+
+### Added
+- **Configuration File (`config.smile.json`):** Introduced a flexible configuration system. Users can now place a `config.smile.json`, `smile.config.json`, `.smilerc.json`, or `smile.json` in their project root to override rule severities.
+- **Rule Downgrades:** Strict rules can now be downgraded to `warn` (emits a warning but doesn't break CI) or turned `off` completely, enabling incremental adoption for large enterprise projects.
+- **Reporter 2.0:** The CLI reporter now displays warnings (`🟡`) natively. If a spec has warnings but zero errors, it successfully prints the Smile Signature and exits with code `0`.
+
+### Changed
+- **Strict by Default Engine:** Refactored the core engine so that **all rules** (including all GraphQL rules) emit `Error` by default. `smile` is now mathematically strict out-of-the-box, ensuring zero false-positives on passing builds unless explicitly configured otherwise via the new config file.
+
+---
+
 ## [1.0.2] - 2026-07-27 — Dual Registry Publishing & CI Hardening
 
 ### Added

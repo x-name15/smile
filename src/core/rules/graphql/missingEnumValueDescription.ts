@@ -25,7 +25,7 @@ export function ruleGraphQLMissingEnumValueDescription(
       if (!value.description?.value) {
         violations.push({
           ruleId: "missing-enum-value-description",
-          severity: ESeverity.Warning,
+          severity: ESeverity.Error,
           message: `Enum value "${enumDef.name.value}.${value.name.value}" has no description`,
           path: `${enumDef.name.value}.${value.name.value}`,
         });

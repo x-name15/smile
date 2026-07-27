@@ -36,7 +36,7 @@ export function ruleOpenApiMissingSummary(doc: TOpenApi3Doc): IViolation[] {
       if (!operation.summary?.trim()) {
         violations.push({
           ruleId: "missing-summary",
-          severity: ESeverity.Warning,
+          severity: ESeverity.Error,
           message: `Operation "${method.toUpperCase()} ${pathKey}" is missing a summary`,
           path: `paths.${pathKey}.${method}.summary`,
         });

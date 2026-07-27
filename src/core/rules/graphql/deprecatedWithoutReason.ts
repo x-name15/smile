@@ -36,7 +36,7 @@ function checkFieldsForDeprecated(
     if (!reasonArg) {
       violations.push({
         ruleId: "deprecated-without-reason",
-        severity: ESeverity.Warning,
+        severity: ESeverity.Error,
         message: `Field "${typeName}.${field.name.value}" is @deprecated but provides no reason`,
         path: `${typeName}.${field.name.value}`,
       });

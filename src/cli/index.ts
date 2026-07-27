@@ -15,7 +15,9 @@ program
   .description("Statically lint a spec file — auto-detects OpenAPI or AsyncAPI (YAML or JSON)")
   .action(async (specPath: string) => {
     try {
-      const result = await lintSpec(specPath);
+      const { loadConfig } = await import("../core/index.js");
+      const config = loadConfig();
+      const result = await lintSpec(specPath, config);
       console.log(renderSmileReport(result));
       process.exitCode = result.passed ? 0 : 1;
     } catch (error) {

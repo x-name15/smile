@@ -21,7 +21,7 @@ function findUndescribedProperties(
     if (!propSchema.description) {
       violations.push({
         ruleId: "missing-description",
-        severity: ESeverity.Warning,
+        severity: ESeverity.Error,
         message: `Property "${propName}" has no description`,
         path: `${basePath}.properties.${propName}`,
       });

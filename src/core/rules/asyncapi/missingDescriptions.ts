@@ -23,7 +23,7 @@ export function ruleAsyncApiMissingChannelDescription(
     if (!channel.description?.trim()) {
       violations.push({
         ruleId: "missing-channel-description",
-        severity: ESeverity.Warning,
+        severity: ESeverity.Error,
         message: `Channel "${channelName}" has no description`,
         path: `channels.${channelName}.description`,
       });
@@ -59,7 +59,7 @@ export function ruleAsyncApiMissingMessageDescription(
       if (!message.description?.trim()) {
         violations.push({
           ruleId: "missing-message-description",
-          severity: ESeverity.Warning,
+          severity: ESeverity.Error,
           message: `Message in "${opKey} ${channelName}" has no description`,
           path: `channels.${channelName}.${opKey}.message.description`,
         });

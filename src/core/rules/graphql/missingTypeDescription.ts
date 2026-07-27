@@ -39,7 +39,7 @@ export function ruleGraphQLMissingTypeDescription(
     if (!typeDef.description?.value) {
       violations.push({
         ruleId: "missing-type-description",
-        severity: ESeverity.Warning,
+        severity: ESeverity.Error,
         message: `Type "${typeDef.name.value}" has no description`,
         path: typeDef.name.value,
       });

@@ -4,8 +4,7 @@
 against a set of rules, and — if you give it a running server — fires real HTTP
 requests and checks that the responses match what the spec promises.
 
-It works without any account, without any configuration file, and without any
-external service.
+It works without any account, and without any external service. Out of the box, it requires zero configuration, but for large enterprise projects, you can incrementally adopt rules via `config.smile.json`.
 
 ---
 
@@ -104,7 +103,36 @@ will fail the pipeline automatically.
 
 ---
 
-## Runtime validation (Breaching Detector)
+## Configuration (`config.smile.json`)
+
+`smile` is extremely strict by default: all internal rules are treated as **errors**. If any rule is broken, the CLI will exit with code `1`, causing your CI pipeline to fail.
+
+However, if you are introducing `smile` to a massive legacy project, you may want to downgrade some rules to warnings or turn them off completely. You can do this by placing a configuration file in the directory where you run the CLI.
+
+The CLI automatically looks for any of the following filenames in this exact order:
+1. `config.smile.json`
+2. `smile.config.json`
+3. `.smilerc.json`
+4. `smile.json`
+
+```json
+{
+  "rules": {
+    "missing-operation-id": "warn",
+    "untyped-schema-property": "off"
+  }
+}
+```
+
+- **`"error"`**: Fails the build (Exit Code 1).
+- **`"warn"`**: Prints a yellow `🟡` warning in the terminal but allows the build to pass (Exit Code 0).
+- **`"off"`**: Completely suppresses the rule.
+
+If you have 0 errors but 3 warnings, `smile` will print the warnings natively, print the Smile Signature, and successfully exit with `0`.
+
+---
+
+## The Breaching Detector (Runtime Smoke Test)
 
 `smile smoke` takes your spec and a base URL, fires a real HTTP `GET` request
 against every documented endpoint, and validates the actual response body against

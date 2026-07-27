@@ -32,7 +32,7 @@ export function ruleGraphQLMissingFieldDescription(
       if (!field.description?.value) {
         violations.push({
           ruleId: "missing-field-description",
-          severity: ESeverity.Warning,
+          severity: ESeverity.Error,
           message: `Field "${typeDef.name.value}.${field.name.value}" has no description`,
           path: `${typeDef.name.value}.${field.name.value}`,
         });

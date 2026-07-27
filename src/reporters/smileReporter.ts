@@ -33,7 +33,12 @@ const SMILE_SIGNATURE = `⠀⠀⠀⠀⠀⠀⣴⣶⣶⣶⣶⣮⣽⣗⣢⠤⣤⣀�
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢈⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀`;
 
 function formatPassed(result: ILintResult): string {
-  return `${SMILE_SIGNATURE}\n\n ${result.format} spec signed clean — no violations.\n`;
+  let warningsText = "";
+  if (result.violations.length > 0) {
+    const scenes = result.violations.map(formatViolation).join("\n\n");
+    warningsText = `🟡 ${result.format} spec has ${result.violations.length} warning(s):\n\n${scenes}\n\n`;
+  }
+  return `${warningsText}${SMILE_SIGNATURE}\n\n ${result.format} spec signed clean — no errors.\n`;
 }
 
 function formatViolation(violation: IViolation, index: number): string {
@@ -73,9 +78,15 @@ function formatEndpointResult(endpoint: IEndpointTestResult): string {
     return `✅ ${label} — matches contract`;
   }
 
+  const hasErrors = endpoint.violations.some(v => v.severity === ESeverity.Error);
+  
   const scenes = endpoint.violations
     .map((violation, index) => formatViolation(violation, index))
     .join("\n\n");
+
+  if (!hasErrors) {
+    return `✅ ${label} — matches contract (with warnings)\n\n${scenes}`;
+  }
 
   return `🚫 ${label} — contract breached\n\n${scenes}`;
 }
@@ -93,7 +104,7 @@ export function renderSmileTestReport(result: ITestResult): string {
   const body = result.endpoints.map(formatEndpointResult).join("\n\n");
 
   if (result.passed) {
-    return `${header}\n${body}\n\n${SMILE_SIGNATURE}\n\n😊  All tested endpoints honor the contract.\n`;
+    return `${header}\n${body}\n\n${SMILE_SIGNATURE}\n\n All tested endpoints honor the contract.\n`;
   }
 
   return `${header}\n${body}\n`;
