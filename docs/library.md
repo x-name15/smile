@@ -13,7 +13,7 @@ full TypeScript types.
 npm install @mrjacket/smile
 ```
 
-Requires Node.js 18+.
+Requires Node.js 22.12.0+.
 
 ---
 

@@ -79,7 +79,7 @@ Full documentation is available in the `docs/` directory:
   - [JSON Schema](./docs/rules/json-schema.md)
   - [GraphQL](./docs/rules/graphql.md)
 
-* Use at least Node.js v18+.
+* Use at least Node.js v22.12.0+.
 * This tool assumes you are parsing JSON or YAML.
 
 ## Roadmap (Upcoming Features)

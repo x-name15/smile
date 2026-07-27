@@ -17,17 +17,11 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: "20"
+        node-version: "22"
         cache: "npm"
 
-    - name: Verify package-lock.json is tidy
-      run: |
-        npm install
-        if [ -n "$(git status --porcelain package-lock.json)" ]; then
-          echo "package-lock.json is not tidy. Please run 'npm install' locally and commit the changes."
-          git diff package-lock.json
-          exit 1
-        fi
+    - name: Install Dependencies
+      run: npm ci
 
     - name: Typecheck
       run: npm run typecheck

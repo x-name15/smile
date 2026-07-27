@@ -51,7 +51,7 @@
     "url": "https://github.com/x-name15/smile/issues"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22.12.0"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
