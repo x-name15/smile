@@ -1,13 +1,15 @@
 {
   "name": "@mrjacket/smile",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Strict API contract validator — lints your spec and verifies real responses against it. Passes clean, or shows you the crime scene.",
   "main": "dist/core/index.js",
   "types": "dist/core/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.mjs",
       "require": "./dist/core/index.js",
-      "types": "./dist/core/index.d.ts"
+      "default": "./dist/core/index.js"
     }
   },
   "bin": {

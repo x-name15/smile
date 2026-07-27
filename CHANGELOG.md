@@ -6,6 +6,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.1.1] - 2026-07-27 — ESM & Bundler Compatibility
+
+### Fixed
+- **Bundlephobia / ESM Support:** Reconfigured `tsup` and `package.json` to publish a dual-format (CommonJS + ESM) library and properly expose `import` and `default` fallbacks in the `"exports"` map. This fixes compatibility issues with modern bundlers (Webpack, esbuild, Vite) and Bundlephobia.
+
+---
+
 ## [1.1.0] - 2026-07-27 — Optional Configuration & Strict Engine
 
 ### Added

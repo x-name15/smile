@@ -6,7 +6,7 @@ export default defineConfig([
   // because rollup-plugin-dts crashes with TypeScript 7.x (tracked bug).
   {
     entry: { "core/index": "src/core/index.ts" },
-    format: ["cjs"],
+    format: ["cjs", "esm"],
     dts: false,
     clean: false,
     splitting: false,
