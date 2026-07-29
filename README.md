@@ -10,7 +10,7 @@
 **smile** is a strict API contract validator built for Node.js test suites and CI pipelines. 
 
 ### Why the name "smile"?
-> Named after [Red John](https://en.wikipedia.org/wiki/Red_John) from [The Mentalist](https://en.wikipedia.org/wiki/The_Mentalist) (a show you should not watch until completion... and beware, the links has spoilers!). 
+> Named after [Red John](https://en.wikipedia.org/wiki/Red_John) from [The Mentalist](https://en.wikipedia.org/wiki/The_Mentalist) (A show you absolutely must watch... and beware, the links has spoilers!). 
 
 The smiley face is the mark that indicates the execution was perfect. Applied to backend development, this is a relentless tool that judges whether your API strictly complies with the established contract. If the API lies or breaches the contract, the test fails. When your specification passes perfectly, it signs the output with the *Smiley Face*. When it fails, it isolates and highlights the "crime scene".
 
