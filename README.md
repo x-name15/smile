@@ -59,12 +59,12 @@ npx @mrjacket/smile lint . --format markdown > report.md
 
 *Supported formats: `.yaml`, `.yml`, `.json`, `.graphql`, `.gql`*
 
-### 3. The Smile Doctor (Interactive Fixes) 🏥
+### 3. Smile Deduce (Interactive Auto-Fixer) 
 
-If you have a lot of missing summaries or operation IDs, you don't have to fix them manually. The Doctor will read your file, prompt you interactively in the terminal for the missing data, and safely save the YAML (preserving all your `# comments` and formatting!).
+If you have a lot of missing summaries or operation IDs, you don't have to fix them manually. Smile Deduce will read your file, prompt you interactively in the terminal for the missing data, and safely save the YAML (preserving all your `# comments` and formatting!).
 
 ```bash
-npx @mrjacket/smile doctor ./openapi.yaml
+npx @mrjacket/smile deduce ./openapi.yaml
 ```
 
 ### 4. Git Pre-Commit Hook 🪝

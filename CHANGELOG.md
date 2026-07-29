@@ -6,6 +6,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.2.4] - 2026-07-29 — Documentation Patch
+
+### Fixed
+- **Documentation Sync:** Updated `README.md` and CLI documentation to correctly reflect the new `smile deduce` command name (formerly known as `doctor`) to ensure `npm` displays the correct documentation on the registry.
+
+---
+
 ## [1.2.3] - 2026-07-29 — More Developer Experience :D
 
 ### Added
