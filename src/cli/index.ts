@@ -19,14 +19,44 @@ program
 
 program
   .command("lint <specPath>")
-  .description("Statically lint a spec file — auto-detects OpenAPI, AsyncAPI, JSON Schema, or GraphQL")
-  .action(async (specPath: string) => {
+  .description("Statically lint a spec file or directory — auto-detects OpenAPI, AsyncAPI, JSON Schema, or GraphQL")
+  .option("-f, --format <type>", "Output format (text, json)", "text")
+  .action(async (specPath: string, options: { format: string }) => {
+    const start = performance.now();
     try {
       const { loadConfig } = await import("../core/index.js");
+      const { lintSpec } = await import("../core/index.js");
+      const { findSpecFiles, fireWebhooks } = await import("./utils.js");
+      
       const config = loadConfig();
-      const result = await lintSpec(specPath, config);
-      console.log(renderSmileReport(result));
-      process.exitCode = result.passed ? 0 : 1;
+      const outputFormat = options.format === "json" || config.format === "json" ? "json" : "text";
+
+      const files = findSpecFiles(specPath);
+      if (files.length === 0) {
+        console.warn(`No specification files found in ${specPath}`);
+        process.exitCode = 0;
+        return;
+      }
+
+      const results = await Promise.all(files.map(f => lintSpec(f, config)));
+      const allPassed = results.every(r => r.passed);
+
+      if (outputFormat === "json") {
+        console.log(JSON.stringify(results, null, 2));
+      } else {
+        // Aggregate rendering
+        for (const result of results) {
+          console.log(renderSmileReport(result));
+        }
+        const duration = Math.round(performance.now() - start);
+        console.log(`\n⏱️  Done in ${duration}ms`);
+      }
+
+      process.exitCode = allPassed ? 0 : 1;
+
+      if (!allPassed) {
+        await fireWebhooks(config.webhooks, results.filter(r => !r.passed));
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.error(`Failed to lint spec: ${message}`);
@@ -43,8 +73,16 @@ program
     "-H, --header <header...>",
     "Custom HTTP headers to inject into the requests (e.g., -H 'Authorization: Bearer token')",
   )
-  .action(async (specPath: string, baseUrl: string, options: { header?: string[] }) => {
+  .option("-f, --format <type>", "Output format (text, json)", "text")
+  .action(async (specPath: string, baseUrl: string, options: { header?: string[], format: string }) => {
+    const start = performance.now();
     try {
+      const { loadConfig } = await import("../core/index.js");
+      const { fireWebhooks } = await import("./utils.js");
+      
+      const config = loadConfig();
+      const outputFormat = options.format === "json" || config.format === "json" ? "json" : "text";
+
       const headersRecord: Record<string, string> = {};
       if (options.header) {
         for (const h of options.header) {
@@ -60,8 +98,20 @@ program
       }
 
       const result = await runSmokeTest(specPath, baseUrl, headersRecord);
-      console.log(renderSmileTestReport(result));
+      
+      if (outputFormat === "json") {
+        console.log(JSON.stringify(result, null, 2));
+      } else {
+        console.log(renderSmileTestReport(result));
+        const duration = Math.round(performance.now() - start);
+        console.log(`\n⏱️  Done in ${duration}ms`);
+      }
+
       process.exitCode = result.passed ? 0 : 1;
+
+      if (!result.passed) {
+        await fireWebhooks(config.webhooks, result);
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.error(`Failed to run smoke test: ${message}`);

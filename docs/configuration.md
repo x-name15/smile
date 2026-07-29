@@ -35,6 +35,32 @@ You can set any valid rule to one of three severities:
 - **`"warn"`**: Prints a yellow `🟡` warning in the terminal but allows the build to pass (Exit Code 0).
 - **`"off"`**: Completely suppresses the rule and hides it from the report.
 
+## Advanced Options
+
+```json
+{
+  "webhooks": [
+    "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+  ],
+  "format": "json",
+  "rules": {
+    "openapi": {
+      "missing-summary": "error"
+    }
+  }
+}
+```
+
+### `webhooks` (optional)
+An array of webhook URLs (e.g. Slack, Discord, MS Teams). If `smile lint` or `smile test` detects a violation, it will automatically send a POST request to these URLs with a JSON summary of the failure.
+
+### `format` (optional)
+Forces the output format globally. Can be `"text"` (default) or `"json"`. Setting this to `"json"` is equivalent to always passing `--format json` via the CLI.
+
+---
+
+## The Rule Matrix
+
 If you have 0 errors but 3 warnings, `smile` will print the warnings natively, print the Smile Signature, and successfully exit with `0`.
 
 ---

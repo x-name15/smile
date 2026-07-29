@@ -27,6 +27,8 @@ export type RuleSeverity = "error" | "warn" | "off";
  */
 export interface ISmileConfig {
   rules?: Record<string, RuleSeverity | Record<string, RuleSeverity>>;
+  webhooks?: string[];
+  format?: "text" | "json";
 }
 
 /**

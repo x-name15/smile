@@ -6,6 +6,16 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.2.2] - 2026-07-29 — The Automation Patch
+
+### Added
+- **Directory Traversal & `.smileignore`:** You can now run `smile lint .` to automatically discover and lint all specification files in a directory. We added support for `.smileignore` to skip irrelevant files like `node_modules/` or third-party specs.
+- **JSON Output (`--format json`):** Added a `-f, --format <type>` flag (which can also be set in `config.smile.json` as `"format": "json"`) to output raw JSON instead of text, making it trivial to integrate `smile` into custom IDE extensions or node scripts.
+- **Webhook Alerts:** Added a `"webhooks"` array property to `config.smile.json`. If `smile lint` or `smile test` fails, it automatically fires a POST request summarizing the crime scene to your Slack/Discord channels.
+- **Performance Metrics:** The CLI now tracks and prints total execution time (e.g. `Done in 45ms`) at the end of the text report.
+
+---
+
 ## [1.2.1] - 2026-07-29 — The Init Patch
 
 ### Added

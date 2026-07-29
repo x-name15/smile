@@ -81,6 +81,14 @@ export async function runInitCommand(): Promise<void> {
     p.log.info("No formats selected. Skipped config.smile.json generation.");
   }
 
+  // 2.5 Generate .smileignore
+  const ignorePath = path.resolve(process.cwd(), ".smileignore");
+  if (!existsSync(ignorePath)) {
+    const ignoreContent = `node_modules\n.git\ndist\nbuild\ncoverage\n`;
+    await fs.writeFile(ignorePath, ignoreContent, "utf-8");
+    p.log.success("Created .smileignore");
+  }
+
   // 3. GitHub Actions
   const generateCI = await p.confirm({
     message: "Generate a GitHub Actions CI workflow?",

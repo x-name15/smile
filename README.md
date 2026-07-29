@@ -10,7 +10,7 @@
 **smile** is a strict API contract validator built for Node.js test suites and CI pipelines. 
 
 ### Why the name "smile"?
-Named after [Red John](https://en.wikipedia.org/wiki/Red_John) from [The Mentalist](https://en.wikipedia.org/wiki/The_Mentalist) (a show you should not watch until completion... and beware, the links has spoilers!). 
+> Named after [Red John](https://en.wikipedia.org/wiki/Red_John) from [The Mentalist](https://en.wikipedia.org/wiki/The_Mentalist) (a show you should not watch until completion... and beware, the links has spoilers!). 
 
 The smiley face is the mark that indicates the execution was perfect. Applied to backend development, this is a relentless tool that judges whether your API strictly complies with the established contract. If the API lies or breaches the contract, the test fails. When your specification passes perfectly, it signs the output with the *Smiley Face*. When it fails, it isolates and highlights the "crime scene".
 
@@ -42,7 +42,18 @@ npx @mrjacket/smile init
 Lint any specification file instantly. `smile` exits with code `1` if violations are found, making it perfect for CI/CD.
 
 ```bash
+# Lint a specific file
 npx @mrjacket/smile lint ./openapi.yaml
+
+# Lint an entire directory (auto-discovers .yaml, .json, .graphql)
+npx @mrjacket/smile lint .
+```
+
+> **Tip:** Create a `.smileignore` file in your root directory to tell `smile` which files or folders to skip (e.g. `node_modules`, `vendor/`), just like `.gitignore`!
+
+You can optionally output the results as raw JSON for programmatic consumption:
+```bash
+npx @mrjacket/smile lint . --format json
 ```
 
 *Supported formats: `.yaml`, `.yml`, `.json`, `.graphql`, `.gql`*
