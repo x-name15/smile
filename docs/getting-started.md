@@ -128,6 +128,31 @@ The CLI automatically looks for any of the following filenames in this exact ord
 - **`"warn"`**: Prints a yellow `🟡` warning in the terminal but allows the build to pass (Exit Code 0).
 - **`"off"`**: Completely suppresses the rule.
 
+### Available Rules
+
+Here is the complete list of rules you can configure, broken down by format:
+
+**OpenAPI**
+- `missing-summary`
+- `missing-operation-id`
+- `untyped-schema-property`
+
+**AsyncAPI**
+- `missing-channel-description`
+- `missing-message-description`
+- `untyped-schema-property`
+
+**GraphQL**
+- `missing-type-description`
+- `missing-field-description`
+- `deprecated-without-reason`
+- `missing-enum-value-description`
+
+**JSON Schema**
+- `missing-title`
+- `missing-description`
+- `untyped-property`
+
 If you have 0 errors but 3 warnings, `smile` will print the warnings natively, print the Smile Signature, and successfully exit with `0`.
 
 ---

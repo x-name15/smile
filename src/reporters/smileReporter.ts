@@ -56,11 +56,21 @@ function formatFailed(result: ILintResult): string {
   return `${header}\n${scenes}\n`;
 }
 
+function emitCIAnnotations(violations: IViolation[], sourcePath: string): void {
+  if (process.env.GITHUB_ACTIONS !== "true") return;
+  for (const violation of violations) {
+    const level = violation.severity === ESeverity.Error ? "error" : "warning";
+    const msg = `[${violation.ruleId}] ${violation.message} (Path: ${violation.path})`;
+    console.log(`::${level} file=${sourcePath}::${msg}`);
+  }
+}
+
 /**
  * Renders a lint result as the Smile Signature Report: the ASCII smile
  * on a clean pass, or a list of "crime scenes" on failure.
  */
 export function renderSmileReport(result: ILintResult): string {
+  emitCIAnnotations(result.violations, result.sourcePath);
   return result.passed ? formatPassed(result) : formatFailed(result);
 }
 
@@ -97,6 +107,9 @@ function formatEndpointResult(endpoint: IEndpointTestResult): string {
  * (including skipped ones) otherwise.
  */
 export function renderSmileTestReport(result: ITestResult): string {
+  const allViolations = result.endpoints.flatMap(e => e.violations);
+  emitCIAnnotations(allViolations, result.sourcePath);
+
   const tested = result.endpoints.filter((endpoint) => !endpoint.skipped);
   const skipped = result.endpoints.filter((endpoint) => endpoint.skipped);
 

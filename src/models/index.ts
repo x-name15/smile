@@ -46,6 +46,7 @@ export interface ILintResult {
   format: ESpecFormat;
   passed: boolean;
   violations: IViolation[];
+  sourcePath: string;
 }
 
 /**
@@ -77,4 +78,5 @@ export interface ITestResult {
   baseUrl: string;
   passed: boolean;
   endpoints: IEndpointTestResult[];
+  sourcePath: string;
 }

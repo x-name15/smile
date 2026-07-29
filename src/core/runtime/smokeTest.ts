@@ -83,6 +83,7 @@ async function testGetOperation(
   baseUrl: string,
   pathTemplate: string,
   operation: TOperation,
+  headers?: Record<string, string>,
 ): Promise<IEndpointTestResult> {
   const label = `GET ${pathTemplate}`;
   const parameters = operation.parameters ?? [];
@@ -113,7 +114,7 @@ async function testGetOperation(
 
   let response: Response;
   try {
-    response = await fetch(url);
+    response = await fetch(url, { headers });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return {
@@ -163,6 +164,7 @@ async function testGetOperation(
 export async function runSmokeTest(
   sourcePath: string,
   baseUrl: string,
+  headers?: Record<string, string>,
 ): Promise<ITestResult> {
   const parsed = await parseOpenApiSpec(sourcePath);
   const doc = parsed.raw as TOpenApi3Doc;
@@ -179,8 +181,9 @@ export async function runSmokeTest(
 
     if (!operation) continue;
 
-    const result = await testGetOperation(baseUrl, pathTemplate, operation);
-    endpoints.push(result);
+    endpoints.push(
+      await testGetOperation(baseUrl, pathTemplate, operation as TOperation, headers),
+    );
   }
 
   const passed = endpoints.every((endpoint) => endpoint.violations.length === 0);
@@ -190,5 +193,6 @@ export async function runSmokeTest(
     baseUrl,
     passed,
     endpoints,
+    sourcePath,
   };
 }

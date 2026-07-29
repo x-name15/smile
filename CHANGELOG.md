@@ -6,6 +6,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.2.0] - 2026-07-29 — Enterprise CI/CD & Authentication
+
+### Added
+- **Authentication Injection:** The `smile test` command now supports passing custom HTTP headers via the `-H, --header` flag, allowing the Breaching Detector to run against protected APIs that require Bearer tokens or API keys.
+- **GitHub Actions Native Annotations:** `smile` now automatically detects when it is running inside GitHub Actions CI/CD. It emits native `::error::` workflow commands, enabling GitHub to automatically attach linting and testing failures as inline comments directly on your Pull Request diffs.
+- **Documentation:** Explicitly documented the complete list of available rules for configuration inside `config.smile.json`.
+
+---
+
 ## [1.1.2] - 2026-07-27 — CLI Output Accuracy
 
 ### Fixed

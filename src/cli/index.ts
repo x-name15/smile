@@ -32,9 +32,27 @@ program
   .description(
     "Run the Breaching Detector: call every documented GET endpoint against baseUrl and validate real responses against the spec",
   )
-  .action(async (specPath: string, baseUrl: string) => {
+  .option(
+    "-H, --header <header...>",
+    "Custom HTTP headers to inject into the requests (e.g., -H 'Authorization: Bearer token')",
+  )
+  .action(async (specPath: string, baseUrl: string, options: { header?: string[] }) => {
     try {
-      const result = await runSmokeTest(specPath, baseUrl);
+      const headersRecord: Record<string, string> = {};
+      if (options.header) {
+        for (const h of options.header) {
+          const firstColon = h.indexOf(":");
+          if (firstColon === -1) {
+            console.warn(`⚠️ Warning: Invalid header format "${h}". Expected "Key: Value".`);
+            continue;
+          }
+          const key = h.slice(0, firstColon).trim();
+          const value = h.slice(firstColon + 1).trim();
+          headersRecord[key] = value;
+        }
+      }
+
+      const result = await runSmokeTest(specPath, baseUrl, headersRecord);
       console.log(renderSmileTestReport(result));
       process.exitCode = result.passed ? 0 : 1;
     } catch (error) {

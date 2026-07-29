@@ -38,6 +38,7 @@ async function lintOpenApiSpec(sourcePath: string, config: ISmileConfig = {}): P
     format: ESpecFormat.OpenApi,
     passed: !violations.some(v => v.severity === ESeverity.Error),
     violations,
+    sourcePath,
   };
 }
 
@@ -57,6 +58,7 @@ async function lintAsyncApiSpec(sourcePath: string, config: ISmileConfig = {}): 
     format: ESpecFormat.AsyncApi,
     passed: !violations.some(v => v.severity === ESeverity.Error),
     violations,
+    sourcePath,
   };
 }
 
@@ -76,6 +78,7 @@ async function lintJsonSchemaSpec(sourcePath: string, config: ISmileConfig = {})
     format: ESpecFormat.JsonSchema,
     passed: !violations.some(v => v.severity === ESeverity.Error),
     violations,
+    sourcePath,
   };
 }
 
@@ -95,6 +98,7 @@ async function lintGraphQLSpec(sourcePath: string, config: ISmileConfig = {}): P
     format: ESpecFormat.GraphQL,
     passed: !violations.some(v => v.severity === ESeverity.Error),
     violations,
+    sourcePath,
   };
 }
 
