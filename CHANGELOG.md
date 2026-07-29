@@ -6,6 +6,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.2.1] - 2026-07-29 — The Init Patch
+
+### Added
+- **Interactive Initializer:** Added the `smile init` CLI command to automatically scaffold projects. Built with `@clack/prompts`, it features a premium, interactive terminal UI. It guides users through creating a `config.smile.json`, a boilerplate `.github/workflows/smile.yml` for CI, and a sample API spec for any of the 4 supported formats (OpenAPI, AsyncAPI, GraphQL, JSON Schema). The config generator is smart and only includes rules for the specific formats the user selects.
+- **Nested Configuration Support:** The `config.smile.json` now supports grouping rules by format (e.g., `"openapi": { "missing-summary": "error" }`). This allows you to configure the same rule differently across different formats. The engine remains 100% backwards-compatible with flat configurations.
+- **Dedicated Configuration Docs:** Refactored documentation to extract the heavy rules list out of `getting-started.md` and into a clean `configuration.md` guide.
+
+### Changed
+- **Internal Documentation:** Added extensive TSDocs to the CLI routing layer (`src/cli/index.ts`) and initialization logic (`src/cli/initCommand.ts`) to improve developer onboarding for future contributors.
+
+---
+
 ## [1.2.0] - 2026-07-29 — Enterprise CI/CD & Authentication
 
 ### Added

@@ -26,7 +26,7 @@ export type RuleSeverity = "error" | "warn" | "off";
  * Smile configuration file interface.
  */
 export interface ISmileConfig {
-  rules?: Record<string, RuleSeverity>;
+  rules?: Record<string, RuleSeverity | Record<string, RuleSeverity>>;
 }
 
 /**

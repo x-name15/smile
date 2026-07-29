@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Main entry point for the \`smile\` CLI.
+ * 
+ * This file registers all available commands using Commander.js and maps them
+ * to their respective core functions (linting, smoke testing, bundling, and init).
+ * It acts purely as a routing layer, handling standard input/output and exit codes.
+ */
 import { Command } from "commander";
 import { lintSpec, runSmokeTest } from "../core/index.js";
 import { renderSmileReport, renderSmileTestReport } from "../reporters/smileReporter.js";
@@ -96,4 +103,18 @@ program
     }
   });
 
-program.parse();
+program
+  .command("init")
+  .description("Initialize smile in your project (generates config, CI workflow, and sample API)")
+  .action(async () => {
+    try {
+      const { runInitCommand } = await import("./initCommand.js");
+      await runInitCommand();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`Failed to initialize smile: ${message}`);
+      process.exitCode = 1;
+    }
+  });
+
+program.parse(process.argv);

@@ -1,0 +1,65 @@
+# Smile Configuration
+
+`smile` is strict by default. Out of the box, it will enforce all rules with maximum severity (Exit Code 1) and complain if your API documentation is missing key details.
+
+However, we understand that not every legacy project can be fixed overnight. If you want to temporarily relax some rules to pass the CI while your team works on them, you can create a configuration file.
+
+## Creating a Configuration File
+
+You can place a configuration file in the root of your repository (where you run the `smile` CLI). `smile` will automatically search for the first file it finds in this exact priority order:
+
+1. `config.smile.json`
+2. `smile.config.json`
+3. `.smilerc.json`
+4. `smile.json`
+
+Alternatively, you can run `npx @mrjacket/smile init` to generate a configuration file automatically.
+
+## Configuration Format
+
+The configuration file must be valid JSON containing a `"rules"` object. 
+
+```json
+{
+  "rules": {
+    "missing-operation-id": "warn",
+    "missing-summary": "off"
+  }
+}
+```
+
+### Severities
+
+You can set any valid rule to one of three severities:
+- **`"error"`**: Fails the build (Exit Code 1). This is the default for all rules if a config file is not present.
+- **`"warn"`**: Prints a yellow `🟡` warning in the terminal but allows the build to pass (Exit Code 0).
+- **`"off"`**: Completely suppresses the rule and hides it from the report.
+
+If you have 0 errors but 3 warnings, `smile` will print the warnings natively, print the Smile Signature, and successfully exit with `0`.
+
+---
+
+## Available Rules
+
+Here is the complete list of rule IDs you can override, broken down by format:
+
+### OpenAPI
+- `missing-summary`
+- `missing-operation-id`
+- `untyped-schema-property`
+
+### AsyncAPI
+- `missing-channel-description`
+- `missing-message-description`
+- `untyped-schema-property`
+
+### GraphQL
+- `missing-type-description`
+- `missing-field-description`
+- `deprecated-without-reason`
+- `missing-enum-value-description`
+
+### JSON Schema
+- `missing-title`
+- `missing-description`
+- `untyped-property`

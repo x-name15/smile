@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { ESeverity, type ISmileConfig, type IViolation } from "../models/index.js";
+import { ESeverity, ESpecFormat, type ISmileConfig, type IViolation, type RuleSeverity } from "../models/index.js";
 
 const CONFIG_FILENAMES = ["config.smile.json", "smile.config.json", ".smilerc.json", "smile.json"];
 
@@ -27,10 +27,12 @@ export function loadConfig(cwd: string = process.cwd()): ISmileConfig {
  * Applies the user's configuration to a list of raw violations.
  * - Drops violations where the rule is set to "off".
  * - Overrides the severity if the rule is set to "warn" or "error".
+ * - Checks nested format configurations first, then falls back to flat configuration.
  */
 export function applyConfigToViolations(
   violations: IViolation[],
-  config: ISmileConfig
+  config: ISmileConfig,
+  format?: ESpecFormat
 ): IViolation[] {
   if (!config.rules || Object.keys(config.rules).length === 0) {
     return violations;
@@ -39,7 +41,17 @@ export function applyConfigToViolations(
   const result: IViolation[] = [];
 
   for (const violation of violations) {
-    const configuredSeverity = config.rules[violation.ruleId];
+    let configuredSeverity: RuleSeverity | undefined;
+
+    // Check nested format config first (if format is provided)
+    if (format && config.rules[format] && typeof config.rules[format] === "object") {
+      configuredSeverity = (config.rules[format] as Record<string, RuleSeverity>)[violation.ruleId];
+    }
+
+    // Fallback to flat root config
+    if (!configuredSeverity && typeof config.rules[violation.ruleId] === "string") {
+      configuredSeverity = config.rules[violation.ruleId] as RuleSeverity;
+    }
 
     if (configuredSeverity === "off") {
       continue; // Suppress this violation

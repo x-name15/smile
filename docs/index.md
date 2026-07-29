@@ -1,8 +1,8 @@
 # smile — Documentation
 
-**`@mrjacket/smile`** is a strict API contract validator for OpenAPI, AsyncAPI,
-JSON Schema, and GraphQL SDL. It lints your spec and verifies real HTTP
-responses against it.
+**`@mrjacket/smile`** acts as a relentless gatekeeper for your API specifications. 
+It auto-detects OpenAPI, AsyncAPI, JSON Schema, and GraphQL SDL, linting the contract 
+and verifying real HTTP responses against it to ensure absolute perfection.
 
 ---
 
@@ -11,6 +11,7 @@ responses against it.
 | Document | Audience | What it covers |
 |----------|----------|----------------|
 | [Getting Started](./getting-started.md) | Everyone | Install, CLI usage, CI integration |
+| [Configuration](./configuration.md) | Everyone | Severities, rule priorities, and configuration files |
 | [Library API](./library.md) | Developers | Programmatic usage, Vitest/Jest integration, TypeScript types |
 
 ## Rules Reference

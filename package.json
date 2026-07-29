@@ -1,6 +1,6 @@
 {
   "name": "@mrjacket/smile",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Strict API contract validator — lints your spec and verifies real responses against it. Passes clean, or shows you the crime scene.",
   "main": "dist/core/index.js",
   "types": "dist/core/index.d.ts",
@@ -67,6 +67,7 @@
     "@apidevtools/json-schema-ref-parser": "^15.5.0",
     "@apidevtools/swagger-parser": "^12.1.0",
     "@asyncapi/parser": "^1.18.1",
+    "@clack/prompts": "^1.7.0",
     "ajv": "^8.20.0",
     "commander": "^15.0.0",
     "graphql": "^17.0.2"

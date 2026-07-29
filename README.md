@@ -10,7 +10,9 @@
 **smile** is a strict API contract validator built for Node.js test suites and CI pipelines. 
 
 ### Why the name "smile"?
-The name is inspired by Red John (from *The Mentalist*). The smiley face is the mark that indicates the execution was perfect for the perpetrator. Applied to backend development, this is a relentless tool that judges whether your API strictly complies with the established contract. If the API lies or breaches the contract, the test fails. When your specification passes perfectly, it signs the output with the *Smiley Face*. When it fails, it isolates and highlights the "crime scene".
+Named after [Red John](https://en.wikipedia.org/wiki/Red_John) from [The Mentalist](https://en.wikipedia.org/wiki/The_Mentalist) (a show you should not watch until completion... and beware, the links has spoilers!). 
+
+The smiley face is the mark that indicates the execution was perfect. Applied to backend development, this is a relentless tool that judges whether your API strictly complies with the established contract. If the API lies or breaches the contract, the test fails. When your specification passes perfectly, it signs the output with the *Smiley Face*. When it fails, it isolates and highlights the "crime scene".
 
 It acts as both a static linter (checking your API specification for completeness) and a runtime validation engine (verifying that your live server's responses actually match the contract you wrote).
 
@@ -27,7 +29,15 @@ It acts as both a static linter (checking your API specification for completenes
 
 ## Quick Start
 
-### 1. Static Linting (CLI)
+### 1. Initialization (Scaffolding)
+
+Run the interactive setup wizard to instantly configure `smile` in your project. It will optionally generate a smart configuration file, a GitHub Actions CI workflow, and a sample API boilerplate.
+
+```bash
+npx @mrjacket/smile init
+```
+
+### 2. Static Linting (CLI)
 
 Lint any specification file instantly. `smile` exits with code `1` if violations are found, making it perfect for CI/CD.
 
@@ -37,7 +47,7 @@ npx @mrjacket/smile lint ./openapi.yaml
 
 *Supported formats: `.yaml`, `.yml`, `.json`, `.graphql`, `.gql`*
 
-### 2. Runtime Validation (Breaching Detector)
+### 3. Runtime Validation (Breaching Detector)
 
 Verify that your live server actually honors the contract:
 
@@ -50,7 +60,7 @@ smile bundle ./openapi/main.yaml --out ./dist/api-bundle.json
 ```
 > Note: Currently supports `GET` endpoints in OpenAPI specs.
 
-### 3. Programmatic Usage (Vitest / Jest)
+### 4. Programmatic Usage (Vitest / Jest)
 
 Install it as a dev dependency to use inside your integration tests:
 
@@ -117,5 +127,5 @@ We are constantly expanding the strictness and capabilities of `smile`. Here is 
 
 This project is licensed under the **GPL-3.0 License**. See the [LICENSE](./LICENSE) file for details.
 
-### Author
-- Mr Jacket
+### Credits
+**Author:** Mr Jacket 

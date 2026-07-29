@@ -82,4 +82,33 @@ describe("Config Engine", () => {
     expect(result.find((v) => v.ruleId === "rule-b")).toBeUndefined();
     expect(result.find((v) => v.ruleId === "rule-c")?.severity).toBe(ESeverity.Error);
   });
+
+  it("handles nested format rules perfectly", () => {
+    const config: ISmileConfig = {
+      rules: {
+        openapi: {
+          "rule-a": "off",
+        },
+        asyncapi: {
+          "rule-b": "warn",
+        }
+      },
+    };
+    
+    const clonedOpenApi = JSON.parse(JSON.stringify(dummyViolations)) as IViolation[];
+    // @ts-ignore using hardcoded string for test
+    const resultOpenApi = applyConfigToViolations(clonedOpenApi, config, "openapi");
+    
+    expect(resultOpenApi).toHaveLength(2); // rule-a was dropped
+    expect(resultOpenApi.find((v) => v.ruleId === "rule-a")).toBeUndefined();
+    expect(resultOpenApi.find((v) => v.ruleId === "rule-b")?.severity).toBe(ESeverity.Error); // not warned because we are in openapi format
+
+    const clonedAsyncApi = JSON.parse(JSON.stringify(dummyViolations)) as IViolation[];
+    // @ts-ignore using hardcoded string for test
+    const resultAsyncApi = applyConfigToViolations(clonedAsyncApi, config, "asyncapi");
+    
+    expect(resultAsyncApi).toHaveLength(3);
+    expect(resultAsyncApi.find((v) => v.ruleId === "rule-a")?.severity).toBe(ESeverity.Error);
+    expect(resultAsyncApi.find((v) => v.ruleId === "rule-b")?.severity).toBe(ESeverity.Warning); // warned because we are in asyncapi format
+  });
 });

@@ -1,6 +1,6 @@
 # Getting Started
 
-`smile` is a strict API contract validator. It reads your spec file, lints it
+`smile` acts as a relentless gatekeeper for your API specifications. It reads your spec file, lints it
 against a set of rules, and — if you give it a running server — fires real HTTP
 requests and checks that the responses match what the spec promises.
 
@@ -28,6 +28,17 @@ npx @mrjacket/smile lint ./openapi.yaml
 ```bash
 npm install --save-dev @mrjacket/smile
 ```
+
+---
+
+## Initialization (Scaffolding)
+
+Once installed, we highly recommend running the interactive setup wizard to configure `smile` in your project. The wizard will optionally generate a smart configuration file, a GitHub Actions CI workflow, and a sample API boilerplate.
+
+```bash
+smile init
+```
+*(If you are running without installation, use `npx @mrjacket/smile init`)*
 
 ---
 
@@ -103,57 +114,13 @@ will fail the pipeline automatically.
 
 ---
 
-## Configuration (`config.smile.json`)
+## Configuration & Rules
 
-`smile` is extremely strict by default: all internal rules are treated as **errors**. If any rule is broken, the CLI will exit with code `1`, causing your CI pipeline to fail.
+`smile` is strict by default. If you want to temporarily relax some rules to pass the CI, you can create a `config.smile.json` file.
 
-However, if you are introducing `smile` to a massive legacy project, you may want to downgrade some rules to warnings or turn them off completely. You can do this by placing a configuration file in the directory where you run the CLI.
+You can also run `npx @mrjacket/smile init` to automatically generate a boilerplate configuration file and a GitHub Actions workflow.
 
-The CLI automatically looks for any of the following filenames in this exact order:
-1. `config.smile.json`
-2. `smile.config.json`
-3. `.smilerc.json`
-4. `smile.json`
-
-```json
-{
-  "rules": {
-    "missing-operation-id": "warn",
-    "untyped-schema-property": "off"
-  }
-}
-```
-
-- **`"error"`**: Fails the build (Exit Code 1).
-- **`"warn"`**: Prints a yellow `🟡` warning in the terminal but allows the build to pass (Exit Code 0).
-- **`"off"`**: Completely suppresses the rule.
-
-### Available Rules
-
-Here is the complete list of rules you can configure, broken down by format:
-
-**OpenAPI**
-- `missing-summary`
-- `missing-operation-id`
-- `untyped-schema-property`
-
-**AsyncAPI**
-- `missing-channel-description`
-- `missing-message-description`
-- `untyped-schema-property`
-
-**GraphQL**
-- `missing-type-description`
-- `missing-field-description`
-- `deprecated-without-reason`
-- `missing-enum-value-description`
-
-**JSON Schema**
-- `missing-title`
-- `missing-description`
-- `untyped-property`
-
-If you have 0 errors but 3 warnings, `smile` will print the warnings natively, print the Smile Signature, and successfully exit with `0`.
+[Read the full Configuration & Rules Guide](./configuration.md) to see the complete list of available rules for OpenAPI, AsyncAPI, GraphQL, and JSON Schema.
 
 ---
 
