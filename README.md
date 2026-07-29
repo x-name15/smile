@@ -51,14 +51,31 @@ npx @mrjacket/smile lint .
 
 > **Tip:** Create a `.smileignore` file in your root directory to tell `smile` which files or folders to skip (e.g. `node_modules`, `vendor/`), just like `.gitignore`!
 
-You can optionally output the results as raw JSON for programmatic consumption:
+You can optionally output the results as raw JSON or Markdown for programmatic consumption:
 ```bash
 npx @mrjacket/smile lint . --format json
+npx @mrjacket/smile lint . --format markdown > report.md
 ```
 
 *Supported formats: `.yaml`, `.yml`, `.json`, `.graphql`, `.gql`*
 
-### 3. Runtime Validation (Breaching Detector)
+### 3. The Smile Doctor (Interactive Fixes) 🏥
+
+If you have a lot of missing summaries or operation IDs, you don't have to fix them manually. The Doctor will read your file, prompt you interactively in the terminal for the missing data, and safely save the YAML (preserving all your `# comments` and formatting!).
+
+```bash
+npx @mrjacket/smile doctor ./openapi.yaml
+```
+
+### 4. Git Pre-Commit Hook 🪝
+
+Never accidentally commit a broken contract again. Install a native, zero-dependency git hook that automatically runs `smile lint .` before every commit:
+
+```bash
+npx @mrjacket/smile install-hook
+```
+
+### 5. Runtime Validation (Breaching Detector)
 
 Verify that your live server actually honors the contract:
 

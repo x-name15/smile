@@ -114,6 +114,26 @@ will fail the pipeline automatically.
 
 ---
 
+## Interactive Auto-Fixer (Smile Deduce)
+
+For common violations like missing operation IDs or summaries, you don't have to fix them manually. Run the `deduce` wizard to interactively solve the missing evidence. Your `# comments` and YAML formatting will be preserved!
+
+```bash
+smile deduce ./openapi.yaml
+```
+
+---
+
+## Git Pre-Commit Hook Installer
+
+Enforce contract linting automatically before every commit by installing our native, zero-dependency git hook:
+
+```bash
+smile install-hook
+```
+
+---
+
 ## Configuration & Rules
 
 `smile` is strict by default. If you want to temporarily relax some rules to pass the CI, you can create a `config.smile.json` file.

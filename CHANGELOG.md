@@ -6,6 +6,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.2.3] - 2026-07-29 — More Developer Experience :D
+
+### Added
+- **Smile Deduce:** Added an interactive `smile deduce <spec>` command (The Mentalist auto-fixer!). It reads your specification, finds violations (like missing summaries or operation IDs), and interactively prompts you to fix them right in your terminal. It safely manipulates your YAML files using AST parsing, preserving all `# comments` and formatting!
+- **Markdown Reports:** Added `--format markdown` flag for CI/CD integrations. Outputs GitHub-friendly tables that you can pipe directly into Pull Request comments.
+- **Pre-commit Hook Installer:** Added the `smile install-hook` command to generate a native, zero-dependency git pre-commit hook that automatically blocks commits if the API contract is broken.
+- **Configurable Test Headers:** Added `testHeaders` to `config.smile.json`. You can now store your Bearer tokens or API keys globally instead of typing `-H` repeatedly in `smile test`.
+
+### Changed
+- **CLI Architecture Refactor:** Moved all command files (`initCommand`, `hookCommand`, `deduceCommand`) into a dedicated `src/cli/commands/` directory for better maintainability.
+
+### Fixed
+- **Init Config Scaffold:** `smile init` now correctly generates stubs for advanced config options (`testHeaders`, `format`, `webhooks`) inside the generated `config.smile.json` so users know they are available.
+
 ## [1.2.2] - 2026-07-29 — The Automation Patch
 
 ### Added

@@ -7,7 +7,7 @@
  */
 import { Command } from "commander";
 import { lintSpec, runSmokeTest } from "../core/index.js";
-import { renderSmileReport, renderSmileTestReport } from "../reporters/smileReporter.js";
+import { renderSmileReport, renderSmileTestReport, renderMarkdownReport, renderMarkdownTestReport } from "../reporters/smileReporter.js";
 import { VERSION } from "../version.js";
 
 const program = new Command();
@@ -20,7 +20,7 @@ program
 program
   .command("lint <specPath>")
   .description("Statically lint a spec file or directory — auto-detects OpenAPI, AsyncAPI, JSON Schema, or GraphQL")
-  .option("-f, --format <type>", "Output format (text, json)", "text")
+  .option("-f, --format <type>", "Output format (text, json, markdown)", "text")
   .action(async (specPath: string, options: { format: string }) => {
     const start = performance.now();
     try {
@@ -29,7 +29,7 @@ program
       const { findSpecFiles, fireWebhooks } = await import("./utils.js");
       
       const config = loadConfig();
-      const outputFormat = options.format === "json" || config.format === "json" ? "json" : "text";
+      const outputFormat = options.format === "json" || config.format === "json" ? "json" : (options.format === "markdown" || config.format === "markdown" ? "markdown" : "text");
 
       const files = findSpecFiles(specPath);
       if (files.length === 0) {
@@ -43,6 +43,10 @@ program
 
       if (outputFormat === "json") {
         console.log(JSON.stringify(results, null, 2));
+      } else if (outputFormat === "markdown") {
+        for (const result of results) {
+          console.log(renderMarkdownReport(result));
+        }
       } else {
         // Aggregate rendering
         for (const result of results) {
@@ -73,7 +77,7 @@ program
     "-H, --header <header...>",
     "Custom HTTP headers to inject into the requests (e.g., -H 'Authorization: Bearer token')",
   )
-  .option("-f, --format <type>", "Output format (text, json)", "text")
+  .option("-f, --format <type>", "Output format (text, json, markdown)", "text")
   .action(async (specPath: string, baseUrl: string, options: { header?: string[], format: string }) => {
     const start = performance.now();
     try {
@@ -81,9 +85,9 @@ program
       const { fireWebhooks } = await import("./utils.js");
       
       const config = loadConfig();
-      const outputFormat = options.format === "json" || config.format === "json" ? "json" : "text";
+      const outputFormat = options.format === "json" || config.format === "json" ? "json" : (options.format === "markdown" || config.format === "markdown" ? "markdown" : "text");
 
-      const headersRecord: Record<string, string> = {};
+      const headersRecord: Record<string, string> = { ...(config.testHeaders || {}) };
       if (options.header) {
         for (const h of options.header) {
           const firstColon = h.indexOf(":");
@@ -101,6 +105,8 @@ program
       
       if (outputFormat === "json") {
         console.log(JSON.stringify(result, null, 2));
+      } else if (outputFormat === "markdown") {
+        console.log(renderMarkdownTestReport(result));
       } else {
         console.log(renderSmileTestReport(result));
         const duration = Math.round(performance.now() - start);
@@ -158,11 +164,39 @@ program
   .description("Initialize smile in your project (generates config, CI workflow, and sample API)")
   .action(async () => {
     try {
-      const { runInitCommand } = await import("./initCommand.js");
+      const { runInitCommand } = await import("./commands/initCommand.js");
       await runInitCommand();
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.error(`Failed to initialize smile: ${message}`);
+      process.exitCode = 1;
+    }
+  });
+
+program
+  .command("install-hook")
+  .description("Install a native git pre-commit hook that runs 'smile lint .' before every commit")
+  .action(async () => {
+    try {
+      const { installHook } = await import("./commands/hookCommand.js");
+      await installHook();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`Failed to install git hook: ${message}`);
+      process.exitCode = 1;
+    }
+  });
+
+program
+  .command("deduce <specPath>")
+  .description("Smile Deduce: Interactively solve contract violations using deduction (Auto-fixer)")
+  .action(async (specPath: string) => {
+    try {
+      const { runDeduceCommand } = await import("./commands/deduceCommand.js");
+      await runDeduceCommand(specPath);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`Deduce failed: ${message}`);
       process.exitCode = 1;
     }
   });

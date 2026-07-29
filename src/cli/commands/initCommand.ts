@@ -9,7 +9,7 @@ import {
   SAMPLE_GRAPHQL,
   SAMPLE_JSONSCHEMA,
   RULES_BY_FORMAT,
-} from "./templates.js";
+} from "../templates.js";
 
 /**
  * Executes the \`smile init\` CLI command.
@@ -66,7 +66,16 @@ export async function runInitCommand(): Promise<void> {
       }
     }
 
-    const configContent = JSON.stringify({ rules }, null, 2);
+    const configObj = {
+      format: "text",
+      testHeaders: {
+        "Authorization": "Bearer YOUR_TOKEN_HERE"
+      },
+      webhooks: [],
+      rules
+    };
+
+    const configContent = JSON.stringify(configObj, null, 2);
     const configPath = path.resolve(process.cwd(), "config.smile.json");
     
     if (existsSync(configPath)) {

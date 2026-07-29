@@ -39,6 +39,10 @@ You can set any valid rule to one of three severities:
 
 ```json
 {
+  "testHeaders": {
+    "Authorization": "Bearer xxxxx",
+    "X-Api-Key": "12345"
+  },
   "webhooks": [
     "https://hookSlackazo/services/blablabla"
   ],
@@ -50,6 +54,9 @@ You can set any valid rule to one of three severities:
   }
 }
 ```
+
+### `testHeaders` (optional)
+A key-value map of HTTP headers that will be automatically injected into every request made by the Breaching Detector (`smile test`). This saves you from having to type `-H "Authorization: ..."` in the CLI every time. Note that headers passed via the CLI will override these configuration headers.
 
 ### `webhooks` (optional)
 An array of webhook URLs (e.g. Slack, Discord, MS Teams). If `smile lint` or `smile test` detects a violation, it will automatically send a POST request to these URLs with a JSON summary of the failure.
