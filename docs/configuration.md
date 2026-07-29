@@ -40,7 +40,7 @@ You can set any valid rule to one of three severities:
 ```json
 {
   "webhooks": [
-    "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+    "https://hookSlackazo/services/blablabla"
   ],
   "format": "json",
   "rules": {
