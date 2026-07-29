@@ -134,6 +134,7 @@ Full documentation is available in the [`docs/`](./docs) directory:
 
 - [Getting Started](./docs/getting-started.md) — CLI usage, CI integration, and exit codes.
 - [Library API](./docs/library.md) — Programmatic usage, Vitest integration, and working with violations.
+- [Configuration](./docs/configuration.md) — Complete guide to customizing rules, webhooks, and test headers in your config.smile.json.
 - **Rules Reference**:
   - [OpenAPI](./docs/rules/openapi.md)
   - [AsyncAPI](./docs/rules/asyncapi.md)
