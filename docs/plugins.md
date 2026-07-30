@@ -126,7 +126,10 @@ interface IViolation {
 
 The plugin architecture is integrated directly into the core engine (`lintSpec`), which means it works identically across all environments:
 
-1. **CLI Usage:** When you run `smile lint .`, it automatically reads `plugins` from `config.smile.json` and evaluates them.
+1. **CLI Usage:** When you run `smile lint .`, it automatically reads `plugins` from `config.smile.json` and evaluates them. You can also load plugins on the fly (bypassing or adding to the config file) using the `--plugin` flag:
+   ```bash
+   smile lint ./api.yaml --plugin ./smile-rules.mjs
+   ```
 2. **CI/CD Pipelines:** In GitHub Actions, GitLab CI, or pre-commit hooks, plugins run exactly as they do locally. Any violations caught by your custom rules will be automatically translated into GitHub Step Summaries, PR inline annotations, and JUnit XML dashboards just like native rules.
 3. **Programmatic Usage (Vitest / Jest):** If you are using `smile` as a library in your integration tests, you can inject plugins directly through the configuration object:
 

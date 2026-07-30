@@ -158,8 +158,6 @@ Full documentation is available in the [`docs/`](./docs) directory:
 ## Roadmap (Upcoming Features)
 
 We are constantly expanding the strictness and capabilities of `smile`. Here is what is coming in future versions:
-
-- **v1.3.0 The Plugin System:** Letting enterprise teams inject custom JavaScript/TypeScript rules dynamically at runtime via `config.smile.json`.
 - **v1.4.0 Extended Ecosystem:** Adding static linting for **gRPC / Protocol Buffers (`.proto`)** and **Postman Collections**.
 - **v1.4.1 Postman Runtime Validation:** Extending the Breaching Detector (`runSmokeTest`) to validate actual live responses against saved examples in Postman Collections.
 - **v1.5.0 JSON:API / HAL**: Validating hypermedia conventions strictly.

@@ -6,6 +6,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.3.1] - 2026-07-30 — CLI Plugin Flag
+
+### Added
+- **CLI Plugin Injection:** Added the `-p, --plugin <path>` flag to the `lint` and `test` CLI commands. You can now load custom rules on the fly directly from the terminal without having to modify `config.smile.json` (e.g., `smile lint ./api.yaml --plugin ./my-plugin.js`).
+
+### Docs
+- **CLI Options:** Explicitly listed CLI options (`--format`, `--quiet`, `--plugin`, `--header`) in `docs/getting-started.md`.
+- **Documentation Hub:** Completely revamped `docs/README.md` to act as an organized hub linking all new guides (Plugins, Library API, Configuration, CI/CD).
+
+---
+
 ## [1.3.0] - 2026-07-30 — The Plugin System
 
 ### Added

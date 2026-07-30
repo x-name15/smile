@@ -21,8 +21,9 @@ program
   .command("lint <specPath>")
   .description("Statically lint a spec file or directory — auto-detects OpenAPI, AsyncAPI, JSON Schema, or GraphQL")
   .option("-f, --format <type>", "Output format (text, json, markdown, junit)", "text")
+  .option("-p, --plugin <path>", "Load a custom plugin on the fly (overrides config)")
   .option("-q, --quiet", "Quiet mode (suppress text output, only print errors or format reports)", false)
-  .action(async (specPath: string, options: { format: string, quiet: boolean }) => {
+  .action(async (specPath: string, options: { format: string, quiet: boolean, plugin?: string }) => {
     const start = performance.now();
     try {
       const { loadConfig } = await import("../core/index.js");
@@ -32,6 +33,10 @@ program
       const { emitGithubStepSummary } = await import("../reporters/utils.js");
       
       const config = loadConfig();
+      if (options.plugin) {
+        config.plugins = [...(config.plugins || []), options.plugin];
+      }
+      
       let outputFormat = options.format;
       if (config.format && options.format === "text") {
         // Fallback to config if not explicitly overridden by CLI
@@ -97,8 +102,9 @@ program
     "Custom HTTP headers to inject into the requests (e.g., -H 'Authorization: Bearer token')",
   )
   .option("-f, --format <type>", "Output format (text, json, markdown, junit)", "text")
+  .option("-p, --plugin <path>", "Load a custom plugin on the fly (overrides config)")
   .option("-q, --quiet", "Quiet mode (suppress text output, only print errors or format reports)", false)
-  .action(async (specPath: string, baseUrl: string, options: { header?: string[], format: string, quiet: boolean }) => {
+  .action(async (specPath: string, baseUrl: string, options: { header?: string[], format: string, quiet: boolean, plugin?: string }) => {
     const start = performance.now();
     try {
       const { loadConfig } = await import("../core/index.js");
@@ -107,6 +113,10 @@ program
       const { emitGithubStepSummary } = await import("../reporters/utils.js");
       
       const config = loadConfig();
+      if (options.plugin) {
+        config.plugins = [...(config.plugins || []), options.plugin];
+      }
+      
       let outputFormat = options.format;
       if (config.format && options.format === "text") {
         outputFormat = config.format;

@@ -54,6 +54,11 @@ smile lint ./schema.json       # JSON Schema
 smile lint ./schema.graphql    # GraphQL SDL
 ```
 
+**CLI Options:**
+- `-f, --format <type>`: Output format (`text`, `json`, `markdown`, `junit`). Defaults to `text`.
+- `-p, --plugin <path>`: Dynamically load a custom JavaScript/TypeScript plugin on the fly.
+- `-q, --quiet`: Quiet mode. Suppresses standard text output and only prints errors or formatted reports.
+
 ### What you'll see on a passing spec
 
 ```
@@ -146,6 +151,12 @@ the schema the spec promises.
 smile test ./openapi.yaml http://localhost:3000
 smile test ./openapi.yaml https://api.staging.example.com
 ```
+
+**CLI Options:**
+- `-f, --format <type>`: Output format (`text`, `json`, `markdown`, `junit`). Defaults to `text`.
+- `-h, --header <header...>`: Custom headers to pass in every request (e.g., `-h 'Authorization: Bearer xyz'`).
+- `-p, --plugin <path>`: Dynamically load a custom JavaScript/TypeScript plugin on the fly.
+- `-q, --quiet`: Quiet mode. Suppresses standard text output and only prints errors or formatted reports.
 
 ### What you'll see
 
