@@ -1,6 +1,7 @@
 import { detectSpecFormat } from "../detectSpecFormat.js";
 import { runOpenApiSmokeTest } from "./openapiTester.js";
 import { runPostmanSmokeTest } from "./postmanTester.js";
+import { runGraphQLSmokeTest } from "./graphqlTester.js";
 import { ESpecFormat, type ITestResult } from "../../models/index.js";
 
 /**
@@ -19,9 +20,11 @@ export async function runSmokeTest(
       return runOpenApiSmokeTest(sourcePath, baseUrl, headers);
     case ESpecFormat.Postman:
       return runPostmanSmokeTest(sourcePath, baseUrl, headers);
+    case ESpecFormat.GraphQL:
+      return runGraphQLSmokeTest(sourcePath, baseUrl, headers);
     default:
       throw new Error(
-        `The Breaching Detector (smile test) currently only supports OpenAPI and Postman specs. Detected format: ${format}`,
+        `The Breaching Detector (smile test) currently only supports OpenAPI, Postman, and GraphQL specs. Detected format: ${format}`,
       );
   }
 }

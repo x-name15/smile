@@ -5,6 +5,9 @@ import { ruleMissingResponses } from "./missingResponses.js";
 import { ruleUntypedSchemaProperty } from "./untypedSchemaProperty.js";
 import { ruleOpenApiMissingSummary } from "./missingSummary.js";
 import { ruleOpenApiNo2xxResponse } from "./no2xxResponse.js";
+import { run as ruleValidExamples } from "./valid-examples.js";
+import { run as ruleRequireSecurity } from "./require-security.js";
+import { run as ruleNoHttpVerbsInPath } from "./no-http-verbs-in-path.js";
 
 type TOpenApi3Doc = OpenAPIV3.Document | OpenAPIV3_1.Document;
 type TRule = (doc: TOpenApi3Doc) => IViolation[];
@@ -18,4 +21,7 @@ export const openApiRules: TRule[] = [
   ruleUntypedSchemaProperty,
   ruleOpenApiMissingSummary,
   ruleOpenApiNo2xxResponse,
+  ruleValidExamples,
+  ruleRequireSecurity,
+  ruleNoHttpVerbsInPath,
 ];

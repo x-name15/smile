@@ -1,7 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Sample API
+  title: Sample Clean API
   version: 1.0.0
+security: []
 paths:
   /users:
     get:

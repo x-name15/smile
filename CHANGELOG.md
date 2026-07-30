@@ -6,6 +6,19 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.4.3] - 2026-07-30 — GraphQL Runtime Validation & OpenAPI Hardening
+
+### Added
+- **GraphQL Runtime Validation:** Extends the Breaching Detector (`smile test`) to natively support GraphQL schemas. It parses `.graphql` SDL files, automatically generates shallow queries (using `__typename`) for parameter-less endpoints on the `Query` root type, dispatches them via POST, and verifies the response structure is free of GraphQL errors.
+- **New OpenAPI Rule: `valid-examples`**: Added strict static validation for OpenAPI examples. If you declare a schema property (e.g., `type: integer`) and provide an example that violates it (e.g., `example: "foo"`), `smile` will now block the build.
+- **New OpenAPI Rule: `require-security`**: Added strict static validation enforcing that every endpoint either has a `security` requirement defined globally/locally, or explicitly overrides it to public using `security: []`. Prevents accidental exposure of unprotected APIs.
+- **New OpenAPI Rule: `no-http-verbs-in-path`**: Added a REST best-practice rule that triggers warnings if paths contain verbs (e.g., `/getUsers`, `/createOrder`).
+
+### Chore
+- **Dependabot Configuration**: Added `.github/dependabot.yml` for automated dependency updates on a weekly schedule.
+
+---
+
 ## [1.4.2] - 2026-07-30 — Full Breaching Detector & Postman Runtime Validation
 
 ### Added

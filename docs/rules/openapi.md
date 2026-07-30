@@ -142,3 +142,85 @@ components:
           type: object
           description: Additional info
 ```
+
+---
+
+## valid-examples
+
+**Severity:** Error
+
+Every `example` and `default` value must strictly match its own schema `type`. 
+An example that violates its own schema type confuses consumers and breaks auto-mocking tools.
+
+**Triggers on:**
+```yaml
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        age:
+          type: integer
+          example: "twenty"  # wrong type
+```
+
+---
+
+## require-security
+
+**Severity:** Error
+
+Every operation must have a `security` requirement defined (either at the root level or operation level).
+If an endpoint is truly meant to be public, you must explicitly declare it with `security: []`.
+This prevents accidental exposure of private endpoints.
+
+**Triggers on:**
+```yaml
+paths:
+  /users:
+    get:
+      # No security defined globally or here
+      responses:
+        "200":
+          description: OK
+```
+
+**Clean:**
+```yaml
+paths:
+  /users:
+    get:
+      security: []  # explicitly public
+      responses:
+        "200":
+          description: OK
+```
+
+---
+
+## no-http-verbs-in-path
+
+**Severity:** Warning
+
+Paths should represent resources (nouns), not actions (verbs). HTTP methods (`GET`, `POST`, `DELETE`) already define the action. Using verbs in the path violates RESTful design principles.
+
+**Triggers on:**
+```yaml
+paths:
+  /getUsers:
+    get:
+      responses:
+        "200":
+          description: OK
+```
+
+**Clean:**
+```yaml
+paths:
+  /users:
+    get:
+      responses:
+        "200":
+          description: OK
+```
+
