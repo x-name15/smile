@@ -123,3 +123,53 @@ enum UserRole {
   GUEST
 }
 ```
+
+---
+
+## require-pascal-case-types
+
+**Severity:** Error
+
+GraphQL conventions dictate that all types (Object, Input, Interface, Enum, Union) should be named using PascalCase (starting with a capital letter).
+
+**Triggers on:**
+``graphql
+# Bad: lowercase start
+type user {
+  id: ID!
+}
+``
+
+**Clean:**
+``graphql
+type User {
+  id: ID!
+}
+``
+
+---
+
+## require-camel-case-fields
+
+**Severity:** Error
+
+GraphQL conventions dictate that all fields inside a type should be named using camelCase (starting with a lowercase letter). Avoid snake_case or PascalCase.
+
+**Triggers on:**
+``graphql
+type User {
+  # Bad: snake_case
+  created_at: String
+  
+  # Bad: PascalCase
+  FirstName: String
+}
+``
+
+**Clean:**
+``graphql
+type User {
+  createdAt: String
+  firstName: String
+}
+``

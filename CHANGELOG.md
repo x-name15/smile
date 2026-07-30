@@ -6,6 +6,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.4.4] - 2026-07-30 — GraphQL Naming Conventions
+
+### Added
+- **New GraphQL Rule: `require-pascal-case-types`**: Added strict naming convention rule for GraphQL types (Object, Input, Interface, Enum, Union) to require PascalCase.
+- **New GraphQL Rule: `require-camel-case-fields`**: Added strict naming convention rule for GraphQL fields to require camelCase.
+
+### Chore
+- **CI/CD Hardening**: Added `semantic-pr.yml` to strictly enforce conventional commits on all Pull Requests.
+- **Security Scanning**: Added `codeql.yml` to automatically run GitHub CodeQL SAST scans on every push to main and weekly schedules.
+
+---
+
 ## [1.4.3] - 2026-07-30 — GraphQL Runtime Validation & OpenAPI Hardening
 
 ### Added

@@ -4,6 +4,8 @@ import { ruleGraphQLMissingTypeDescription } from "./missingTypeDescription.js";
 import { ruleGraphQLMissingFieldDescription } from "./missingFieldDescription.js";
 import { ruleGraphQLDeprecatedWithoutReason } from "./deprecatedWithoutReason.js";
 import { ruleGraphQLMissingEnumValueDescription } from "./missingEnumValueDescription.js";
+import { ruleGraphQLRequirePascalCaseTypes } from "./requirePascalCaseTypes.js";
+import { ruleGraphQLRequireCamelCaseFields } from "./requireCamelCaseFields.js";
 
 type TRule = (doc: DocumentNode) => IViolation[];
 
@@ -15,4 +17,6 @@ export const graphqlRules: TRule[] = [
   ruleGraphQLMissingFieldDescription,
   ruleGraphQLDeprecatedWithoutReason,
   ruleGraphQLMissingEnumValueDescription,
+  ruleGraphQLRequirePascalCaseTypes,
+  ruleGraphQLRequireCamelCaseFields,
 ];
