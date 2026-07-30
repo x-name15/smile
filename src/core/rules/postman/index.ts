@@ -1,4 +1,4 @@
-import type { IPostmanCollection } from "../../../parsers/postman.js";
+import type { IPostmanCollection } from "../../../models/index.js";
 import { requireRequestDescription } from "./require-request-description.js";
 import { noEmptyFolders } from "./no-empty-folders.js";
 import { requireResponseExample } from "./require-response-example.js";

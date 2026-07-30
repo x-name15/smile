@@ -111,3 +111,14 @@ Here is the complete list of rule IDs you can override, broken down by format:
 - `missing-title`
 - `missing-description`
 - `untyped-property`
+- `array-without-items`
+
+### gRPC
+- `require-rpc-comments`
+- `pascal-case-messages`
+- `camel-case-fields`
+
+### Postman
+- `require-request-description`
+- `require-response-example`
+- `no-empty-folders`

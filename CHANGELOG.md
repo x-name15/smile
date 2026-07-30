@@ -6,6 +6,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.4.1] - 2026-07-30 — Hardening & Stability
+
+### Fixed
+- **detectSpecFormat fallback:** When a file format cannot be determined, it now returns `ESpecFormat.Unknown` and displays a clear error message, rather than silently falling back to parsing as OpenAPI and generating confusing parser errors.
+- **Postman typings:** Replaced all usages of `any[]` in Postman rules with the new `IPostmanItem` interface, ensuring type safety against malformed collection JSONs.
+- **Postman interfaces moved:** Moved all Postman type definitions (`IPostmanCollection`, `IPostmanItem`, etc.) to the central `src/models/index.ts` file and added comprehensive TSDocs.
+- **Deduce interactive auto-fixer:** Hardened `smile deduce` to abort gracefully if run against unsupported formats (like gRPC, Postman, GraphQL). Added guard checks to prevent crashes when JSON structures lack a `paths` object.
+
+### Tests
+- **gRPC stress testing:** Added `sample-grpc-large.proto`, a real-world multi-service fixture with nested types and enums, to ensure `protobufjs` rules scale gracefully.
+- **OpenAPI stress testing:** Added `sample-openapi-large.yaml` with 50 endpoints to ensure fast AST generation and linting.
+
+---
+
 ## [1.4.0] - 2026-07-30 — gRPC and Postman Support
 
 ### Added

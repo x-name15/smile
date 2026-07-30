@@ -34,6 +34,12 @@ export function detectSpecFormat(sourcePath: string): ESpecFormat {
     return ESpecFormat.JsonSchema;
   }
 
-  // Default: OpenAPI (openapi key, swagger key, or unknown — fall through)
-  return ESpecFormat.OpenApi;
+  // OpenAPI: top-level `openapi` or `swagger` key
+  if (/^openapi\s*:/m.test(contents) || /^swagger\s*:/m.test(contents) || /"openapi"\s*:/.test(contents) || /"swagger"\s*:/.test(contents)) {
+    return ESpecFormat.OpenApi;
+  }
+
+  // Could not determine the format — return Unknown instead of silently
+  // treating the file as OpenAPI, which would produce confusing parse errors.
+  return ESpecFormat.Unknown;
 }

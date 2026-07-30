@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import * as p from "@clack/prompts";
 import YAML from "yaml";
 import { lintSpec, loadConfig } from "../../core/index.js";
+import { ESpecFormat } from "../../models/index.js";
 import type { IViolation } from "../../models/index.js";
 
 /**
@@ -21,13 +22,22 @@ function extractRouteFromMessage(message: string): { method: string; path: strin
  * parser to inject the fixes back into the file without altering existing formatting
  * or comments.
  * 
- * @param specPath The path to the OpenAPI/AsyncAPI/GraphQL/JSON Schema file.
+ * Only supported for OpenAPI and AsyncAPI specs (formats that have a `paths` structure).
+ * 
+ * @param specPath The path to the OpenAPI/AsyncAPI file.
  */
 export async function runDeduceCommand(specPath: string): Promise<void> {
   p.intro("Welcome to Smile Deduce, Mentalist)");
 
   const config = loadConfig();
   const result = await lintSpec(specPath, config);
+
+  // Deduce only works on formats that have a paths/operations structure
+  const supportedFormats = [ESpecFormat.OpenApi, ESpecFormat.AsyncApi];
+  if (!supportedFormats.includes(result.format)) {
+    p.outro(`⚠️ Smile Deduce only supports OpenAPI and AsyncAPI specs. Detected format: "${result.format}".`);
+    return;
+  }
 
   if (result.passed && result.violations.length === 0) {
     p.outro("✅ Your spec is perfectly healthy! No deductions needed.");
@@ -85,11 +95,17 @@ export async function runDeduceCommand(specPath: string): Promise<void> {
       
       if (summary) {
         if (isJson) {
-          jsonObj.paths[route.path][route.method].summary = summary;
+          const operation = jsonObj?.paths?.[route.path]?.[route.method];
+          if (operation) {
+            operation.summary = summary;
+            changesMade++;
+          } else {
+            p.log.warn(`Could not locate operation ${route.method.toUpperCase()} ${route.path} in JSON. Skipping.`);
+          }
         } else {
           doc!.setIn(["paths", route.path, route.method, "summary"], summary);
+          changesMade++;
         }
-        changesMade++;
       }
     } else if (violation.ruleId === "missing-operation-id") {
       const opId = await p.text({
@@ -103,11 +119,17 @@ export async function runDeduceCommand(specPath: string): Promise<void> {
       
       if (opId) {
         if (isJson) {
-          jsonObj.paths[route.path][route.method].operationId = opId;
+          const operation = jsonObj?.paths?.[route.path]?.[route.method];
+          if (operation) {
+            operation.operationId = opId;
+            changesMade++;
+          } else {
+            p.log.warn(`Could not locate operation ${route.method.toUpperCase()} ${route.path} in JSON. Skipping.`);
+          }
         } else {
           doc!.setIn(["paths", route.path, route.method, "operationId"], opId);
+          changesMade++;
         }
-        changesMade++;
       }
     }
   }

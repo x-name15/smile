@@ -1,7 +1,6 @@
 import type { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
 import type { DocumentNode } from "graphql";
 import type protobuf from "protobufjs";
-import type { IPostmanCollection } from "../parsers/postman.js";
 
 import { parseOpenApiSpec } from "../parsers/openapi.js";
 import { parseAsyncApiSpec } from "../parsers/asyncapi.js";
@@ -18,7 +17,7 @@ import { grpcRules } from "./rules/grpc/index.js";
 import { postmanRules } from "./rules/postman/index.js";
 
 import { detectSpecFormat } from "./detectSpecFormat.js";
-import { ESpecFormat, ESeverity, type ILintResult, type ISmileConfig } from "../models/index.js";
+import { ESpecFormat, ESeverity, type ILintResult, type ISmileConfig, type IPostmanCollection } from "../models/index.js";
 import { loadPlugins, evaluateCustomRules } from "./pluginLoader.js";
 
 export * from "../models/index.js";
@@ -145,6 +144,18 @@ async function lintSpec(sourcePath: string, config: ISmileConfig = {}): Promise<
       return lintGrpcSpec(sourcePath, config);
     case ESpecFormat.Postman:
       return lintPostmanSpec(sourcePath, config);
+    case ESpecFormat.Unknown:
+      return {
+        format: ESpecFormat.Unknown,
+        passed: false,
+        violations: [{
+          ruleId: "unknown-spec-format",
+          severity: ESeverity.Error,
+          message: `Could not detect the spec format of "${sourcePath}". Supported formats: OpenAPI (.yaml/.json), AsyncAPI (.yaml/.json), JSON Schema (.json), GraphQL (.graphql/.gql), gRPC (.proto), Postman Collection (.json).`,
+          path: sourcePath,
+        }],
+        sourcePath,
+      };
     default:
       return lintOpenApiSpec(sourcePath, config);
   }

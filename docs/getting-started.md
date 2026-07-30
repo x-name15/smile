@@ -52,6 +52,8 @@ smile lint ./openapi.yaml
 smile lint ./asyncapi.yaml
 smile lint ./schema.json       # JSON Schema
 smile lint ./schema.graphql    # GraphQL SDL
+smile lint ./service.proto     # gRPC
+smile lint ./collection.json   # Postman Collection
 ```
 
 **CLI Options:**
@@ -112,7 +114,7 @@ smile lint ./schema.graphql    # GraphQL SDL
 |------|---------|
 | `0` | Spec is clean — no violations |
 | `1` | One or more violations found |
-| `2` | Spec could not be parsed (file not found, invalid syntax, etc.) |
+| `2` | Spec could not be parsed, or the format could not be detected (`unknown-spec-format`) |
 
 Exit codes make `smile lint` directly usable in CI pipelines — a non-zero exit
 will fail the pipeline automatically.
@@ -206,10 +208,12 @@ It also features native integrations for **GitHub Actions**, **GitLab CI**, **JU
 
 | Format | Detection | Rules |
 |--------|-----------|-------|
-| OpenAPI 3.x | `openapi:` key in file | 5 rules |
+| OpenAPI 3.x | `openapi:` or `swagger:` key in file | 5 rules |
 | AsyncAPI 2.x | `asyncapi:` key in file | 5 rules |
 | JSON Schema | `$schema:` key in file | 4 rules |
 | GraphQL SDL | `.graphql` / `.gql` extension | 4 rules |
+| gRPC | `.proto` extension | 3 rules |
+| Postman Collection | `schema.getpostman.com` in JSON | 3 rules |
 
 For the full list of rules and what each one checks, see the
 [rules reference](./rules/).

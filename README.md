@@ -161,7 +161,7 @@ Full documentation is available in the [`docs/`](./docs) directory:
 ## Roadmap (Upcoming Features)
 
 We are constantly expanding the strictness and capabilities of `smile`. Here is what is coming in future versions:
-- **v1.4.1 Postman Runtime Validation:** Extending the Breaching Detector (`runSmokeTest`) to validate actual live responses against saved examples in Postman Collections.
+- **v1.4.2 Postman Runtime Validation & Full Breaching Detector:** Extending the Breaching Detector (`runSmokeTest`) to validate actual live responses against saved examples in Postman Collections. Enhancing the OpenAPI detector to support `POST`, `PUT`, and `DELETE` with auto-generated bodies.
 - **v1.5.0 JSON:API / HAL**: Validating hypermedia conventions strictly.
 
 ## License

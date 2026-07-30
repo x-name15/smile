@@ -102,3 +102,48 @@ export interface ITestResult {
   endpoints: IEndpointTestResult[];
   sourcePath: string;
 }
+
+// ─── Postman ───────────────────────────────────────────────────────────────
+
+/**
+ * Represents a single request configuration in a Postman Collection.
+ */
+export interface IPostmanRequest {
+  method: string;
+  url: string | { raw?: string };
+  description?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Represents a saved example response in a Postman Collection.
+ */
+export interface IPostmanResponse {
+  name: string;
+  code?: number;
+  body?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Represents a node in the Postman Collection tree (either a folder or a request item).
+ */
+export interface IPostmanItem {
+  name: string;
+  request?: IPostmanRequest;
+  response?: IPostmanResponse[];
+  item?: IPostmanItem[];
+}
+
+/**
+ * Represents the root structure of a Postman Collection JSON.
+ */
+export interface IPostmanCollection {
+  info: {
+    name: string;
+    description?: string;
+    schema: string;
+  };
+  item: IPostmanItem[];
+  [key: string]: unknown;
+}

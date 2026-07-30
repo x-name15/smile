@@ -1,10 +1,9 @@
-import { ESeverity, type IViolation } from "../../../models/index.js";
-import type { IPostmanCollection } from "../../../parsers/postman.js";
+import { ESeverity, type IViolation, type IPostmanCollection, type IPostmanItem } from "../../../models/index.js";
 
 export function requireRequestDescription(doc: IPostmanCollection): IViolation[] {
   const violations: IViolation[] = [];
 
-  function traverse(items: any[], pathPrefix: string) {
+  function traverse(items: IPostmanItem[], pathPrefix: string) {
     items.forEach((item, index) => {
       const currentPath = `${pathPrefix}[${index}]`;
       if (item.request) {

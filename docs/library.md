@@ -45,6 +45,8 @@ enum ESpecFormat {
   AsyncApi   = "asyncapi",
   JsonSchema = "json-schema",
   GraphQL    = "graphql",
+  Grpc       = "grpc",
+  Postman    = "postman",
 }
 
 interface ISmileConfig {
@@ -92,6 +94,8 @@ import {
   lintAsyncApiSpec,
   lintJsonSchemaSpec,
   lintGraphQLSpec,
+  lintGrpcSpec,
+  lintPostmanSpec,
 } from "@mrjacket/smile";
 
 // OpenAPI
@@ -105,6 +109,12 @@ const jsonSchemaResult = await lintJsonSchemaSpec("./schema.json");
 
 // GraphQL SDL
 const graphqlResult = await lintGraphQLSpec("./schema.graphql");
+
+// gRPC
+const grpcResult = await lintGrpcSpec("./service.proto");
+
+// Postman Collection
+const postmanResult = await lintPostmanSpec("./collection.json");
 ```
 
 ---

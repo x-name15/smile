@@ -1,15 +1,5 @@
 import { readFileSync } from "node:fs";
-import { ESpecFormat, type IParsedSpec } from "../models/index.js";
-
-export interface IPostmanCollection {
-  info: {
-    name: string;
-    description?: string;
-    schema: string;
-  };
-  item: any[];
-  [key: string]: any;
-}
+import { ESpecFormat, type IParsedSpec, type IPostmanCollection } from "../models/index.js";
 
 export async function parsePostmanSpec(filePath: string): Promise<IParsedSpec> {
   try {
