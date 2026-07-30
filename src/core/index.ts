@@ -32,7 +32,7 @@ async function lintOpenApiSpec(sourcePath: string, config: ISmileConfig = {}): P
   
   // Use the newly exported applyConfigToViolations
   const { applyConfigToViolations } = await import("./config.js");
-  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.OpenApi);
+  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.OpenApi, sourcePath);
 
   return {
     format: ESpecFormat.OpenApi,
@@ -52,7 +52,7 @@ async function lintAsyncApiSpec(sourcePath: string, config: ISmileConfig = {}): 
 
   const rawViolations = asyncApiRules.flatMap((rule) => rule(doc));
   const { applyConfigToViolations } = await import("./config.js");
-  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.AsyncApi);
+  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.AsyncApi, sourcePath);
 
   return {
     format: ESpecFormat.AsyncApi,
@@ -72,7 +72,7 @@ async function lintJsonSchemaSpec(sourcePath: string, config: ISmileConfig = {})
 
   const rawViolations = jsonSchemaRules.flatMap((rule) => rule(doc));
   const { applyConfigToViolations } = await import("./config.js");
-  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.JsonSchema);
+  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.JsonSchema, sourcePath);
 
   return {
     format: ESpecFormat.JsonSchema,
@@ -92,7 +92,7 @@ async function lintGraphQLSpec(sourcePath: string, config: ISmileConfig = {}): P
 
   const rawViolations = graphqlRules.flatMap((rule) => rule(doc));
   const { applyConfigToViolations } = await import("./config.js");
-  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.GraphQL);
+  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.GraphQL, sourcePath);
 
   return {
     format: ESpecFormat.GraphQL,

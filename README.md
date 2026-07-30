@@ -51,10 +51,16 @@ npx @mrjacket/smile lint .
 
 > **Tip:** Create a `.smileignore` file in your root directory to tell `smile` which files or folders to skip (e.g. `node_modules`, `vendor/`), just like `.gitignore`!
 
-You can optionally output the results as raw JSON or Markdown for programmatic consumption:
+You can optionally output the results as raw JSON, Markdown, or JUnit (for CI/CD dashboards):
 ```bash
 npx @mrjacket/smile lint . --format json
 npx @mrjacket/smile lint . --format markdown > report.md
+npx @mrjacket/smile lint . --format junit > junit.xml
+```
+
+To suppress all CLI menus and art in CI environments, use the `--quiet` or `-q` flag:
+```bash
+npx @mrjacket/smile lint . --quiet
 ```
 
 *Supported formats: `.yaml`, `.yml`, `.json`, `.graphql`, `.gql`*
@@ -67,15 +73,7 @@ If you have a lot of missing summaries or operation IDs, you don't have to fix t
 npx @mrjacket/smile deduce ./openapi.yaml
 ```
 
-### 4. Git Pre-Commit Hook 🪝
-
-Never accidentally commit a broken contract again. Install a native, zero-dependency git hook that automatically runs `smile lint .` before every commit:
-
-```bash
-npx @mrjacket/smile install-hook
-```
-
-### 5. Runtime Validation (Breaching Detector)
+### 4. Runtime Validation (Breaching Detector)
 
 Verify that your live server actually honors the contract:
 
@@ -88,7 +86,7 @@ smile bundle ./openapi/main.yaml --out ./dist/api-bundle.json
 ```
 > Note: Currently supports `GET` endpoints in OpenAPI specs.
 
-### 4. Programmatic Usage (Vitest / Jest)
+### 5. Programmatic Usage (Vitest / Jest)
 
 Install it as a dev dependency to use inside your integration tests:
 
@@ -126,13 +124,25 @@ The CLI supports the following filenames: `config.smile.json`, `smile.config.jso
 ```
 *Rules set to `"warn"` will print yellow alerts in the CLI but will exit with code `0` (Success).*
 
+### Inline Suppressions (YAML Only)
+If you need to bypass a rule on a single specific line without changing the global configuration, you can use the `# smile-ignore-next-line <ruleId>` comment directly in your `.yaml` or `.yml` specifications.
+
+```yaml
+paths:
+  /users:
+    get:
+      # smile-ignore-next-line missing-summary
+      operationId: getUsers
+```
+
 ---
 
 ## Documentation
 
 Full documentation is available in the [`docs/`](./docs) directory:
 
-- [Getting Started](./docs/getting-started.md) — CLI usage, CI integration, and exit codes.
+- [Getting Started](./docs/getting-started.md) — CLI usage, basic commands, and exit codes.
+- [CI/CD & DevOps](./docs/ci-cd.md) — GitHub Actions, GitLab CI, JUnit, and Webhooks.
 - [Library API](./docs/library.md) — Programmatic usage, Vitest integration, and working with violations.
 - [Configuration](./docs/configuration.md) — Complete guide to customizing rules, webhooks, and test headers in your config.smile.json.
 - **Rules Reference**:

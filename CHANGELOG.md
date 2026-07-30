@@ -6,6 +6,25 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.2.5] - 2026-07-30 — CI/CD & Flexibility Patch
+
+### Added
+- **GitHub Step Summaries:** `smile lint` and `smile test` now automatically detect if they are running inside GitHub Actions. If so, they will silently append a beautiful Markdown table of the results to `$GITHUB_STEP_SUMMARY`, giving you native visual dashboards on your PRs!
+- **Inline Suppressions:** Added support for `# smile-ignore-next-line <ruleId>` in YAML specifications. This allows developers to bypass specific rules on a case-by-case basis using AST parsing without polluting the global `config.smile.json`.
+- **JUnit XML Reports:** Added native support for JUnit format (`--format junit`). Both `smile lint` and `smile test` can now output XML reports that are perfectly digestible by GitLab CI, Jenkins, SonarQube, and Bitbucket.
+- **Quiet Mode:** Added a `-q, --quiet` flag to suppress all CLI spam (ASCII art, progress spinners, success messages) in CI environments, printing only errors and machine-readable formats.
+
+### Changed
+- **Reporters Refactor:** Refactored the internal `smileReporter.ts` into a cleaner, multi-file module architecture without impacting the public API.
+
+### Fixed
+- **Documentation Overhaul:** Conducted a massive review of the `docs/` directory to ensure complete parity with the `1.2.5` codebase.
+  - Created a dedicated `docs/ci-cd.md` guide centralizing all DevOps capabilities (GitHub Actions, GitLab CI, JUnit, Webhooks, Pre-commit).
+  - Fixed outdated references to `smile smoke` across all files, updating them to the correct `smile test` command.
+  - Updated `library.md` with accurate TypeScript types for `runSmokeTest` (now returning `ITestResult` and accepting custom HTTP headers).
+  - Cleaned up `getting-started.md` and `README.md` to point seamlessly to the new CI/CD guide.
+---
+
 ## [1.2.4] - 2026-07-29 — Documentation Patch
 
 ### Fixed

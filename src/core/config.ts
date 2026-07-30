@@ -1,6 +1,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { ESeverity, ESpecFormat, type ISmileConfig, type IViolation, type RuleSeverity } from "../models/index.js";
+import YAML from "yaml";
 
 const CONFIG_FILENAMES = ["config.smile.json", "smile.config.json", ".smilerc.json", "smile.json"];
 
@@ -28,14 +29,26 @@ export function loadConfig(cwd: string = process.cwd()): ISmileConfig {
  * - Drops violations where the rule is set to "off".
  * - Overrides the severity if the rule is set to "warn" or "error".
  * - Checks nested format configurations first, then falls back to flat configuration.
+ * - Parses AST for YAML files to drop inline suppressed violations (# smile-ignore-next-line).
  */
 export function applyConfigToViolations(
   violations: IViolation[],
   config: ISmileConfig,
-  format?: ESpecFormat
+  format?: ESpecFormat,
+  sourcePath?: string
 ): IViolation[] {
   if (!config.rules || Object.keys(config.rules).length === 0) {
-    return violations;
+    config.rules = {}; // ensure rules object exists for suppression check
+  }
+
+  let yamlDoc: any = null;
+  if (sourcePath && (sourcePath.endsWith(".yaml") || sourcePath.endsWith(".yml"))) {
+    try {
+      const fileStr = readFileSync(sourcePath, "utf-8");
+      yamlDoc = YAML.parseDocument(fileStr);
+    } catch (e) {
+      // gracefully fail if file can't be parsed
+    }
   }
 
   const result: IViolation[] = [];
@@ -55,6 +68,26 @@ export function applyConfigToViolations(
 
     if (configuredSeverity === "off") {
       continue; // Suppress this violation
+    }
+
+    // Check inline AST suppression for YAML
+    if (yamlDoc) {
+      const pathSegments = violation.path.split(".");
+      let node = yamlDoc.getIn(pathSegments);
+      
+      // If node is undefined (e.g. missing property), check the parent node
+      if (node === undefined && pathSegments.length > 0) {
+        pathSegments.pop();
+        node = yamlDoc.getIn(pathSegments);
+      }
+
+      if (node && node.commentBefore) {
+        const comment = String(node.commentBefore).trim();
+        const ignoreRegex = new RegExp(`smile-ignore-next-line\\s+${violation.ruleId}`);
+        if (ignoreRegex.test(comment)) {
+          continue; // Suppress via inline comment
+        }
+      }
     }
 
     if (configuredSeverity === "warn") {

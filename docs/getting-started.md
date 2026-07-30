@@ -124,15 +124,7 @@ smile deduce ./openapi.yaml
 
 ---
 
-## Git Pre-Commit Hook Installer
 
-Enforce contract linting automatically before every commit by installing our native, zero-dependency git hook:
-
-```bash
-smile install-hook
-```
-
----
 
 ## Configuration & Rules
 
@@ -146,13 +138,13 @@ You can also run `npx @mrjacket/smile init` to automatically generate a boilerpl
 
 ## The Breaching Detector (Runtime Smoke Test)
 
-`smile smoke` takes your spec and a base URL, fires a real HTTP `GET` request
+`smile test` takes your spec and a base URL, fires a real HTTP `GET` request
 against every documented endpoint, and validates the actual response body against
 the schema the spec promises.
 
 ```bash
-smile smoke ./openapi.yaml http://localhost:3000
-smile smoke ./openapi.yaml https://api.staging.example.com
+smile test ./openapi.yaml http://localhost:3000
+smile test ./openapi.yaml https://api.staging.example.com
 ```
 
 ### What you'll see
@@ -192,25 +184,10 @@ smile bundle ./openapi/main.yaml --out ./dist/api-bundle.json
 
 ## Using smile in CI
 
-Because `smile` exits with code `1` on violations, you can use it directly in
-any CI system without any extra configuration.
+Because `smile` exits with code `1` on violations, you can use it directly in any CI system without any extra configuration.
+It also features native integrations for **GitHub Actions**, **GitLab CI**, **JUnit XML Reports**, and **Pre-Commit Hooks**.
 
-### GitHub Actions
-
-```yaml
-- name: Lint API spec
-  run: npx @mrjacket/smile lint ./openapi.yaml
-
-- name: Smoke test staging
-  run: npx @mrjacket/smile smoke ./openapi.yaml ${{ vars.STAGING_URL }}
-```
-
-### Pre-commit hook (with Husky)
-
-```bash
-# .husky/pre-commit
-npx @mrjacket/smile lint ./openapi.yaml
-```
+👉 **[Read the full CI/CD & DevOps Guide](./ci-cd.md)** for detailed examples.
 
 ---
 

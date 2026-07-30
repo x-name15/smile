@@ -29,7 +29,7 @@ export interface ISmileConfig {
   rules?: Record<string, RuleSeverity | Record<string, RuleSeverity>>;
   webhooks?: string[];
   testHeaders?: Record<string, string>;
-  format?: "text" | "json" | "markdown";
+  format?: "text" | "json" | "markdown" | "junit";
 }
 
 /**

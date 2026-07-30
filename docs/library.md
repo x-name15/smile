@@ -157,9 +157,11 @@ every response body against the spec's declared schema:
 ```ts
 import { runSmokeTest } from "@mrjacket/smile";
 
-const results = await runSmokeTest("./openapi.yaml", "http://localhost:3000");
+// Optional: pass custom headers if your API is protected
+const headers = { Authorization: "Bearer my-token" };
+const result = await runSmokeTest("./openapi.yaml", "http://localhost:3000", headers);
 
-for (const r of results) {
+for (const r of result.endpoints) {
   if (!r.passed) {
     console.error(`${r.method} ${r.path} — ${r.violations.length} violation(s)`);
   }
@@ -242,8 +244,8 @@ describe("API contract", () => {
   });
 
   it("all endpoints respond with their documented schema (smoke)", async () => {
-    const results = await runSmokeTest("./openapi.yaml", BASE_URL);
-    const failed = results.filter((r) => !r.passed);
+    const result = await runSmokeTest("./openapi.yaml", BASE_URL);
+    const failed = result.endpoints.filter((r) => !r.passed && !r.skipped);
 
     // Custom message shows exactly which endpoint failed and why
     expect(failed).toHaveLength(0);

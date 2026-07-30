@@ -62,7 +62,22 @@ A key-value map of HTTP headers that will be automatically injected into every r
 An array of webhook URLs (e.g. Slack, Discord, MS Teams). If `smile lint` or `smile test` detects a violation, it will automatically send a POST request to these URLs with a JSON summary of the failure.
 
 ### `format` (optional)
-Forces the output format globally. Can be `"text"` (default) or `"json"`. Setting this to `"json"` is equivalent to always passing `--format json` via the CLI.
+Forces the output format globally. Can be `"text"` (default), `"json"`, `"markdown"`, or `"junit"`. Setting this to `"json"` is equivalent to always passing `--format json` via the CLI.
+
+---
+
+## Inline Suppressions (YAML Only)
+If you need to bypass a rule on a single specific line without changing the global configuration, you can use the `# smile-ignore-next-line <ruleId>` comment directly in your `.yaml` or `.yml` specifications.
+
+```yaml
+paths:
+  /users:
+    get:
+      # smile-ignore-next-line missing-summary
+      operationId: getUsers
+```
+
+This functions exactly like ESLint or Prettier overrides.
 
 ---
 

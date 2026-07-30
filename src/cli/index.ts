@@ -7,7 +7,7 @@
  */
 import { Command } from "commander";
 import { lintSpec, runSmokeTest } from "../core/index.js";
-import { renderSmileReport, renderSmileTestReport, renderMarkdownReport, renderMarkdownTestReport } from "../reporters/smileReporter.js";
+import { renderSmileReport, renderSmileTestReport, renderMarkdownReport, renderMarkdownTestReport } from "../reporters/index.js";
 import { VERSION } from "../version.js";
 
 const program = new Command();
@@ -20,20 +20,27 @@ program
 program
   .command("lint <specPath>")
   .description("Statically lint a spec file or directory — auto-detects OpenAPI, AsyncAPI, JSON Schema, or GraphQL")
-  .option("-f, --format <type>", "Output format (text, json, markdown)", "text")
-  .action(async (specPath: string, options: { format: string }) => {
+  .option("-f, --format <type>", "Output format (text, json, markdown, junit)", "text")
+  .option("-q, --quiet", "Quiet mode (suppress text output, only print errors or format reports)", false)
+  .action(async (specPath: string, options: { format: string, quiet: boolean }) => {
     const start = performance.now();
     try {
       const { loadConfig } = await import("../core/index.js");
       const { lintSpec } = await import("../core/index.js");
       const { findSpecFiles, fireWebhooks } = await import("./utils.js");
+      const { renderJunitReport, renderMarkdownReport, renderSmileReport } = await import("../reporters/index.js");
+      const { emitGithubStepSummary } = await import("../reporters/utils.js");
       
       const config = loadConfig();
-      const outputFormat = options.format === "json" || config.format === "json" ? "json" : (options.format === "markdown" || config.format === "markdown" ? "markdown" : "text");
+      let outputFormat = options.format;
+      if (config.format && options.format === "text") {
+        // Fallback to config if not explicitly overridden by CLI
+        outputFormat = config.format;
+      }
 
       const files = findSpecFiles(specPath);
       if (files.length === 0) {
-        console.warn(`No specification files found in ${specPath}`);
+        if (!options.quiet) console.warn(`No specification files found in ${specPath}`);
         process.exitCode = 0;
         return;
       }
@@ -41,19 +48,31 @@ program
       const results = await Promise.all(files.map(f => lintSpec(f, config)));
       const allPassed = results.every(r => r.passed);
 
+      // Always generate step summary in Github Actions if we're running tests
+      if (process.env.GITHUB_ACTIONS === "true") {
+        const mdSummary = results.map(r => renderMarkdownReport(r)).join("\n---\n");
+        emitGithubStepSummary(mdSummary);
+      }
+
       if (outputFormat === "json") {
         console.log(JSON.stringify(results, null, 2));
       } else if (outputFormat === "markdown") {
         for (const result of results) {
           console.log(renderMarkdownReport(result));
         }
-      } else {
-        // Aggregate rendering
+      } else if (outputFormat === "junit") {
         for (const result of results) {
-          console.log(renderSmileReport(result));
+          console.log(renderJunitReport(result));
         }
-        const duration = Math.round(performance.now() - start);
-        console.log(`\n⏱️  Done in ${duration}ms`);
+      } else {
+        // Aggregate rendering for text
+        if (!options.quiet) {
+          for (const result of results) {
+            console.log(renderSmileReport(result));
+          }
+          const duration = Math.round(performance.now() - start);
+          console.log(`\n⏱️  Done in ${duration}ms`);
+        }
       }
 
       process.exitCode = allPassed ? 0 : 1;
@@ -77,22 +96,28 @@ program
     "-H, --header <header...>",
     "Custom HTTP headers to inject into the requests (e.g., -H 'Authorization: Bearer token')",
   )
-  .option("-f, --format <type>", "Output format (text, json, markdown)", "text")
-  .action(async (specPath: string, baseUrl: string, options: { header?: string[], format: string }) => {
+  .option("-f, --format <type>", "Output format (text, json, markdown, junit)", "text")
+  .option("-q, --quiet", "Quiet mode (suppress text output, only print errors or format reports)", false)
+  .action(async (specPath: string, baseUrl: string, options: { header?: string[], format: string, quiet: boolean }) => {
     const start = performance.now();
     try {
       const { loadConfig } = await import("../core/index.js");
       const { fireWebhooks } = await import("./utils.js");
+      const { renderJunitTestReport, renderMarkdownTestReport, renderSmileTestReport } = await import("../reporters/index.js");
+      const { emitGithubStepSummary } = await import("../reporters/utils.js");
       
       const config = loadConfig();
-      const outputFormat = options.format === "json" || config.format === "json" ? "json" : (options.format === "markdown" || config.format === "markdown" ? "markdown" : "text");
+      let outputFormat = options.format;
+      if (config.format && options.format === "text") {
+        outputFormat = config.format;
+      }
 
       const headersRecord: Record<string, string> = { ...(config.testHeaders || {}) };
       if (options.header) {
         for (const h of options.header) {
           const firstColon = h.indexOf(":");
           if (firstColon === -1) {
-            console.warn(`⚠️ Warning: Invalid header format "${h}". Expected "Key: Value".`);
+            if (!options.quiet) console.warn(`⚠️ Warning: Invalid header format "${h}". Expected "Key: Value".`);
             continue;
           }
           const key = h.slice(0, firstColon).trim();
@@ -103,14 +128,23 @@ program
 
       const result = await runSmokeTest(specPath, baseUrl, headersRecord);
       
+      // Always generate step summary in Github Actions if we're running tests
+      if (process.env.GITHUB_ACTIONS === "true") {
+        emitGithubStepSummary(renderMarkdownTestReport(result));
+      }
+
       if (outputFormat === "json") {
         console.log(JSON.stringify(result, null, 2));
       } else if (outputFormat === "markdown") {
         console.log(renderMarkdownTestReport(result));
+      } else if (outputFormat === "junit") {
+        console.log(renderJunitTestReport(result));
       } else {
-        console.log(renderSmileTestReport(result));
-        const duration = Math.round(performance.now() - start);
-        console.log(`\n⏱️  Done in ${duration}ms`);
+        if (!options.quiet) {
+          console.log(renderSmileTestReport(result));
+          const duration = Math.round(performance.now() - start);
+          console.log(`\n⏱️  Done in ${duration}ms`);
+        }
       }
 
       process.exitCode = result.passed ? 0 : 1;
