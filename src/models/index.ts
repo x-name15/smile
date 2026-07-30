@@ -26,10 +26,26 @@ export type RuleSeverity = "error" | "warn" | "off";
  * Smile configuration file interface.
  */
 export interface ISmileConfig {
+  plugins?: string[];
   rules?: Record<string, RuleSeverity | Record<string, RuleSeverity>>;
   webhooks?: string[];
   testHeaders?: Record<string, string>;
   format?: "text" | "json" | "markdown" | "junit";
+}
+
+/**
+ * Interface for a custom plugin loaded dynamically via config.
+ */
+export interface ISmilePlugin {
+  rules: Record<string, ISmileCustomRule>;
+}
+
+/**
+ * Interface for a custom rule provided by a plugin.
+ */
+export interface ISmileCustomRule {
+  format: ESpecFormat | "all";
+  evaluate: (specNode: unknown) => IViolation[];
 }
 
 /**

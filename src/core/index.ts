@@ -10,6 +10,7 @@ import { jsonSchemaRules } from "./rules/jsonschema/index.js";
 import { graphqlRules } from "./rules/graphql/index.js";
 import { detectSpecFormat } from "./detectSpecFormat.js";
 import { ESpecFormat, ESeverity, type ILintResult, type ISmileConfig } from "../models/index.js";
+import { loadPlugins, evaluateCustomRules } from "./pluginLoader.js";
 
 export * from "../models/index.js";
 export * from "./detectSpecFormat.js";
@@ -30,7 +31,9 @@ async function lintOpenApiSpec(sourcePath: string, config: ISmileConfig = {}): P
 
   const rawViolations = openApiRules.flatMap((rule) => rule(doc));
   
-  // Use the newly exported applyConfigToViolations
+  const customRules = await loadPlugins(config.plugins);
+  rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.OpenApi, customRules));
+
   const { applyConfigToViolations } = await import("./config.js");
   const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.OpenApi, sourcePath);
 
@@ -51,6 +54,10 @@ async function lintAsyncApiSpec(sourcePath: string, config: ISmileConfig = {}): 
   const doc = parsed.raw as Record<string, unknown>;
 
   const rawViolations = asyncApiRules.flatMap((rule) => rule(doc));
+  
+  const customRules = await loadPlugins(config.plugins);
+  rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.AsyncApi, customRules));
+
   const { applyConfigToViolations } = await import("./config.js");
   const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.AsyncApi, sourcePath);
 
@@ -71,6 +78,10 @@ async function lintJsonSchemaSpec(sourcePath: string, config: ISmileConfig = {})
   const doc = parsed.raw as Record<string, unknown>;
 
   const rawViolations = jsonSchemaRules.flatMap((rule) => rule(doc));
+  
+  const customRules = await loadPlugins(config.plugins);
+  rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.JsonSchema, customRules));
+
   const { applyConfigToViolations } = await import("./config.js");
   const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.JsonSchema, sourcePath);
 
@@ -91,6 +102,10 @@ async function lintGraphQLSpec(sourcePath: string, config: ISmileConfig = {}): P
   const doc = parsed.raw as DocumentNode;
 
   const rawViolations = graphqlRules.flatMap((rule) => rule(doc));
+  
+  const customRules = await loadPlugins(config.plugins);
+  rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.GraphQL, customRules));
+
   const { applyConfigToViolations } = await import("./config.js");
   const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.GraphQL, sourcePath);
 

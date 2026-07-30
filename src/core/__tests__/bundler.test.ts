@@ -5,8 +5,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const bundleTestDir = path.resolve(__dirname, "../../../examples/bundle-test");
-const examplesDir = path.resolve(__dirname, "../../../examples");
+const bundleTestDir = path.resolve(__dirname, "../../../fixtures/bundle-test");
+const fixturesDir = path.resolve(__dirname, "../../../fixtures");
 
 describe("bundleSpec", () => {
   it("bundles a multi-file OpenAPI spec correctly", async () => {
@@ -24,7 +24,7 @@ describe("bundleSpec", () => {
   });
 
   it("skips GraphQL seamlessly", async () => {
-    const sourcePath = path.join(examplesDir, "sample-graphql.graphql");
+    const sourcePath = path.join(fixturesDir, "sample-graphql.graphql");
     const result = await bundleSpec(sourcePath);
 
     expect(result.format).toBe(ESpecFormat.GraphQL);

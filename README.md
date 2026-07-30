@@ -143,6 +143,7 @@ Full documentation is available in the [`docs/`](./docs) directory:
 
 - [Getting Started](./docs/getting-started.md) — CLI usage, basic commands, and exit codes.
 - [CI/CD & DevOps](./docs/ci-cd.md) — GitHub Actions, GitLab CI, JUnit, and Webhooks.
+- [Writing Plugins](./docs/plugins.md) — How to write and inject custom JavaScript/TypeScript rules.
 - [Library API](./docs/library.md) — Programmatic usage, Vitest integration, and working with violations.
 - [Configuration](./docs/configuration.md) — Complete guide to customizing rules, webhooks, and test headers in your config.smile.json.
 - **Rules Reference**:
@@ -158,9 +159,10 @@ Full documentation is available in the [`docs/`](./docs) directory:
 
 We are constantly expanding the strictness and capabilities of `smile`. Here is what is coming in future versions:
 
-- **gRPC / Protocol Buffers (`.proto`)**: Static linting of service definitions and runtime validation of actual binary payloads against the contract.
-- **Postman Collections**: Extracting implicit API contracts directly from existing Postman collections and enforcing them.
-- **JSON:API / HAL**: Validating hypermedia conventions strictly.
+- **v1.3.0 The Plugin System:** Letting enterprise teams inject custom JavaScript/TypeScript rules dynamically at runtime via `config.smile.json`.
+- **v1.4.0 Extended Ecosystem:** Adding static linting for **gRPC / Protocol Buffers (`.proto`)** and **Postman Collections**.
+- **v1.4.1 Postman Runtime Validation:** Extending the Breaching Detector (`runSmokeTest`) to validate actual live responses against saved examples in Postman Collections.
+- **v1.5.0 JSON:API / HAL**: Validating hypermedia conventions strictly.
 
 ## License
 

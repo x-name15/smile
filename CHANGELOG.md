@@ -6,6 +6,23 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.3.0] - 2026-07-30 — The Plugin System
+
+### Added
+- **Plugin System:** Enterprise teams can now inject their own JavaScript/TypeScript custom rules dynamically at runtime via `config.smile.json`. 
+  - Plugins can be loaded via relative paths (`./my-rules.js`) or NPM packages (`smile-plugin-enterprise`).
+  - Custom rules can target specific formats (e.g. `openapi`) or apply universally to all formats using `"all"`.
+  - Added new `plugins` array property to the configuration file format.
+
+### Docs
+- **Plugin Guide:** Created a dedicated `docs/plugins.md` explaining how to build and inject custom rules.
+- **Boilerplate:** Added a ready-to-use boilerplate plugin in `examples/my-custom-plugin.js`.
+
+### Chore
+- **Test Fixtures Isolation:** Migrated all internal `.yaml` test files from the `examples/` folder to a dedicated `fixtures/` directory. The `examples/` folder is now strictly reserved for clean, production-ready boilerplate code. Evaluated and refactored the entire `src/core/__tests__` suite to point to the new directory safely.
+
+---
+
 ## [1.2.5] - 2026-07-30 — CI/CD & Flexibility Patch
 
 ### Added
