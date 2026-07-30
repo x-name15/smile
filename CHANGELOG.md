@@ -6,6 +6,22 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.4.2] - 2026-07-30 — Full Breaching Detector & Postman Runtime Validation
+
+### Added
+- **OpenAPI `POST/PUT/PATCH/DELETE` Validation:** The Breaching Detector (`smile test`) now supports state-mutating requests. It automatically generates valid JSON bodies for `POST/PUT/PATCH` requests by analyzing the OpenAPI schema.
+- **Postman Runtime Validation:** The Breaching Detector can now recursively traverse Postman collections, fire requests against the live server, and dynamically infer a structural JSON Schema from the saved example to validate the real server's response.
+- **Runtime Dispatcher Architecture:** Refactored `smokeTest.ts` into a clean format-based dispatcher that delegates to `openapiTester.ts` and `postmanTester.ts`.
+
+### Changed
+- **Warning Toleration:** `smile test` now properly ignores warnings (such as `204 No Content` missing a schema) and correctly exits with code `0` as long as there are no Error-level violations.
+
+### Docs
+- **Destructive Warnings:** Added prominent warnings to `README.md`, `docs/getting-started.md`, and `docs/library.md` explicitly stating that `smile test` now modifies databases with fake data.
+- **Roadmap:** Updated roadmap, pushing AsyncAPI broker validation to v1.6.0.
+
+---
+
 ## [1.4.1] - 2026-07-30 — Hardening & Stability
 
 ### Fixed

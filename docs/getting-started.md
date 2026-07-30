@@ -131,8 +131,6 @@ smile deduce ./openapi.yaml
 
 ---
 
-
-
 ## Configuration & Rules
 
 `smile` is strict by default. If you want to temporarily relax some rules to pass the CI, you can create a `config.smile.json` file.
@@ -144,6 +142,8 @@ You can also run `npx @mrjacket/smile init` to automatically generate a boilerpl
 ---
 
 ## The Breaching Detector (Runtime Smoke Test)
+
+> ⚠️ **WARNING:** `smile test` performs destructive HTTP requests (`POST`, `PUT`, `DELETE`). Run strictly against local or ephemeral environments to avoid accidental data loss!
 
 `smile test` takes your spec and a base URL, fires a real HTTP `GET` request
 against every documented endpoint, and validates the actual response body against
@@ -178,8 +178,8 @@ Testing against http://localhost:3000 — 2 endpoint(s) tested, 0 skipped
    detail:  expected number, got string
 ```
 
-> **Note:** The Breaching Detector only supports `GET` requests and OpenAPI specs.
-> Support for other methods and AsyncAPI runtime validation is on the roadmap.
+> **Note:** The Breaching Detector currently supports `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` requests for OpenAPI specs, and full structural validation for Postman Collections.
+> Support for AsyncAPI runtime validation is on the roadmap.
 
 ---
 

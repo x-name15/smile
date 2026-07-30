@@ -161,7 +161,9 @@ const violations = validateResponseAgainstSchema(schema, body, "GET /users/:id")
 
 ## Runtime smoke test: `runSmokeTest`
 
-Fire all documented `GET` endpoints against a live server and validate
+> ⚠️ **WARNING:** `runSmokeTest` performs destructive HTTP requests (`POST`, `PUT`, `DELETE`). Run strictly against local or ephemeral environments to avoid accidental data loss!
+
+Fire all documented endpoints against a live server and validate
 every response body against the spec's declared schema:
 
 ```ts

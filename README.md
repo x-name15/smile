@@ -21,7 +21,11 @@ It acts as both a static linter (checking your API specification for completenes
 - **Multi-format support:** Auto-detects and validates OpenAPI 3.x, AsyncAPI 2.x, JSON Schema, GraphQL SDL, gRPC (`.proto`), and Postman Collections.
 - **Zero dependencies for the CLI:** Run it via `npx` instantly in your CI pipelines.
 - **Library API:** Native Vitest/Jest integration. Import it directly into your tests with full TypeScript support (no subprocesses).
-- **The Breaching Detector:** Point `smile` at your live server and it will fire real HTTP requests against every documented endpoint, validating the runtime response body against the schema.
+- **The Breaching Detector (Runtime Smoke Test)**
+
+> ⚠️ **WARNING:** `smile test` performs actual HTTP requests against the provided server. It will execute `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` requests using auto-generated fake data if your spec defines them. **This will create, modify, and delete real data.** You should run this strictly against local, staging, or ephemeral environments. We are not responsible for accidental data loss in production.
+
+`smile test` takes your spec and a base URL, fires a real HTTP requests against every documented endpoint, validating the runtime response body against the schema.
 - **Built-in Rule Engine:** Opinionated, zero-configuration rules focused on documentation completeness and contract enforceability.
 - **Plugin System:** Extend smile with your own custom rules written in plain JavaScript. Load them via `config.smile.json` or the `--plugin` CLI flag.
 - **Incremental Adoption:** Customize rule severities (`error`, `warn`, `off`) via `config.smile.json` without breaking CI/CD.
@@ -76,6 +80,8 @@ npx @mrjacket/smile deduce ./openapi.yaml
 
 ### 4. Runtime Validation (Breaching Detector)
 
+> ⚠️ **WARNING:** `smile test` performs destructive HTTP requests (`POST`, `PUT`, `DELETE`). Run strictly against local or ephemeral environments to avoid accidental data loss!
+
 Verify that your live server actually honors the contract:
 
 ```bash
@@ -85,7 +91,7 @@ smile test ./openapi.yaml https://api.staging.myserver.com
 # Bundle a modular spec into a single JSON file
 smile bundle ./openapi/main.yaml --out ./dist/api-bundle.json
 ```
-> Note: Currently supports `GET` endpoints in OpenAPI specs.
+> Note: Currently supports `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` endpoints for OpenAPI, and full validation for Postman Collections.
 
 ### 5. Programmatic Usage (Vitest / Jest)
 
@@ -161,8 +167,8 @@ Full documentation is available in the [`docs/`](./docs) directory:
 ## Roadmap (Upcoming Features)
 
 We are constantly expanding the strictness and capabilities of `smile`. Here is what is coming in future versions:
-- **v1.4.2 Postman Runtime Validation & Full Breaching Detector:** Extending the Breaching Detector (`runSmokeTest`) to validate actual live responses against saved examples in Postman Collections. Enhancing the OpenAPI detector to support `POST`, `PUT`, and `DELETE` with auto-generated bodies.
 - **v1.5.0 JSON:API / HAL**: Validating hypermedia conventions strictly.
+- **v1.6.0 AsyncAPI Runtime Validation**: Extending the Breaching Detector to connect to live message brokers (Kafka/RabbitMQ) and validate message payloads in real-time.
 
 ## License
 

@@ -112,6 +112,10 @@ export interface IPostmanRequest {
   method: string;
   url: string | { raw?: string };
   description?: string;
+  body?: {
+    mode?: string;
+    raw?: string;
+  };
   [key: string]: unknown;
 }
 
