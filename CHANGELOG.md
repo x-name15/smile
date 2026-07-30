@@ -6,6 +6,35 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.4.0] - 2026-07-30 — gRPC and Postman Support
+
+### Added
+- **gRPC (.proto) Linting:** Introduced native static linting for Protocol Buffers using `protobufjs` (new runtime dependency).
+- **gRPC Native Rules:** Added `require-rpc-comments`, `pascal-case-messages`, and `camel-case-fields`.
+- **Postman Collections Linting:** Introduced native static linting for Postman Collections (`v2.0.0` and `v2.1.0`).
+- **Postman Native Rules:** Added `require-request-description`, `no-empty-folders`, and `require-response-example`.
+- **New Exported Functions:** `lintGrpcSpec` and `lintPostmanSpec` are now fully exported from the library API.
+- **New Fixtures:** Added `fixtures/sample-grpc.proto`, `fixtures/sample-grpc-clean.proto`, `fixtures/sample-postman.json`, and `fixtures/sample-postman-clean.json` for testing.
+
+### Fixed
+- **gRPC Parser bug:** `protobufjs` was loaded without `alternateCommentMode: true`, causing all method comments to be silently ignored. The `require-rpc-comments` rule was firing on every method indiscriminately. Fixed by enabling `alternateCommentMode` in `src/parsers/grpc.ts`.
+- **Interface inconsistency:** `src/parsers/grpc.ts` and `src/parsers/postman.ts` were returning custom interfaces (`IGrpcParsedResult`, `IPostmanParsedResult`) instead of the standard project interface `IParsedSpec`. Refactored to use the shared interface for consistency.
+- **TypeScript type assertion:** Added proper `as protobuf.Root` and `as IPostmanCollection` casts in `src/core/index.ts` after standardizing parsers to `IParsedSpec`, fixing TS2345 errors on build.
+- **npm keywords:** Added missing `grpc`, `protobuf`, `postman`, and `graphql` keywords to `package.json`.
+
+### Tests
+- **gRPC test suite expanded:** `lintGrpc.test.ts` went from 1 test to 9 tests. Now matches the depth of OpenAPI/AsyncAPI suites: broken spec tests per rule (with specific message assertions), format detection, required fields check, and a full clean-spec passing test.
+- **Postman test suite expanded:** `lintPostman.test.ts` went from 1 test to 10 tests. Includes a negative test verifying that a well-formed request (`Get Users`) does NOT trigger false positives.
+- **detectSpecFormat tests:** Added coverage for `.proto` and Postman Collection detection.
+
+### Docs
+- **New:** `docs/rules/grpc.md` — full rules reference for gRPC in the same style as `openapi.md` (with Triggers on / Clean examples for each rule).
+- **New:** `docs/rules/postman.md` — full rules reference for Postman in the same style as `openapi.md`.
+- **Updated:** `docs/README.md` — added gRPC and Postman to the Rules Reference table.
+- **Updated:** `README.md` — Features list now includes gRPC, Postman, and the Plugin System. Supported formats line now includes `.proto`. Rules Reference links updated. Roadmap updated to remove already-shipped 1.4.0 items.
+
+---
+
 ## [1.3.1] - 2026-07-30 — CLI Plugin Flag
 
 ### Added

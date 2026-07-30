@@ -15,6 +15,9 @@ export enum ESpecFormat {
   AsyncApi = "asyncapi",
   JsonSchema = "json-schema",
   GraphQL = "graphql",
+  Grpc = "grpc",
+  Postman = "postman",
+  Unknown = "unknown",
 }
 
 /**

@@ -18,11 +18,12 @@ It acts as both a static linter (checking your API specification for completenes
 
 ## Features
 
-- **Multi-format support:** Auto-detects and validates OpenAPI 3.x, AsyncAPI 2.x, JSON Schema, and GraphQL SDL.
+- **Multi-format support:** Auto-detects and validates OpenAPI 3.x, AsyncAPI 2.x, JSON Schema, GraphQL SDL, gRPC (`.proto`), and Postman Collections.
 - **Zero dependencies for the CLI:** Run it via `npx` instantly in your CI pipelines.
 - **Library API:** Native Vitest/Jest integration. Import it directly into your tests with full TypeScript support (no subprocesses).
 - **The Breaching Detector:** Point `smile` at your live server and it will fire real HTTP requests against every documented endpoint, validating the runtime response body against the schema.
 - **Built-in Rule Engine:** Opinionated, zero-configuration rules focused on documentation completeness and contract enforceability.
+- **Plugin System:** Extend smile with your own custom rules written in plain JavaScript. Load them via `config.smile.json` or the `--plugin` CLI flag.
 - **Incremental Adoption:** Customize rule severities (`error`, `warn`, `off`) via `config.smile.json` without breaking CI/CD.
 
 ---
@@ -63,7 +64,7 @@ To suppress all CLI menus and art in CI environments, use the `--quiet` or `-q` 
 npx @mrjacket/smile lint . --quiet
 ```
 
-*Supported formats: `.yaml`, `.yml`, `.json`, `.graphql`, `.gql`*
+*Supported formats: `.yaml`, `.yml`, `.json`, `.graphql`, `.gql`, `.proto`*
 
 ### 3. Smile Deduce (Interactive Auto-Fixer) 
 
@@ -151,6 +152,8 @@ Full documentation is available in the [`docs/`](./docs) directory:
   - [AsyncAPI](./docs/rules/asyncapi.md)
   - [JSON Schema](./docs/rules/json-schema.md)
   - [GraphQL](./docs/rules/graphql.md)
+  - [gRPC](./docs/rules/grpc.md)
+  - [Postman](./docs/rules/postman.md)
 
 * Use at least Node.js v22.12.0+.
 * This tool assumes you are parsing JSON or YAML.
@@ -158,7 +161,6 @@ Full documentation is available in the [`docs/`](./docs) directory:
 ## Roadmap (Upcoming Features)
 
 We are constantly expanding the strictness and capabilities of `smile`. Here is what is coming in future versions:
-- **v1.4.0 Extended Ecosystem:** Adding static linting for **gRPC / Protocol Buffers (`.proto`)** and **Postman Collections**.
 - **v1.4.1 Postman Runtime Validation:** Extending the Breaching Detector (`runSmokeTest`) to validate actual live responses against saved examples in Postman Collections.
 - **v1.5.0 JSON:API / HAL**: Validating hypermedia conventions strictly.
 

@@ -24,6 +24,8 @@ and verifying real HTTP responses against it to ensure absolute perfection.
 | AsyncAPI 2.x | [asyncapi.md](./rules/asyncapi.md) | 5 rules |
 | JSON Schema | [json-schema.md](./rules/json-schema.md) | 4 rules |
 | GraphQL SDL | [graphql.md](./rules/graphql.md) | 4 rules |
+| gRPC (.proto) | [grpc.md](./rules/grpc.md) | 3 rules |
+| Postman | [postman.md](./rules/postman.md) | 3 rules |
 
 ## Extensibility
 

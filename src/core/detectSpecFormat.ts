@@ -12,7 +12,17 @@ export function detectSpecFormat(sourcePath: string): ESpecFormat {
     return ESpecFormat.GraphQL;
   }
 
+  // gRPC: extension-based
+  if (/\.proto$/i.test(sourcePath)) {
+    return ESpecFormat.Grpc;
+  }
+
   const contents = readFileSync(sourcePath, "utf-8");
+
+  // Postman Collections: check for postman schema URL in JSON
+  if (/schema\.getpostman\.com\/json\/collection/i.test(contents)) {
+    return ESpecFormat.Postman;
+  }
 
   // AsyncAPI: top-level `asyncapi` key
   if (/^asyncapi\s*:/m.test(contents) || /"asyncapi"\s*:/.test(contents)) {

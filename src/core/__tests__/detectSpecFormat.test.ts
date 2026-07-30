@@ -54,9 +54,14 @@ describe("detectSpecFormat", () => {
   });
 
   it("detects a clean GraphQL SDL by its .graphql extension", () => {
-    const result = detectSpecFormat(
-      path.join(fixturesDir, "sample-graphql-clean.graphql"),
-    );
-    expect(result).toBe(ESpecFormat.GraphQL);
+    expect(detectSpecFormat(path.join(fixturesDir, "sample-graphql-clean.graphql"))).toBe(ESpecFormat.GraphQL);
+  });
+
+  it("should correctly identify a gRPC specification", () => {
+    expect(detectSpecFormat(path.join(fixturesDir, "sample-grpc.proto"))).toBe(ESpecFormat.Grpc);
+  });
+
+  it("should correctly identify a Postman Collection", () => {
+    expect(detectSpecFormat(path.join(fixturesDir, "sample-postman.json"))).toBe(ESpecFormat.Postman);
   });
 });
