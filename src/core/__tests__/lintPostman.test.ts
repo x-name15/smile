@@ -76,4 +76,12 @@ describe("lintPostmanSpec", () => {
       expect(result.violations).toHaveLength(0);
     });
   });
+
+  describe("spoofed schema host (sample-postman-spoofed-schema.json)", () => {
+    it("rejects schema URLs from unsupported hosts", async () => {
+      await expect(
+        lintPostmanSpec(path.join(fixturesDir, "sample-postman-spoofed-schema.json"))
+      ).rejects.toThrow("Unsupported info.schema host");
+    });
+  });
 });
