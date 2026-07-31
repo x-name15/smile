@@ -230,6 +230,20 @@ program
   });
 
 program
+  .command("config")
+  .description("Smile Config: View your currently active configuration and rule overrides")
+  .action(async () => {
+    try {
+      const { runConfigCommand } = await import("./commands/configCommand.js");
+      await runConfigCommand();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`Config command failed: ${message}`);
+      process.exitCode = 1;
+    }
+  });
+
+program
   .command("deduce <specPath>")
   .description("Smile Deduce: Interactively solve contract violations using deduction (Auto-fixer)")
   .action(async (specPath: string) => {

@@ -22,6 +22,26 @@ function extractChannelFromMessage(message: string): string | null {
   return match ? match[1] : null;
 }
 
+function extractGraphQLFieldFromMessage(message: string): { type: string; field: string } | null {
+  const match = message.match(/Field "(.*?)\.(.*?)"/);
+  if (!match) return null;
+  return { type: match[1], field: match[2] };
+}
+
+function extractGraphQLTypeFromMessage(message: string): string | null {
+  const match = message.match(/Type "(.*?)"/);
+  return match ? match[1] : null;
+}
+
+function toCamelCase(str: string): string {
+  return str.replace(/([-_][a-z0-9])/ig, ($1) => $1.toUpperCase().replace('-', '').replace('_', '')).replace(/^[A-Z]/, (m) => m.toLowerCase());
+}
+
+function toPascalCase(str: string): string {
+  const camel = toCamelCase(str);
+  return camel.charAt(0).toUpperCase() + camel.slice(1);
+}
+
 /**
  * Runs the interactive "Smile Deduce" CLI wizard.
  * Scans a given specification for missing values (like operation IDs or summaries),
@@ -39,10 +59,10 @@ export async function runDeduceCommand(specPath: string): Promise<void> {
   const config = loadConfig();
   const result = await lintSpec(specPath, config);
 
-  // Deduce only works on formats that have a paths/operations structure
-  const supportedFormats = [ESpecFormat.OpenApi, ESpecFormat.AsyncApi];
+  // Deduce works on formats that have a paths/operations structure, or GraphQL
+  const supportedFormats = [ESpecFormat.OpenApi, ESpecFormat.AsyncApi, ESpecFormat.GraphQL];
   if (!supportedFormats.includes(result.format)) {
-    p.outro(`⚠️ Smile Deduce only supports OpenAPI and AsyncAPI specs. Detected format: "${result.format}".`);
+    p.outro(`⚠️ Smile Deduce only supports OpenAPI, AsyncAPI, and GraphQL specs. Detected format: "${result.format}".`);
     return;
   }
 
@@ -56,7 +76,9 @@ export async function runDeduceCommand(specPath: string): Promise<void> {
     (v) =>
       v.ruleId === "missing-summary" ||
       v.ruleId === "missing-operation-id" ||
-      v.ruleId === "missing-channel-description"
+      v.ruleId === "missing-channel-description" ||
+      v.ruleId === "require-camel-case-fields" ||
+      v.ruleId === "require-pascal-case-types"
   );
 
   if (fixableViolations.length === 0) {
@@ -74,7 +96,9 @@ export async function runDeduceCommand(specPath: string): Promise<void> {
   let jsonObj: any = null;
   
   try {
-    if (isJson) {
+    if (result.format === ESpecFormat.GraphQL) {
+      // We mutate text directly for GraphQL to avoid stripping comments
+    } else if (isJson) {
       jsonObj = JSON.parse(fileContent);
     } else {
       doc = YAML.parseDocument(fileContent);
@@ -85,9 +109,83 @@ export async function runDeduceCommand(specPath: string): Promise<void> {
   }
 
   let changesMade = 0;
+  let currentFileContent = fileContent;
 
   for (const violation of fixableViolations) {
+    if (violation.ruleId === "require-camel-case-fields") {
+      const data = extractGraphQLFieldFromMessage(violation.message);
+      if (!data) continue;
+      
+      const suggestion = toCamelCase(data.field);
+      const newName = await p.text({
+        message: `Field "${data.field}" inside "${data.type}" should be camelCase.`,
+        placeholder: suggestion,
+        initialValue: suggestion,
+      });
+      if (p.isCancel(newName)) {
+        p.cancel("Deduction session cancelled.");
+        process.exit(0);
+      }
+      if (newName) {
+        const regex = new RegExp(`\\b${data.field}\\b`, "g");
+        currentFileContent = currentFileContent.replace(regex, newName as string);
+        changesMade++;
+      }
+      continue;
+    }
+
+    if (violation.ruleId === "require-pascal-case-types") {
+      const typeName = extractGraphQLTypeFromMessage(violation.message);
+      if (!typeName) continue;
+
+      const suggestion = toPascalCase(typeName);
+      const newName = await p.text({
+        message: `Type "${typeName}" should be PascalCase.`,
+        placeholder: suggestion,
+        initialValue: suggestion,
+      });
+      if (p.isCancel(newName)) {
+        p.cancel("Deduction session cancelled.");
+        process.exit(0);
+      }
+      if (newName) {
+        const regex = new RegExp(`\\b${typeName}\\b`, "g");
+        currentFileContent = currentFileContent.replace(regex, newName as string);
+        changesMade++;
+      }
+      continue;
+    }
+
     const route = extractRouteFromMessage(violation.message);
+
+    if (violation.ruleId === "missing-channel-description") {
+      const channel = extractChannelFromMessage(violation.message);
+      if (!channel) continue;
+
+      const desc = await p.text({
+        message: `Missing description for channel ${channel}. What is this event stream about?`,
+        placeholder: `e.g. "Emitted when a new user registers"`,
+      });
+      if (p.isCancel(desc)) {
+        p.cancel("Deduction session cancelled.");
+        process.exit(0);
+      }
+      
+      if (desc) {
+        if (isJson) {
+          const channelObj = jsonObj?.channels?.[channel];
+          if (channelObj) {
+            channelObj.description = desc;
+            changesMade++;
+          }
+        } else {
+          doc!.setIn(["channels", channel, "description"], desc);
+          changesMade++;
+        }
+      }
+      continue;
+    }
+
     if (!route) {
       p.log.warn(`Could not parse route for violation: ${violation.message}`);
       continue;
@@ -143,36 +241,14 @@ export async function runDeduceCommand(specPath: string): Promise<void> {
           changesMade++;
         }
       }
-    } else if (violation.ruleId === "missing-channel-description") {
-      const channel = extractChannelFromMessage(violation.message);
-      if (!channel) continue;
-
-      const desc = await p.text({
-        message: `Missing description for channel ${channel}. What is this event stream about?`,
-        placeholder: `e.g. "Emitted when a new user registers"`,
-      });
-      if (p.isCancel(desc)) {
-        p.cancel("Deduction session cancelled.");
-        process.exit(0);
-      }
-      
-      if (desc) {
-        if (isJson) {
-          const channelObj = jsonObj?.channels?.[channel];
-          if (channelObj) {
-            channelObj.description = desc;
-            changesMade++;
-          }
-        } else {
-          doc!.setIn(["channels", channel, "description"], desc);
-          changesMade++;
-        }
-      }
     }
   }
 
   if (changesMade > 0) {
-    const newContent = isJson ? JSON.stringify(jsonObj, null, 2) : doc!.toString();
+    let newContent = currentFileContent;
+    if (result.format !== ESpecFormat.GraphQL) {
+      newContent = isJson ? JSON.stringify(jsonObj, null, 2) : doc!.toString();
+    }
     writeFileSync(specPath, newContent, "utf-8");
     p.outro(`Observation finished! Applied ${changesMade} fix(es) to ${specPath}.`);
   } else {

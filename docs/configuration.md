@@ -107,6 +107,7 @@ Here is the complete list of rule IDs you can override, broken down by format:
 - `require-security`
 - `no-http-verbs-in-path`
 - `strict-hypermedia`
+- `valid-path-parameters`
 
 ### AsyncAPI
 - `missing-operation-id`
@@ -120,6 +121,8 @@ Here is the complete list of rule IDs you can override, broken down by format:
 - `missing-field-description`
 - `deprecated-without-reason`
 - `missing-enum-value-description`
+- `require-pascal-case-types`
+- `require-camel-case-fields`
 
 ### JSON Schema
 - `missing-title`

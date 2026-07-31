@@ -72,7 +72,9 @@ npx @mrjacket/smile lint . --quiet
 
 ### 3. Smile Deduce (Interactive Auto-Fixer) 
 
-If you have a lot of missing summaries or operation IDs, you don't have to fix them manually. Smile Deduce will read your file, prompt you interactively in the terminal for the missing data, and safely save the YAML (preserving all your `# comments` and formatting!).
+If you have a lot of missing summaries, operation IDs, or channel descriptions, you don't have to fix them manually. Smile Deduce will read your OpenAPI or AsyncAPI file, prompt you interactively in the terminal for the missing data, and safely save the YAML (preserving all your `# comments` and formatting!). 
+
+For **GraphQL**, it even acts as a smart naming assistant, automatically suggesting CamelCase and PascalCase corrections for your types and fields and safely injecting them!
 
 ```bash
 npx @mrjacket/smile deduce ./openapi.yaml

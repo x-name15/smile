@@ -123,7 +123,9 @@ will fail the pipeline automatically.
 
 ## Interactive Auto-Fixer (Smile Deduce)
 
-For common violations like missing operation IDs or summaries, you don't have to fix them manually. Run the `deduce` wizard to interactively solve the missing evidence. Your `# comments` and YAML formatting will be preserved!
+For common violations like missing operation IDs, summaries, or channel descriptions, you don't have to fix them manually. Run the `deduce` wizard to interactively solve the missing evidence for OpenAPI and AsyncAPI. Your `# comments` and YAML formatting will be perfectly preserved!
+
+For **GraphQL**, it even acts as a smart naming assistant, automatically suggesting CamelCase and PascalCase corrections for your types and fields and safely injecting them!
 
 ```bash
 smile deduce ./openapi.yaml
@@ -210,10 +212,10 @@ It also features native integrations for **GitHub Actions**, **GitLab CI**, **JU
 
 | Format | Detection | Rules |
 |--------|-----------|-------|
-| OpenAPI 3.x | `openapi:` or `swagger:` key in file | 9 rules |
+| OpenAPI 3.x | `openapi:` or `swagger:` key in file | 10 rules |
 | AsyncAPI 2.x | `asyncapi:` key in file | 5 rules |
 | JSON Schema | `$schema:` key in file | 5 rules |
-| GraphQL SDL | `.graphql` / `.gql` extension | 4 rules |
+| GraphQL SDL | `.graphql` / `.gql` extension | 6 rules |
 | gRPC | `.proto` extension | 3 rules |
 | Postman Collection | `schema.getpostman.com` in JSON | 3 rules |
 

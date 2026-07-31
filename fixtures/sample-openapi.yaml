@@ -27,6 +27,12 @@ paths:
     post:
       # Missing operationId on purpose
       # Missing responses on purpose
+  /users/{missing_id}:
+    get:
+      operationId: getPhantom
+      responses:
+        "200":
+          description: ok
   /users/{id}:
     get:
       operationId: getUserById

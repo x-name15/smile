@@ -6,6 +6,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.5.2] - 2026-07-31 — More Commands and Support Update
+
+### Added
+- **`smile config` command:** Added a sleek new CLI command that visually summarizes all active rule overrides and plugins based on your `config.smile.json`.
+- **OpenAPI Phantom Parameters:** Added the `valid-path-parameters` rule. If you define a route like `/users/{id}`, this rule strictly enforces that the parameter `id` is explicitly documented, preventing unvalidated inputs and broken SDK generation.
+- **GraphQL Auto-Fixer:** Upgraded `smile deduce` to fully support GraphQL naming conventions. It now automatically detects `camel-case-fields` and `pascal-case-types` violations, suggests the correct casing, and safely injects the fix via regex AST manipulation to perfectly preserve your comments.
+
+### Fixed
+- **Documentation Parity:** Fixed missing rules in the `configuration.md` master list and corrected malformed markdown codeblocks in the GraphQL rules documentation to ensure 1:1 parity between code and docs.
+
+---
+
 ## [1.5.1] - 2026-07-31 — JSON Schema Strictness & AsyncAPI Deduce
 
 ### Added

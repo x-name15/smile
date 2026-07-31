@@ -1,6 +1,6 @@
 {
   "name": "@mrjacket/smile",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Strict API contract validator — lints your spec and verifies real responses against it. Passes clean, or shows you the crime scene.",
   "main": "dist/core/index.js",
   "types": "dist/core/index.d.ts",
@@ -40,8 +40,10 @@
     "contract-testing",
     "api-validation",
     "api-linter",
+    "ci/cd-api-validation",
     "spec-validator",
-    "graphql"
+    "graphql",
+    "the-mentalist"
   ],
   "author": {
     "name": "x-name15",

@@ -56,6 +56,13 @@ describe("lintOpenApiSpec", () => {
       const ruleIds = result.violations.map((v) => v.ruleId);
       expect(ruleIds).toContain("no-2xx-response");
     });
+    it("detects valid-path-parameters violations", async () => {
+      const result = await lintOpenApiSpec(
+        path.join(fixturesDir, "sample-openapi.yaml"),
+      );
+      const ruleIds = result.violations.map((v) => v.ruleId);
+      expect(ruleIds).toContain("valid-path-parameters");
+    });
   });
 
   describe("clean spec (sample-openapi-clean.yaml)", () => {

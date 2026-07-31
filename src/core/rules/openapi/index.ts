@@ -9,6 +9,7 @@ import { run as ruleValidExamples } from "./valid-examples.js";
 import { run as ruleRequireSecurity } from "./require-security.js";
 import { run as ruleNoHttpVerbsInPath } from "./no-http-verbs-in-path.js";
 import { ruleStrictHypermedia } from "./strict-hypermedia.js";
+import { ruleOpenApiValidPathParameters } from "./validPathParameters.js";
 
 type TOpenApi3Doc = OpenAPIV3.Document | OpenAPIV3_1.Document;
 type TRule = (doc: TOpenApi3Doc) => IViolation[];
@@ -26,4 +27,5 @@ export const openApiRules: TRule[] = [
   ruleRequireSecurity,
   ruleNoHttpVerbsInPath,
   ruleStrictHypermedia,
+  ruleOpenApiValidPathParameters,
 ];

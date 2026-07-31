@@ -269,3 +269,40 @@ paths:
                   data:
                     type: object
 ```
+
+---
+
+## valid-path-parameters
+
+**Severity:** Error
+
+Every parameter that appears in a path template (e.g., `{id}` in `/users/{id}`) must be explicitly defined in the `parameters` array (either at the path level or the operation level). Failing to document path parameters leads to broken SDK generation and allows unvalidated input to hit the backend.
+
+**Triggers on:**
+```yaml
+paths:
+  /users/{id}:
+    get:
+      operationId: getUser
+      # 🚫 Missing parameters array defining 'id'
+      responses:
+        '200':
+          description: ok
+```
+
+**Clean:**
+```yaml
+paths:
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getUser
+      responses:
+        '200':
+          description: ok
+```
