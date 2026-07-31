@@ -2,4 +2,4 @@ name: "Smile CodeQL Configuration"
 
 query-filters:
   - exclude:
-      id: js/file-data-in-network-request
+      id: js/file-access-to-http

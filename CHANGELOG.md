@@ -12,7 +12,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **Fix:** Properly resolved "Missing regular expression anchor" in `detectSpecFormat.ts` by structurally extracting the Postman schema URL first and validating it with a strict `^` anchor, avoiding previous hacky workarounds.
 - **Fix:** Refactored the `no-acme-domain` rule example in `my-custom-plugin.js` to use `.includes()` instead of a regex, resolving a CodeQL false positive without altering the business intent.
 - **Added:** Created `SECURITY.md` to officially establish the security policy and document known CodeQL false positives.
-- **Added:** Introduced `.github/codeql/codeql-config.yml` to formally suppress the `js/file-data-in-network-request` CodeQL rule. This rule is a false positive since the core functionality of the `smile test` command (Breaching Detector) fundamentally requires sending local file data over HTTP to validate target APIs.
+- **Added:** Introduced `.github/config/codeql/codeql-config.yml` to formally suppress the `js/file-access-to-http` CodeQL rule. This rule is a false positive since the core functionality of the `smile test` command (Breaching Detector) fundamentally requires sending local file data over HTTP to validate target APIs.
 
 ---
 
