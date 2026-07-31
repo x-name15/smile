@@ -3,7 +3,7 @@
 Thank you for considering a contribution to `smile`! Contributions of any kind — bug
 reports, feature requests, documentation fixes, and pull requests — are welcome.
 
-`smile` is an open source project licensed under **MIT**, maintained primarily by a
+`smile` is an open source project licensed under **GNU GENERAL PUBLIC LICENSE**, maintained primarily by a
 single developer. Please read this document before submitting anything.
 
 ## Contact
