@@ -3,6 +3,7 @@ import { ruleJsonSchemaMissingTitle } from "./missingTitle.js";
 import { ruleJsonSchemaUntypedProperty } from "./untypedProperty.js";
 import { ruleJsonSchemaMissingDescription } from "./missingDescription.js";
 import { ruleJsonSchemaArrayWithoutItems } from "./arrayWithoutItems.js";
+import { ruleJsonSchemaRequireAdditionalProperties } from "./requireAdditionalProperties.js";
 
 type TJsonSchema = Record<string, unknown>;
 type TRule = (doc: TJsonSchema) => IViolation[];
@@ -15,4 +16,5 @@ export const jsonSchemaRules: TRule[] = [
   ruleJsonSchemaUntypedProperty,
   ruleJsonSchemaMissingDescription,
   ruleJsonSchemaArrayWithoutItems,
+  ruleJsonSchemaRequireAdditionalProperties,
 ];

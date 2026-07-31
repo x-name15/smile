@@ -3,6 +3,7 @@
   "title": "User",
   "description": "A user object representing a registered account.",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "id": {
       "type": "string",
@@ -14,6 +15,7 @@
     },
     "metadata": {
       "type": "object",
+      "additionalProperties": false,
       "description": "Additional metadata attached to this user.",
       "properties": {
         "source": {

@@ -140,3 +140,36 @@ validity, and runtime validation of array contents is impossible.
   }
 }
 ```
+
+---
+
+## require-additional-properties
+
+**Severity:** Error
+
+Every `type: "object"` definition should explicitly declare `"additionalProperties": false`. Without this, clients could send arbitrary data in payloads that your API may accidentally process, which poses a security risk (like Mass Assignment attacks).
+
+**Triggers on:**
+```json
+{
+  "type": "object",
+  "properties": {
+    "username": {
+      "type": "string"
+    }
+  }
+}
+```
+
+**Clean:**
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "username": {
+      "type": "string"
+    }
+  }
+}
+```

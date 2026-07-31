@@ -126,6 +126,7 @@ Here is the complete list of rule IDs you can override, broken down by format:
 - `missing-description`
 - `untyped-property`
 - `array-without-items`
+- `require-additional-properties`
 
 ### gRPC
 - `require-rpc-comments`

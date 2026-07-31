@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.5.1] - 2026-07-31 — JSON Schema Strictness & AsyncAPI Deduce
+
+### Added
+- **JSON Schema Strictness:** Added `require-additional-properties` rule. This strictly enforces that all `type: "object"` schemas explicitly declare `"additionalProperties": false` to prevent loose payloads and mass assignment vulnerabilities.
+- **AsyncAPI Deduce Support:** The `smile deduce` interactive auto-fixer now fully supports AsyncAPI! It can now interactively fix `missing-operation-id` and `missing-channel-description` violations in your event streams, injecting the code via a generic AST parser to preserve all YAML formatting and `# comments` perfectly.
+
+---
+
 ## [1.5.0] - 2026-07-31 — JSON:API & HAL Validation
 
 ### Added

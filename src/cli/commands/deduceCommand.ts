@@ -10,9 +10,16 @@ import type { IViolation } from "../../models/index.js";
  * 'Operation "GET /users/{id}" is missing ...'
  */
 function extractRouteFromMessage(message: string): { method: string; path: string } | null {
-  const match = message.match(/Operation "([A-Z]+) (.*?)"/);
+  // Matches OpenAPI: Operation "GET /users"
+  // Matches AsyncAPI: Operation "subscribe user/events"
+  const match = message.match(/Operation "([A-Za-z]+) (.*?)"/);
   if (!match) return null;
   return { method: match[1].toLowerCase(), path: match[2] };
+}
+
+function extractChannelFromMessage(message: string): string | null {
+  const match = message.match(/Channel "(.*?)"/);
+  return match ? match[1] : null;
 }
 
 /**
@@ -46,7 +53,10 @@ export async function runDeduceCommand(specPath: string): Promise<void> {
 
   // Filter for rules we know how to auto-fix
   const fixableViolations = result.violations.filter(
-    (v) => v.ruleId === "missing-summary" || v.ruleId === "missing-operation-id"
+    (v) =>
+      v.ruleId === "missing-summary" ||
+      v.ruleId === "missing-operation-id" ||
+      v.ruleId === "missing-channel-description"
   );
 
   if (fixableViolations.length === 0) {
@@ -119,7 +129,7 @@ export async function runDeduceCommand(specPath: string): Promise<void> {
       
       if (opId) {
         if (isJson) {
-          const operation = jsonObj?.paths?.[route.path]?.[route.method];
+          const operation = jsonObj?.paths?.[route.path]?.[route.method] || jsonObj?.channels?.[route.path]?.[route.method];
           if (operation) {
             operation.operationId = opId;
             changesMade++;
@@ -127,7 +137,34 @@ export async function runDeduceCommand(specPath: string): Promise<void> {
             p.log.warn(`Could not locate operation ${route.method.toUpperCase()} ${route.path} in JSON. Skipping.`);
           }
         } else {
-          doc!.setIn(["paths", route.path, route.method, "operationId"], opId);
+          // If paths exists, it's OpenAPI. If channels exists, it's AsyncAPI.
+          const baseKey = doc!.get("paths") ? "paths" : "channels";
+          doc!.setIn([baseKey, route.path, route.method, "operationId"], opId);
+          changesMade++;
+        }
+      }
+    } else if (violation.ruleId === "missing-channel-description") {
+      const channel = extractChannelFromMessage(violation.message);
+      if (!channel) continue;
+
+      const desc = await p.text({
+        message: `Missing description for channel ${channel}. What is this event stream about?`,
+        placeholder: `e.g. "Emitted when a new user registers"`,
+      });
+      if (p.isCancel(desc)) {
+        p.cancel("Deduction session cancelled.");
+        process.exit(0);
+      }
+      
+      if (desc) {
+        if (isJson) {
+          const channelObj = jsonObj?.channels?.[channel];
+          if (channelObj) {
+            channelObj.description = desc;
+            changesMade++;
+          }
+        } else {
+          doc!.setIn(["channels", channel, "description"], desc);
           changesMade++;
         }
       }

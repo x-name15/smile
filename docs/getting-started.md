@@ -212,7 +212,7 @@ It also features native integrations for **GitHub Actions**, **GitLab CI**, **JU
 |--------|-----------|-------|
 | OpenAPI 3.x | `openapi:` or `swagger:` key in file | 9 rules |
 | AsyncAPI 2.x | `asyncapi:` key in file | 5 rules |
-| JSON Schema | `$schema:` key in file | 4 rules |
+| JSON Schema | `$schema:` key in file | 5 rules |
 | GraphQL SDL | `.graphql` / `.gql` extension | 4 rules |
 | gRPC | `.proto` extension | 3 rules |
 | Postman Collection | `schema.getpostman.com` in JSON | 3 rules |

@@ -63,6 +63,14 @@ describe("lintJsonSchemaSpec", () => {
       const ruleIds = result.violations.map((v) => v.ruleId);
       expect(ruleIds).toContain("array-without-items");
     });
+
+    it("detects require-additional-properties violations", async () => {
+      const result = await lintJsonSchemaSpec(
+        path.join(fixturesDir, "sample-jsonschema.json"),
+      );
+      const ruleIds = result.violations.map((v) => v.ruleId);
+      expect(ruleIds).toContain("require-additional-properties");
+    });
   });
 
   describe("clean spec (sample-jsonschema-clean.json)", () => {
