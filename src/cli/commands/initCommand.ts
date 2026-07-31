@@ -1,6 +1,5 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { existsSync } from "node:fs";
 import * as p from "@clack/prompts";
 import {
   GITHUB_WORKFLOW,
