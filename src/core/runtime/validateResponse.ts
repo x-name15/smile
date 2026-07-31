@@ -22,16 +22,41 @@ export function validateResponseAgainstSchema(
   schema: unknown,
   actualBody: unknown,
   pathLabel: string,
+  mediaType?: string
 ): IViolation[] {
-  if (!schema || typeof schema !== "object") {
-    return [
-      {
-        ruleId: "missing-response-schema",
-        severity: ESeverity.Warning,
-        message: "No schema was documented for this response, so the body could not be checked",
+  const violations: IViolation[] = [];
+
+  // Hypermedia Runtime Validation
+  if (mediaType === "application/vnd.api+json" && actualBody && typeof actualBody === "object") {
+    const bodyObj = actualBody as Record<string, unknown>;
+    if (!bodyObj.data && !bodyObj.meta && !bodyObj.errors) {
+      violations.push({
+        ruleId: "strict-hypermedia-runtime",
+        severity: ESeverity.Error,
+        message: "JSON:API response payloads must contain at least one of 'data', 'meta', or 'errors' at the root.",
         path: pathLabel,
-      },
-    ];
+      });
+    }
+  } else if (mediaType === "application/hal+json" && actualBody && typeof actualBody === "object") {
+    const bodyObj = actualBody as Record<string, unknown>;
+    if (!bodyObj._links) {
+      violations.push({
+        ruleId: "strict-hypermedia-runtime",
+        severity: ESeverity.Error,
+        message: "HAL response payloads must contain a '_links' object at the root.",
+        path: pathLabel,
+      });
+    }
+  }
+
+  if (!schema || typeof schema !== "object") {
+    violations.push({
+      ruleId: "missing-response-schema",
+      severity: ESeverity.Warning,
+      message: "No schema was documented for this response, so the body could not be checked",
+      path: pathLabel,
+    });
+    return violations;
   }
 
   let validate: ReturnType<typeof ajv.compile>;
@@ -39,26 +64,26 @@ export function validateResponseAgainstSchema(
     validate = ajv.compile(schema as Record<string, unknown>);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    return [
-      {
-        ruleId: "invalid-response-schema",
-        severity: ESeverity.Error,
-        message: `The documented schema for this response is malformed and cannot be compiled: ${message}`,
-        path: pathLabel,
-      },
-    ];
+    violations.push({
+      ruleId: "invalid-response-schema",
+      severity: ESeverity.Error,
+      message: `The documented schema for this response is malformed and cannot be compiled: ${message}`,
+      path: pathLabel,
+    });
+    return violations;
   }
 
   const isValid = validate(actualBody);
 
-  if (isValid) {
-    return [];
+  if (!isValid) {
+    const ajvViolations = (validate.errors ?? []).map((error) => ({
+      ruleId: "response-schema-mismatch",
+      severity: ESeverity.Error,
+      message: `${error.instancePath || "(root)"} ${error.message ?? "does not match schema"}`,
+      path: pathLabel,
+    }));
+    violations.push(...ajvViolations);
   }
 
-  return (validate.errors ?? []).map((error) => ({
-    ruleId: "response-schema-mismatch",
-    severity: ESeverity.Error,
-    message: `${error.instancePath || "(root)"} ${error.message ?? "does not match schema"}`,
-    path: pathLabel,
-  }));
+  return violations;
 }

@@ -52,14 +52,25 @@ function buildConcreteUrl(
  */
 function findExpectedSuccessResponse(
   operation: TOperation,
-): { statusCode: string; schema: unknown } | null {
+): { statusCode: string; schema: unknown; mediaType: string } | null {
   const responses = operation.responses ?? {};
 
   for (const [statusCode, responseObj] of Object.entries(responses)) {
     if (!statusCode.startsWith("2")) continue;
     const response = responseObj as OpenAPIV3.ResponseObject;
-    const schema = response.content?.["application/json"]?.schema;
-    return { statusCode, schema };
+    if (!response.content) return { statusCode, schema: undefined, mediaType: "" };
+
+    for (const mediaType of ["application/vnd.api+json", "application/hal+json", "application/json"]) {
+      if (response.content[mediaType]) {
+        return { statusCode, schema: response.content[mediaType].schema, mediaType };
+      }
+    }
+    
+    // Fallback to the first available media type
+    const firstMedia = Object.keys(response.content)[0];
+    if (firstMedia) {
+      return { statusCode, schema: response.content[firstMedia].schema, mediaType: firstMedia };
+    }
   }
 
   return null;
@@ -206,7 +217,8 @@ async function testOperation(
     });
   } else {
     const resBody: unknown = await response.json().catch(() => undefined);
-    violations.push(...validateResponseAgainstSchema(expected.schema, resBody, label));
+    const actualMediaType = response.headers.get("content-type")?.split(";")[0]?.trim() || expected.mediaType;
+    violations.push(...validateResponseAgainstSchema(expected.schema, resBody, label, actualMediaType));
   }
 
   return {

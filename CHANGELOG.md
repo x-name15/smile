@@ -6,6 +6,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.5.0] - 2026-07-31 — JSON:API & HAL Validation
+
+### Added
+- **JSON:API & HAL Strict Contract Linting:** Added `strict-hypermedia` OpenAPI rule. If an endpoint declares a response with `application/vnd.api+json` or `application/hal+json`, `smile` statically traverses the schema to enforce the hypermedia standard (e.g. JSON:API requires `data`, `meta`, or `errors`; HAL requires `_links`).
+- **JSON:API & HAL Dynamic Runtime Validation:** The Breaching Detector (`smile test`) is now hypermedia-aware. When it intercepts a live response with `application/vnd.api+json` or `application/hal+json` headers, it dynamically asserts that the payload conforms to the official structural constraints, completely independent of the user's OpenAPI schema.
+- **Zero Configuration (Automatic Opt-in):** Hypermedia validation is 100% plug-and-play. It only activates if you explicitly declare or serve those content types, maintaining perfect backwards compatibility for standard REST/JSON APIs.
+
+### Docs
+- **Documentation Parity:** Ensured `docs/` is 1:1 with `src/`. Added `strict-hypermedia` to `docs/rules/openapi.md`.
+- **Configuration Hub:** Updated `docs/configuration.md` with the new rule, missing 1.4.3 rules, and added documentation for the `plugins` array.
+- **Smart Validation Details:** Documented the "Zero Config" nature of hypermedia validation in both `docs/rules/openapi.md` and `docs/getting-started.md`.
+
+---
+
 ## [1.4.6] - 2026-07-31 — Security Policy & CodeQL Configuration
 
 ### Security & Documentation

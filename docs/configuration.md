@@ -39,6 +39,9 @@ You can set any valid rule to one of three severities:
 
 ```json
 {
+  "plugins": [
+    "./examples/my-custom-plugin.js"
+  ],
   "testHeaders": {
     "Authorization": "Bearer xxxxx",
     "X-Api-Key": "12345"
@@ -54,6 +57,9 @@ You can set any valid rule to one of three severities:
   }
 }
 ```
+
+### `plugins` (optional)
+An array of file paths or npm package names pointing to custom JavaScript/TypeScript plugin modules. Use this to enforce your own company-specific API design guidelines (e.g., `"./rules/my-custom-rule.js"`). See [plugins.md](plugins.md) for a full guide on writing plugins.
 
 ### `testHeaders` (optional)
 A key-value map of HTTP headers that will be automatically injected into every request made by the Breaching Detector (`smile test`). This saves you from having to type `-H "Authorization: ..."` in the CLI every time. Note that headers passed via the CLI will override these configuration headers.
@@ -94,9 +100,17 @@ Here is the complete list of rule IDs you can override, broken down by format:
 ### OpenAPI
 - `missing-summary`
 - `missing-operation-id`
+- `missing-responses`
+- `no-2xx-response`
 - `untyped-schema-property`
+- `valid-examples`
+- `require-security`
+- `no-http-verbs-in-path`
+- `strict-hypermedia`
 
 ### AsyncAPI
+- `missing-operation-id`
+- `missing-message`
 - `missing-channel-description`
 - `missing-message-description`
 - `untyped-schema-property`

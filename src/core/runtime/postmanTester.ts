@@ -123,7 +123,8 @@ async function testPostmanItem(
   } else if (expectedResponse.body) {
     const resBody: unknown = await response.json().catch(() => undefined);
     const inferredSchema = inferSchemaFromJsonString(expectedResponse.body);
-    violations.push(...validateResponseAgainstSchema(inferredSchema, resBody, label));
+    const actualMediaType = response.headers.get("content-type")?.split(";")[0]?.trim();
+    violations.push(...validateResponseAgainstSchema(inferredSchema, resBody, label, actualMediaType));
   }
 
   return {

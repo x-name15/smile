@@ -69,4 +69,36 @@ describe("validateResponseAgainstSchema", () => {
     expect(violations[0].ruleId).toBe("invalid-response-schema");
     expect(violations[0].severity).toBe(ESeverity.Error);
   });
+
+  describe("Hypermedia Validation (JSON:API)", () => {
+    it("returns error if application/vnd.api+json body lacks data, meta, or errors", () => {
+      const body = { id: "1" };
+      const violations = validateResponseAgainstSchema(userSchema, body, "GET /", "application/vnd.api+json");
+      const hypermediaViolations = violations.filter(v => v.ruleId === "strict-hypermedia-runtime");
+      expect(hypermediaViolations).toHaveLength(1);
+    });
+
+    it("returns no hypermedia error if application/vnd.api+json body has data", () => {
+      const body = { data: { id: "1", type: "users" } };
+      const violations = validateResponseAgainstSchema(userSchema, body, "GET /", "application/vnd.api+json");
+      const hypermediaViolations = violations.filter(v => v.ruleId === "strict-hypermedia-runtime");
+      expect(hypermediaViolations).toHaveLength(0);
+    });
+  });
+
+  describe("Hypermedia Validation (HAL)", () => {
+    it("returns error if application/hal+json body lacks _links", () => {
+      const body = { name: "Test" };
+      const violations = validateResponseAgainstSchema(userSchema, body, "GET /", "application/hal+json");
+      const hypermediaViolations = violations.filter(v => v.ruleId === "strict-hypermedia-runtime");
+      expect(hypermediaViolations).toHaveLength(1);
+    });
+
+    it("returns no hypermedia error if application/hal+json body has _links", () => {
+      const body = { _links: { self: { href: "/" } } };
+      const violations = validateResponseAgainstSchema(userSchema, body, "GET /", "application/hal+json");
+      const hypermediaViolations = violations.filter(v => v.ruleId === "strict-hypermedia-runtime");
+      expect(hypermediaViolations).toHaveLength(0);
+    });
+  });
 });

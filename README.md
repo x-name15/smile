@@ -167,7 +167,6 @@ Full documentation is available in the [`docs/`](./docs) directory:
 ## Roadmap (Upcoming Features)
 
 We are constantly expanding the strictness and capabilities of `smile`. Here is what is coming in future versions:
-- **v1.5.0 JSON:API / HAL**: Validating hypermedia conventions strictly.
 - **v1.6.0 AsyncAPI Runtime Validation**: Extending the Breaching Detector to connect to live message brokers (Kafka/RabbitMQ) and validate message payloads in real-time.
 - **v1.7.0 AsyncAPI v3 Migration**: Rewriting the underlying parser to support `@asyncapi/parser` v3+ and its new AST structure.
 

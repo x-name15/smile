@@ -224,3 +224,48 @@ paths:
           description: OK
 ```
 
+---
+
+## strict-hypermedia
+
+**Severity:** Error
+
+If a response specifies `application/vnd.api+json` (JSON:API) or `application/hal+json` (HAL), this rule enforces that the OpenAPI schema structurally aligns with the hypermedia standard.
+- For **JSON:API**, the schema must define at least one of `data`, `meta`, or `errors` at the root.
+- For **HAL**, the schema must define a `_links` object at the root.
+
+> **💡 Automatic Opt-In (Zero Config):** This rule is completely invisible for standard REST APIs. It only activates if `smile` detects that you are explicitly declaring `application/vnd.api+json` or `application/hal+json` in your OpenAPI spec. If you use standard `application/json`, this rule stays dormant.
+
+**Triggers on:**
+```yaml
+paths:
+  /users:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  username:    # Missing 'data', 'meta', or 'errors'
+                    type: string
+```
+
+**Clean:**
+```yaml
+paths:
+  /users:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+```

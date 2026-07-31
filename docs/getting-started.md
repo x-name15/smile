@@ -181,6 +181,8 @@ Testing against http://localhost:3000 — 2 endpoint(s) tested, 0 skipped
 > **Note:** The Breaching Detector currently supports `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` requests for OpenAPI specs, and full structural validation for Postman Collections.
 > Support for AsyncAPI runtime validation is on the roadmap.
 
+> **💡 Smart Hypermedia Validation:** If the target server responds with `application/vnd.api+json` (JSON:API) or `application/hal+json` (HAL), `smile test` automatically upgrades its checks to strictly enforce official hypermedia structural constraints on the payload, completely zero-config.
+
 ---
 
 ## Bundling multi-file specs
@@ -208,7 +210,7 @@ It also features native integrations for **GitHub Actions**, **GitLab CI**, **JU
 
 | Format | Detection | Rules |
 |--------|-----------|-------|
-| OpenAPI 3.x | `openapi:` or `swagger:` key in file | 5 rules |
+| OpenAPI 3.x | `openapi:` or `swagger:` key in file | 9 rules |
 | AsyncAPI 2.x | `asyncapi:` key in file | 5 rules |
 | JSON Schema | `$schema:` key in file | 4 rules |
 | GraphQL SDL | `.graphql` / `.gql` extension | 4 rules |
