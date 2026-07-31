@@ -6,8 +6,6 @@
  * It acts purely as a routing layer, handling standard input/output and exit codes.
  */
 import { Command } from "commander";
-import { lintSpec, runSmokeTest } from "../core/index.js";
-import { renderSmileReport, renderSmileTestReport, renderMarkdownReport, renderMarkdownTestReport } from "../reporters/index.js";
 import { VERSION } from "../version.js";
 
 const program = new Command();
@@ -107,7 +105,7 @@ program
   .action(async (specPath: string, baseUrl: string, options: { header?: string[], format: string, quiet: boolean, plugin?: string }) => {
     const start = performance.now();
     try {
-      const { loadConfig } = await import("../core/index.js");
+      const { loadConfig, runSmokeTest } = await import("../core/index.js");
       const { fireWebhooks } = await import("./utils.js");
       const { renderJunitTestReport, renderMarkdownTestReport, renderSmileTestReport } = await import("../reporters/index.js");
       const { emitGithubStepSummary } = await import("../reporters/utils.js");

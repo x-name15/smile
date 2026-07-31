@@ -85,7 +85,7 @@ export async function fireWebhooks(webhooks: string[] | undefined, summary: unkn
 
   const promises = webhooks.map(async (url) => {
     try {
-      await fetch(url, {
+      await fetch(new URL(url).toString(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: payload

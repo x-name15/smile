@@ -41,26 +41,43 @@ export async function installHook(): Promise<void> {
     await mkdir(hooksDir, { recursive: true });
   }
 
-  if (existsSync(hookPath)) {
-    const overwrite = await p.confirm({
-      message: "A pre-commit hook already exists. Overwrite it?",
-      initialValue: false,
-    });
+  let shouldOverwrite = false;
+  try {
+    await writeFile(hookPath, HOOK_SCRIPT, { encoding: "utf-8", flag: "wx" });
+  } catch (error: any) {
+    if (error.code === "EEXIST") {
+      const overwrite = await p.confirm({
+        message: "A pre-commit hook already exists. Overwrite it?",
+        initialValue: false,
+      });
 
-    if (!overwrite || p.isCancel(overwrite)) {
-      p.cancel("Installation cancelled.");
-      process.exit(0);
+      if (!overwrite || p.isCancel(overwrite)) {
+        p.cancel("Installation cancelled.");
+        process.exit(0);
+      }
+      shouldOverwrite = true;
+    } else {
+      p.log.error(`Failed to install hook: ${error}`);
+      process.exit(1);
+    }
+  }
+
+  if (shouldOverwrite) {
+    try {
+      await writeFile(hookPath, HOOK_SCRIPT, "utf-8");
+    } catch (error) {
+      p.log.error(`Failed to overwrite hook: ${error}`);
+      process.exit(1);
     }
   }
 
   try {
-    await writeFile(hookPath, HOOK_SCRIPT, "utf-8");
     // Make it executable (755)
     await chmod(hookPath, 0o755);
     p.log.success("Successfully installed smile pre-commit hook.");
     p.outro("Your API contracts are now protected from bad commits! 🛡️");
   } catch (error) {
-    p.log.error(`Failed to install hook: ${error}`);
+    p.log.error(`Failed to set permissions: ${error}`);
     process.exit(1);
   }
 }

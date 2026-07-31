@@ -53,7 +53,6 @@ export async function runInitCommand(): Promise<void> {
   }
 
   // 2. Build the config based on selection
-  let configGenerated = false;
   if (generateConfig && Array.isArray(selectedFormats) && selectedFormats.length > 0) {
     const rules: Record<string, Record<string, string>> = {};
     for (const format of selectedFormats) {
@@ -78,13 +77,16 @@ export async function runInitCommand(): Promise<void> {
     const configContent = JSON.stringify(configObj, null, 2);
     const configPath = path.resolve(process.cwd(), "config.smile.json");
     
-    if (existsSync(configPath)) {
-      p.log.warn(`Skipped: config.smile.json already exists.`);
-    } else {
-      await fs.writeFile(configPath, configContent, "utf-8");
+    try {
+      await fs.writeFile(configPath, configContent, { encoding: "utf-8", flag: "wx" });
       const totalRules = Object.values(rules).reduce((acc, curr) => acc + Object.keys(curr).length, 0);
       p.log.success(`Created config.smile.json with ${totalRules} rules across ${Object.keys(rules).length} format(s).`);
-      configGenerated = true;
+    } catch (error: any) {
+      if (error.code === "EEXIST") {
+        p.log.warn(`Skipped: config.smile.json already exists.`);
+      } else {
+        throw error;
+      }
     }
   } else {
     p.log.info("No formats selected. Skipped config.smile.json generation.");
@@ -92,10 +94,12 @@ export async function runInitCommand(): Promise<void> {
 
   // 2.5 Generate .smileignore
   const ignorePath = path.resolve(process.cwd(), ".smileignore");
-  if (!existsSync(ignorePath)) {
-    const ignoreContent = `node_modules\n.git\ndist\nbuild\ncoverage\n`;
-    await fs.writeFile(ignorePath, ignoreContent, "utf-8");
+  const ignoreContent = `node_modules\n.git\ndist\nbuild\ncoverage\n`;
+  try {
+    await fs.writeFile(ignorePath, ignoreContent, { encoding: "utf-8", flag: "wx" });
     p.log.success("Created .smileignore");
+  } catch (error: any) {
+    if (error.code !== "EEXIST") throw error;
   }
 
   // 3. GitHub Actions
@@ -112,12 +116,17 @@ export async function runInitCommand(): Promise<void> {
   if (generateCI) {
     const ciDir = path.resolve(process.cwd(), ".github", "workflows");
     const ciPath = path.resolve(ciDir, "smile.yml");
-    if (existsSync(ciPath)) {
-      p.log.warn(`Skipped: .github/workflows/smile.yml already exists.`);
-    } else {
-      await fs.mkdir(ciDir, { recursive: true });
-      await fs.writeFile(ciPath, GITHUB_WORKFLOW, "utf-8");
+    await fs.mkdir(ciDir, { recursive: true });
+    
+    try {
+      await fs.writeFile(ciPath, GITHUB_WORKFLOW, { encoding: "utf-8", flag: "wx" });
       p.log.success("Created .github/workflows/smile.yml");
+    } catch (error: any) {
+      if (error.code === "EEXIST") {
+        p.log.warn(`Skipped: .github/workflows/smile.yml already exists.`);
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -163,11 +172,15 @@ export async function runInitCommand(): Promise<void> {
 
     if (specFileName) {
       const specPath = path.resolve(process.cwd(), specFileName);
-      if (existsSync(specPath)) {
-        p.log.warn(`Skipped: ${specFileName} already exists.`);
-      } else {
-        await fs.writeFile(specPath, specContent, "utf-8");
+      try {
+        await fs.writeFile(specPath, specContent, { encoding: "utf-8", flag: "wx" });
         p.log.success(`Created ${specFileName}`);
+      } catch (error: any) {
+        if (error.code === "EEXIST") {
+          p.log.warn(`Skipped: ${specFileName} already exists.`);
+        } else {
+          throw error;
+        }
       }
     }
   }

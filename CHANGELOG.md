@@ -6,6 +6,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.4.5] - 2026-07-31 — Security Hardening
+
+### Security
+- **Fix:** Resolved 19 CodeQL vulnerabilities across the codebase.
+- **Fix:** Hardened Postman and Custom Plugin parsers against Incomplete URL Substring Sanitization (CWE-20) by strictly validating hostnames and using word boundaries.
+- **Fix:** Eliminated Time-of-Check to Time-of-Use (TOCTOU) file system race conditions in `smile init` and `smile install-hook` commands by using atomic exclusive writes (`wx`).
+- **Fix:** Added missing regex anchors to prevent potential ReDoS attacks during spec format detection.
+- **Fix:** Suppressed SSRF/Data Exfiltration false positives in the Breaching Detector by properly sanitizing requested URLs with the `URL` constructor.
+
+---
+
 ## [1.4.4] - 2026-07-30 — GraphQL Naming Conventions
 
 ### Added

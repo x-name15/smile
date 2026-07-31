@@ -1,7 +1,6 @@
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import { ESpecFormat } from "../models/index.js";
 import { detectSpecFormat } from "./detectSpecFormat.js";
-import { readFileSync } from "node:fs";
 
 export interface IBundleResult {
   format: ESpecFormat;

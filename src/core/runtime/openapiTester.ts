@@ -178,7 +178,7 @@ async function testOperation(
 
   let response: Response;
   try {
-    response = await fetch(url, fetchOptions);
+    response = await fetch(new URL(url).toString(), fetchOptions);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return {

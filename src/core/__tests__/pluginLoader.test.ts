@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { loadPlugins, evaluateCustomRules } from "../pluginLoader.js";
 import { ESpecFormat, ESeverity } from "../../models/index.js";
 

@@ -82,7 +82,7 @@ async function testGraphQLField(
 
   let response: Response;
   try {
-    response = await fetch(baseUrl, {
+    response = await fetch(new URL(baseUrl).toString(), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

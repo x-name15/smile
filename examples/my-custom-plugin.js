@@ -35,7 +35,7 @@ export default {
       evaluate(doc) {
         // Stringify the entire AST to do a fast global regex search
         const rawString = JSON.stringify(doc);
-        if (rawString.includes("acme.com")) {
+        if (/\bacme\.com\b/.test(rawString)) {
           return [
             {
               severity: "warning",

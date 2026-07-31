@@ -20,7 +20,7 @@ export function detectSpecFormat(sourcePath: string): ESpecFormat {
   const contents = readFileSync(sourcePath, "utf-8");
 
   // Postman Collections: check for postman schema URL in JSON
-  if (/schema\.getpostman\.com\/json\/collection/i.test(contents)) {
+  if (/https?:\/\/schema\.getpostman\.com\/json\/collection/i.test(contents)) {
     return ESpecFormat.Postman;
   }
 
