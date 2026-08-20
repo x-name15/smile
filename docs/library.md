@@ -163,7 +163,7 @@ const violations = validateResponseAgainstSchema(schema, body, "GET /users/:id")
 
 > ⚠️ **WARNING:** `runSmokeTest` performs destructive HTTP requests (`POST`, `PUT`, `DELETE`). Run strictly against local or ephemeral environments to avoid accidental data loss!
 
-Fire all documented endpoints against a live server and validate
+Fire all supported documented endpoints against a live server and validate
 every response body against the spec's declared schema:
 
 ```ts
@@ -180,8 +180,17 @@ for (const r of result.endpoints) {
 }
 ```
 
-> **Note:** `runSmokeTest` only covers `GET` requests. Other HTTP methods
-> require request body generation and are on the roadmap.
+For OpenAPI, `runSmokeTest` covers `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`.
+Request bodies for mutating methods are generated from JSON examples, defaults,
+and simple schemas. Path parameters are auto-tested when they provide an
+`example` or `default` value; otherwise the endpoint is reported as skipped.
+Responses are decoded according to their `Content-Type`, so text and JSON
+schemas can be validated correctly. Postman collections are traversed
+recursively and preserve absolute request URLs.
+
+The GraphQL runtime tester also supports schemas that map `query` to a custom
+root type. Fields with required arguments remain skipped because Smile cannot
+generate safe values for them automatically.
 
 ---
 

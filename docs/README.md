@@ -1,8 +1,9 @@
 # smile — Documentation
 
 **`@mrjacket/smile`** acts as a relentless gatekeeper for your API specifications. 
-It auto-detects OpenAPI, AsyncAPI, JSON Schema, and GraphQL SDL, linting the contract 
-and verifying real HTTP responses against it to ensure absolute perfection.
+It auto-detects OpenAPI, AsyncAPI, JSON Schema, GraphQL SDL, gRPC `.proto`
+files, and Postman Collections, linting the contract and verifying real HTTP
+responses where runtime validation is supported.
 
 ---
 
@@ -20,12 +21,12 @@ and verifying real HTTP responses against it to ensure absolute perfection.
 
 | Format | Document | Native Rules |
 |--------|----------|-------|
-| OpenAPI 3.x | [openapi.md](./rules/openapi.md) | 5 rules |
-| AsyncAPI 2.x | [asyncapi.md](./rules/asyncapi.md) | 5 rules |
-| JSON Schema | [json-schema.md](./rules/json-schema.md) | 4 rules |
-| GraphQL SDL | [graphql.md](./rules/graphql.md) | 4 rules |
-| gRPC (.proto) | [grpc.md](./rules/grpc.md) | 3 rules |
-| Postman | [postman.md](./rules/postman.md) | 3 rules |
+| OpenAPI 3.x | [openapi.md](./rules/openapi.md) | See reference |
+| AsyncAPI 2.x | [asyncapi.md](./rules/asyncapi.md) | See reference |
+| JSON Schema | [json-schema.md](./rules/json-schema.md) | See reference |
+| GraphQL SDL | [graphql.md](./rules/graphql.md) | See reference |
+| gRPC (.proto) | [grpc.md](./rules/grpc.md) | See reference |
+| Postman | [postman.md](./rules/postman.md) | See reference |
 
 ## Extensibility
 

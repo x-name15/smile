@@ -11,7 +11,11 @@ import {
 
 type TOpenApi3Doc = OpenAPIV3.Document | OpenAPIV3_1.Document;
 type TParameter = OpenAPIV3.ParameterObject;
-type TOperation = OpenAPIV3.OperationObject & { parameters?: TParameter[] };
+type TOperation = OpenAPIV3.OperationObject & {
+  parameters?: TParameter[];
+  pathParameters?: TParameter[];
+};
+type TPathItem = OpenAPIV3.PathItemObject & { parameters?: TParameter[] };
 
 const AUTO_TESTABLE_METHODS = ["get", "post", "put", "patch", "delete"];
 
@@ -146,7 +150,14 @@ async function testOperation(
 ): Promise<IEndpointTestResult> {
   const upperMethod = method.toUpperCase();
   const label = `${upperMethod} ${pathTemplate}`;
-  const parameters = operation.parameters ?? [];
+  const parametersByKey = new Map<string, TParameter>();
+  for (const parameter of operation.pathParameters ?? []) {
+    parametersByKey.set(`${parameter.in}:${parameter.name}`, parameter);
+  }
+  for (const parameter of operation.parameters ?? []) {
+    parametersByKey.set(`${parameter.in}:${parameter.name}`, parameter);
+  }
+  const parameters = [...parametersByKey.values()];
   const url = buildConcreteUrl(baseUrl, pathTemplate, parameters);
 
   if (url === null) {
@@ -216,8 +227,10 @@ async function testOperation(
       path: label,
     });
   } else {
-    const resBody: unknown = await response.json().catch(() => undefined);
     const actualMediaType = response.headers.get("content-type")?.split(";")[0]?.trim() || expected.mediaType;
+    const resBody: unknown = actualMediaType.includes("json")
+      ? await response.json().catch(() => undefined)
+      : await response.text();
     violations.push(...validateResponseAgainstSchema(expected.schema, resBody, label, actualMediaType));
   }
 
@@ -246,8 +259,17 @@ export async function runOpenApiSmokeTest(
       const operation = (pathItem as Record<string, unknown>)[method] as TOperation | undefined;
       if (!operation) continue;
 
+      const pathParameters = (pathItem as TPathItem).parameters ?? [];
+
       endpoints.push(
-        await testOperation(baseUrl, pathTemplate, method, operation, doc, headers),
+        await testOperation(
+          baseUrl,
+          pathTemplate,
+          method,
+          { ...operation, pathParameters },
+          doc,
+          headers,
+        ),
       );
     }
   }

@@ -69,7 +69,9 @@ async function testPostmanItem(
   const rawPath = extractPath(item.request.url);
   // Remove Postman variables like {{baseUrl}} and replace with our baseUrl
   const cleanPath = rawPath.replace(/\{\{[^}]+\}\}/g, "").replace(/^\/+/, "");
-  const url = `${baseUrl.replace(/\/$/, "")}/${cleanPath}`;
+  const url = /^https?:\/\//i.test(rawPath.trim())
+    ? rawPath.trim()
+    : `${baseUrl.replace(/\/$/, "")}/${cleanPath}`;
   const label = `${method} ${rawPath}`;
 
   const expectedResponse = item.response[0];

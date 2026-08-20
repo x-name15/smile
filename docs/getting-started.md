@@ -147,8 +147,8 @@ You can also run `npx @mrjacket/smile init` to automatically generate a boilerpl
 
 > ⚠️ **WARNING:** `smile test` performs destructive HTTP requests (`POST`, `PUT`, `DELETE`). Run strictly against local or ephemeral environments to avoid accidental data loss!
 
-`smile test` takes your spec and a base URL, fires a real HTTP `GET` request
-against every documented endpoint, and validates the actual response body against
+`smile test` takes your spec and a base URL, fires real HTTP requests against
+the supported documented endpoints, and validates each response body against
 the schema the spec promises.
 
 ```bash
@@ -180,7 +180,7 @@ Testing against http://localhost:3000 — 2 endpoint(s) tested, 0 skipped
    detail:  expected number, got string
 ```
 
-> **Note:** The Breaching Detector currently supports `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` requests for OpenAPI specs, and full structural validation for Postman Collections.
+> **Note:** The Breaching Detector currently supports `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` requests for OpenAPI specs, and full structural validation for Postman Collections. OpenAPI path parameters require an `example` or `default` value to be auto-tested; otherwise the endpoint is reported as skipped. Postman absolute request URLs are preserved.
 > Support for AsyncAPI runtime validation is on the roadmap.
 
 > **💡 Smart Hypermedia Validation:** If the target server responds with `application/vnd.api+json` (JSON:API) or `application/hal+json` (HAL), `smile test` automatically upgrades its checks to strictly enforce official hypermedia structural constraints on the payload, completely zero-config.
@@ -212,12 +212,12 @@ It also features native integrations for **GitHub Actions**, **GitLab CI**, **JU
 
 | Format | Detection | Rules |
 |--------|-----------|-------|
-| OpenAPI 3.x | `openapi:` or `swagger:` key in file | 10 rules |
-| AsyncAPI 2.x | `asyncapi:` key in file | 5 rules |
-| JSON Schema | `$schema:` key in file | 5 rules |
-| GraphQL SDL | `.graphql` / `.gql` extension | 6 rules |
-| gRPC | `.proto` extension | 3 rules |
-| Postman Collection | `schema.getpostman.com` in JSON | 3 rules |
+| OpenAPI 3.x | `openapi:` or `swagger:` key in file | [Reference](./rules/openapi.md) |
+| AsyncAPI 2.x | `asyncapi:` key in file | [Reference](./rules/asyncapi.md) |
+| JSON Schema | `$schema:` key in file | [Reference](./rules/json-schema.md) |
+| GraphQL SDL | `.graphql` / `.gql` extension | [Reference](./rules/graphql.md) |
+| gRPC | `.proto` extension | [Reference](./rules/grpc.md) |
+| Postman Collection | `schema.getpostman.com` in JSON | [Reference](./rules/postman.md) |
 
 For the full list of rules and what each one checks, see the
 [rules reference](./rules/).

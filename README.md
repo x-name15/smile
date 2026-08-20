@@ -50,7 +50,7 @@ Lint any specification file instantly. `smile` exits with code `1` if violations
 # Lint a specific file
 npx @mrjacket/smile lint ./openapi.yaml
 
-# Lint an entire directory (auto-discovers .yaml, .json, .graphql)
+# Lint an entire directory (auto-discovers supported specification files)
 npx @mrjacket/smile lint .
 ```
 
@@ -93,7 +93,7 @@ smile test ./openapi.yaml https://api.staging.myserver.com
 # Bundle a modular spec into a single JSON file
 smile bundle ./openapi/main.yaml --out ./dist/api-bundle.json
 ```
-> Note: Currently supports `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` endpoints for OpenAPI, and full validation for Postman Collections.
+> Note: OpenAPI runtime tests support `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`. Path parameters need an `example` or `default` value to be auto-tested. Postman Collections are traversed recursively, and absolute request URLs are preserved.
 
 ### 5. Programmatic Usage (Vitest / Jest)
 

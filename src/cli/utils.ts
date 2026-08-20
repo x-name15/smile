@@ -33,7 +33,7 @@ export function findSpecFiles(basePath: string): string[] {
   }
 
   const results: string[] = [];
-  const validExtensions = [".yaml", ".yml", ".json", ".graphql", ".gql"];
+  const validExtensions = [".yaml", ".yml", ".json", ".graphql", ".gql", ".proto"];
 
   function traverse(currentDir: string) {
     const files = readdirSync(currentDir);

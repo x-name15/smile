@@ -1,6 +1,9 @@
 import type {
   DocumentNode,
   ObjectTypeDefinitionNode,
+  ObjectTypeExtensionNode,
+  SchemaDefinitionNode,
+  SchemaExtensionNode,
   FieldDefinitionNode,
   TypeNode,
 } from "graphql";
@@ -146,9 +149,21 @@ export async function runGraphQLSmokeTest(
 
   const endpoints: IEndpointTestResult[] = [];
   
+  const schemaDefinition = doc.definitions.find(
+    (def): def is SchemaDefinitionNode | SchemaExtensionNode =>
+      (def.kind === "SchemaDefinition" || def.kind === "SchemaExtension") &&
+      def.operationTypes?.some((operation) => operation.operation === "query") === true,
+  );
+    const queryTypeName = schemaDefinition?.operationTypes?.find(
+    (operation) => operation.operation === "query",
+  )?.type.name.value ?? "Query";
+
   const queryType = doc.definitions.find(
     (def): def is ObjectTypeDefinitionNode => 
-      def.kind === "ObjectTypeDefinition" && def.name.value === "Query"
+      def.kind === "ObjectTypeDefinition" && def.name.value === queryTypeName,
+  ) ?? doc.definitions.find(
+    (def): def is ObjectTypeExtensionNode =>
+      def.kind === "ObjectTypeExtension" && def.name.value === queryTypeName,
   );
 
   if (queryType && queryType.fields) {

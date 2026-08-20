@@ -6,6 +6,25 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.5.3] - 2026-08-20 — Runtime and CI/CD Stability
+
+### Fixed
+- **gRPC directory discovery:** `smile lint <directory>` now discovers `.proto` files instead of silently skipping them.
+- **OpenAPI path parameters:** Runtime tests now combine parameters declared on a Path Item with operation parameters. Operation-level declarations take precedence.
+- **OpenAPI response bodies:** Runtime validation now reads JSON and non-JSON responses according to their `Content-Type`, including `text/plain` schemas.
+- **Postman absolute URLs:** Runtime tests preserve absolute request URLs instead of prefixing them with the supplied `baseUrl`.
+- **Plugin isolation:** Plugin results are cached per plugin configuration, so one lint/test invocation cannot leak rules into another configuration in the same process.
+- **GraphQL custom roots:** Runtime tests now discover query fields when the schema maps `query` to a custom root type instead of requiring a type named `Query`.
+- **JUnit output:** XML attributes and failure text are escaped so paths, URLs, rule IDs, and messages containing characters such as `&` or `<` produce valid CI reports.
+
+### Tests
+- Added regression coverage for gRPC directory discovery, OpenAPI path-level parameters and text responses, Postman absolute URLs, GraphQL custom query roots, plugin isolation, and JUnit escaping.
+- The release candidate passes 104 tests, strict TypeScript checking, and the production build.
+
+### Changed
+- **Repository quality gate:** Removed the unused `npm run lint` script. For this contract-validation project, CI relies on strict typechecking, regression tests, and production builds rather than a separate source-style lint step.
+- **Documentation parity:** Updated the README and `docs/` guides to describe the current OpenAPI, GraphQL, gRPC, Postman, runtime, and CI/CD behavior accurately.
+
 ## [1.5.2] - 2026-07-31 — More Commands and Support Update
 
 ### Added

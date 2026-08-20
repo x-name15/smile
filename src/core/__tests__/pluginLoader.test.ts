@@ -21,8 +21,7 @@ describe("Plugin Loader", () => {
     const plugins = ["./does-not-exist.js"];
     const rules = await loadPlugins(plugins);
     
-    // It should just return whatever is cached, or skip the bad one.
-    expect(rules).toBeDefined();
+    expect(rules).toEqual({});
   });
 
   it("evaluateCustomRules should properly evaluate format-specific rules", async () => {

@@ -8,14 +8,12 @@ import { ESpecFormat } from "../models/index.js";
  * Resolves local paths relative to the current working directory,
  * and allows bare specifiers for npm packages.
  */
-let cachedRules: Record<string, ISmileCustomRule> | null = null;
+const cachedRules = new Map<string, Record<string, ISmileCustomRule>>();
 
 export async function loadPlugins(pluginPaths: string[] = []): Promise<Record<string, ISmileCustomRule>> {
-  if (cachedRules) return cachedRules;
-  if (pluginPaths.length === 0) {
-    cachedRules = {};
-    return cachedRules;
-  }
+  const cacheKey = pluginPaths.join("\0");
+  const cached = cachedRules.get(cacheKey);
+  if (cached) return cached;
 
   const customRules: Record<string, ISmileCustomRule> = {};
 
@@ -48,7 +46,7 @@ export async function loadPlugins(pluginPaths: string[] = []): Promise<Record<st
     }
   }
 
-  cachedRules = customRules;
+  cachedRules.set(cacheKey, customRules);
   return customRules;
 }
 
