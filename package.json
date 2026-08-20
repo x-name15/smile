@@ -70,7 +70,7 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^15.5.0",
+    "@apidevtools/json-schema-ref-parser": "^16.0.0",
     "@apidevtools/swagger-parser": "^12.1.0",
     "@asyncapi/parser": "^1.18.1",
     "@clack/prompts": "^1.7.0",
