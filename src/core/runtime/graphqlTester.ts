@@ -8,6 +8,7 @@ import type {
   TypeNode,
 } from "graphql";
 import { parseGraphQLSpec } from "../../parsers/graphql.js";
+import { fetchWithTimeout, RequestTimeoutError } from "./request.js";
 import {
   ESeverity,
   ESpecFormat,
@@ -62,6 +63,7 @@ async function testGraphQLField(
   field: FieldDefinitionNode,
   doc: DocumentNode,
   headers?: Record<string, string>,
+  requestTimeoutMs?: number,
 ): Promise<IEndpointTestResult> {
   const fieldName = field.name.value;
   const label = `Query.${fieldName}`;
@@ -85,14 +87,14 @@ async function testGraphQLField(
 
   let response: Response;
   try {
-    response = await fetch(new URL(baseUrl).toString(), {
+    response = await fetchWithTimeout(new URL(baseUrl).toString(), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         ...headers,
       },
       body: JSON.stringify({ query: queryStr }),
-    });
+    }, requestTimeoutMs);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return {
@@ -101,9 +103,11 @@ async function testGraphQLField(
       skipped: false,
       violations: [
         {
-          ruleId: "endpoint-unreachable",
+          ruleId: error instanceof RequestTimeoutError ? "endpoint-timeout" : "endpoint-unreachable",
           severity: ESeverity.Error,
-          message: `Could not reach ${baseUrl}: ${message}`,
+          message: error instanceof RequestTimeoutError
+            ? `Request to ${baseUrl} timed out: ${message}`
+            : `Could not reach ${baseUrl}: ${message}`,
           path: label,
         },
       ],
@@ -116,7 +120,7 @@ async function testGraphQLField(
     violations.push({
       ruleId: "unexpected-status-code",
       severity: ESeverity.Error,
-      message: `Expected 200 OK, got ${response.status}`,
+      message: `Expected a successful 2xx response, got ${response.status}`,
       path: label,
     });
   } else {
@@ -143,6 +147,7 @@ export async function runGraphQLSmokeTest(
   sourcePath: string,
   baseUrl: string,
   headers?: Record<string, string>,
+  requestTimeoutMs?: number,
 ): Promise<ITestResult> {
   const parsed = await parseGraphQLSpec(sourcePath);
   const doc = parsed.raw as DocumentNode;
@@ -154,7 +159,7 @@ export async function runGraphQLSmokeTest(
       (def.kind === "SchemaDefinition" || def.kind === "SchemaExtension") &&
       def.operationTypes?.some((operation) => operation.operation === "query") === true,
   );
-    const queryTypeName = schemaDefinition?.operationTypes?.find(
+  const queryTypeName = schemaDefinition?.operationTypes?.find(
     (operation) => operation.operation === "query",
   )?.type.name.value ?? "Query";
 
@@ -168,7 +173,7 @@ export async function runGraphQLSmokeTest(
 
   if (queryType && queryType.fields) {
     for (const field of queryType.fields) {
-      endpoints.push(await testGraphQLField(baseUrl, field, doc, headers));
+      endpoints.push(await testGraphQLField(baseUrl, field, doc, headers, requestTimeoutMs));
     }
   }
 

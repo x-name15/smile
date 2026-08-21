@@ -1,6 +1,6 @@
 {
   "name": "@mrjacket/smile",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "Strict API contract validator — lints your spec and verifies real responses against it. Passes clean, or shows you the crime scene.",
   "main": "dist/core/index.js",
   "types": "dist/core/index.d.ts",
@@ -27,6 +27,7 @@
     "dev": "tsx src/cli/index.ts",
     "prepublishOnly": "npm run build && npm test",
     "test": "vitest run",
+    "test:package": "node scripts/package-smoke-test.mjs",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },

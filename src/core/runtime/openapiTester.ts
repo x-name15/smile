@@ -1,6 +1,7 @@
 import type { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
 import { parseOpenApiSpec } from "../../parsers/openapi.js";
 import { validateResponseAgainstSchema } from "./validateResponse.js";
+import { fetchWithTimeout, RequestTimeoutError } from "./request.js";
 import {
   ESeverity,
   ESpecFormat,
@@ -147,6 +148,7 @@ async function testOperation(
   operation: TOperation,
   doc: TOpenApi3Doc,
   headers?: Record<string, string>,
+  requestTimeoutMs?: number,
 ): Promise<IEndpointTestResult> {
   const upperMethod = method.toUpperCase();
   const label = `${upperMethod} ${pathTemplate}`;
@@ -200,7 +202,7 @@ async function testOperation(
 
   let response: Response;
   try {
-    response = await fetch(new URL(url).toString(), fetchOptions);
+    response = await fetchWithTimeout(new URL(url).toString(), fetchOptions, requestTimeoutMs);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return {
@@ -209,9 +211,11 @@ async function testOperation(
       skipped: false,
       violations: [
         {
-          ruleId: "endpoint-unreachable",
+          ruleId: error instanceof RequestTimeoutError ? "endpoint-timeout" : "endpoint-unreachable",
           severity: ESeverity.Error,
-          message: `Could not reach ${url}: ${message}`,
+          message: error instanceof RequestTimeoutError
+            ? `Request to ${url} timed out: ${message}`
+            : `Could not reach ${url}: ${message}`,
           path: label,
         },
       ],
@@ -246,6 +250,7 @@ export async function runOpenApiSmokeTest(
   sourcePath: string,
   baseUrl: string,
   headers?: Record<string, string>,
+  requestTimeoutMs?: number,
 ): Promise<ITestResult> {
   const parsed = await parseOpenApiSpec(sourcePath);
   const doc = parsed.raw as TOpenApi3Doc;
@@ -269,6 +274,7 @@ export async function runOpenApiSmokeTest(
           { ...operation, pathParameters },
           doc,
           headers,
+          requestTimeoutMs,
         ),
       );
     }

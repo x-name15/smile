@@ -93,7 +93,7 @@ program
 program
   .command("test <specPath> <baseUrl>")
   .description(
-    "Run the Breaching Detector: call every documented GET endpoint against baseUrl and validate real responses against the spec",
+    "Run the Breaching Detector: call supported documented endpoints against baseUrl and validate real responses against the spec",
   )
   .option(
     "-H, --header <header...>",

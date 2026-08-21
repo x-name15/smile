@@ -6,12 +6,15 @@ import { ESeverity } from "../../models/index.js";
 import { runOpenApiSmokeTest } from "../runtime/openapiTester.js";
 import { runPostmanSmokeTest } from "../runtime/postmanTester.js";
 import { runGraphQLSmokeTest } from "../runtime/graphqlTester.js";
+import { runSmokeTest } from "../runtime/smokeTest.js";
+import { DEFAULT_REQUEST_TIMEOUT_MS, fetchWithTimeout, resolveRequestTimeout } from "../runtime/request.js";
 
 describe("OpenAPI smoke tests", () => {
   let temporaryDirectory: string | undefined;
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.useRealTimers();
     if (temporaryDirectory) rmSync(temporaryDirectory, { recursive: true, force: true });
   });
 
@@ -95,5 +98,54 @@ describe("OpenAPI smoke tests", () => {
     expect(fetchMock).toHaveBeenCalledOnce();
     expect(result.endpoints).toHaveLength(1);
     expect(result.passed).toBe(true);
+  });
+
+  it("reports a distinct violation when a request times out", async () => {
+    temporaryDirectory = mkdtempSync(join(tmpdir(), "smile-timeout-"));
+    const specPath = join(temporaryDirectory, "api.json");
+    writeFileSync(specPath, JSON.stringify({
+      openapi: "3.0.0",
+      info: { title: "Timeout API", version: "1.0.0" },
+      paths: {
+        "/health": {
+          get: { responses: { "200": { description: "ok" } } },
+        },
+      },
+    }));
+
+    vi.stubGlobal("fetch", vi.fn((_input: string | URL | Request, init?: RequestInit) => (
+      new Promise<Response>((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => reject(new Error("aborted")));
+      })
+    )));
+
+    const result = await runSmokeTest(
+      specPath,
+      "http://localhost",
+      undefined,
+      { requestTimeoutMs: 1 },
+    );
+
+    expect(result.endpoints[0]?.violations[0]?.ruleId).toBe("endpoint-timeout");
+    expect(result.endpoints[0]?.violations[0]?.message).toContain("1ms");
+  });
+
+  it("aborts a request after the configured timeout", async () => {
+    vi.stubGlobal("fetch", vi.fn((_input: string | URL | Request, init?: RequestInit) => (
+      new Promise<Response>((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => reject(new Error("aborted")));
+      })
+    )));
+
+    await expect(fetchWithTimeout("http://localhost", {}, 1)).rejects.toThrow(
+      "Request timed out after 1ms",
+    );
+  });
+
+  it("falls back to 30 seconds for missing or invalid timeout values", () => {
+    expect(resolveRequestTimeout()).toBe(DEFAULT_REQUEST_TIMEOUT_MS);
+    expect(resolveRequestTimeout(0)).toBe(DEFAULT_REQUEST_TIMEOUT_MS);
+    expect(resolveRequestTimeout(-1)).toBe(DEFAULT_REQUEST_TIMEOUT_MS);
+    expect(resolveRequestTimeout(Number.NaN)).toBe(DEFAULT_REQUEST_TIMEOUT_MS);
   });
 });

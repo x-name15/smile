@@ -33,6 +33,7 @@ export interface ISmileConfig {
   rules?: Record<string, RuleSeverity | Record<string, RuleSeverity>>;
   webhooks?: string[];
   testHeaders?: Record<string, string>;
+  requestTimeoutMs?: number;
   format?: "text" | "json" | "markdown" | "junit";
 }
 

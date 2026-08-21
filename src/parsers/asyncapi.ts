@@ -1,6 +1,10 @@
 import { readFileSync } from "node:fs";
-import { parse } from "@asyncapi/parser";
+import * as asyncApiParserModule from "@asyncapi/parser";
 import { ESpecFormat, type IParsedSpec } from "../models/index.js";
+
+const asyncApiParser = (asyncApiParserModule as typeof asyncApiParserModule & {
+  default?: typeof asyncApiParserModule;
+}).default ?? asyncApiParserModule;
 
 /**
  * Loads and validates an AsyncAPI spec from a file path (YAML or JSON).
@@ -16,7 +20,7 @@ export async function parseAsyncApiSpec(
     const source = readFileSync(sourcePath, "utf-8");
 
     // v1.x: parse() throws on invalid docs and returns an AsyncAPIDocument on success.
-    const document = await parse(source);
+    const document = await asyncApiParser.parse(source);
 
     return {
       format: ESpecFormat.AsyncApi,

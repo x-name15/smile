@@ -180,6 +180,18 @@ for (const r of result.endpoints) {
 }
 ```
 
+The optional fourth argument accepts runtime configuration. For example, to
+limit each request to 10 seconds:
+
+```ts
+const result = await runSmokeTest(
+  "./openapi.yaml",
+  "http://localhost:3000",
+  headers,
+  { requestTimeoutMs: 10_000 },
+);
+```
+
 For OpenAPI, `runSmokeTest` covers `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`.
 Request bodies for mutating methods are generated from JSON examples, defaults,
 and simple schemas. Path parameters are auto-tested when they provide an
@@ -187,6 +199,11 @@ and simple schemas. Path parameters are auto-tested when they provide an
 Responses are decoded according to their `Content-Type`, so text and JSON
 schemas can be validated correctly. Postman collections are traversed
 recursively and preserve absolute request URLs.
+
+Every runtime request has a 30-second timeout. When it expires, the endpoint
+returns an `endpoint-timeout` error instead of leaving the calling test or CI
+job waiting indefinitely. This is separate from `endpoint-unreachable`, which
+covers connection and transport failures.
 
 The GraphQL runtime tester also supports schemas that map `query` to a custom
 root type. Fields with required arguments remain skipped because Smile cannot

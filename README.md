@@ -29,6 +29,7 @@ It acts as both a static linter (checking your API specification for completenes
 - **Built-in Rule Engine:** Opinionated, zero-configuration rules focused on documentation completeness and contract enforceability.
 - **Plugin System:** Extend smile with your own custom rules written in plain JavaScript. Load them via `config.smile.json` or the `--plugin` CLI flag.
 - **Incremental Adoption:** Customize rule severities (`error`, `warn`, `off`) via `config.smile.json` without breaking CI/CD.
+- **Packaged Artifact Gate:** The CI release gate packs and installs the npm artifact in a temporary consumer project, checking library imports, CLI versioning, valid/invalid exit codes, and AsyncAPI distribution compatibility.
 
 ---
 
@@ -125,6 +126,7 @@ The CLI supports the following filenames: `config.smile.json`, `smile.config.jso
 
 ```json
 {
+  "requestTimeoutMs": 10000,
   "rules": {
     "missing-operation-id": "warn",
     "untyped-property": "off"
@@ -132,6 +134,10 @@ The CLI supports the following filenames: `config.smile.json`, `smile.config.jso
 }
 ```
 *Rules set to `"warn"` will print yellow alerts in the CLI but will exit with code `0` (Success).*
+
+`requestTimeoutMs` controls the maximum duration of each `smile test` request.
+It must be a positive finite number; invalid or missing values fall back to
+`30000` milliseconds.
 
 ### Inline Suppressions (YAML Only)
 If you need to bypass a rule on a single specific line without changing the global configuration, you can use the `# smile-ignore-next-line <ruleId>` comment directly in your `.yaml` or `.yml` specifications.
@@ -168,9 +174,10 @@ Full documentation is available in the [`docs/`](./docs) directory:
 
 ## Roadmap (Upcoming Features)
 
-We are constantly expanding the strictness and capabilities of `smile`. Here is what is coming in future versions:
-- **v1.6.0 AsyncAPI Runtime Validation**: Extending the Breaching Detector to connect to live message brokers (Kafka/RabbitMQ) and validate message payloads in real-time.
-- **v1.7.0 AsyncAPI v3 Migration**: Rewriting the underlying parser to support `@asyncapi/parser` v3+ and its new AST structure.
+We are keeping the roadmap deliberately small and focused on predictable behavior in libraries and CI/CD pipelines:
+- **v1.5.4 Reliability Hardening**: Bounded timeouts and clearer diagnostics for runtime requests, explicit reporting of non-successful webhook responses, packaged-artifact E2E coverage, and the AsyncAPI CJS/ESM distribution fix. No new specification format or rule family is planned for this release.
+- **v1.6.0 AsyncAPI Parser Compatibility**: Establish the supported `@asyncapi/parser` versions, complete the CJS/ESM compatibility work, and define the migration path for the parser's v3+ AST without claiming broker runtime support prematurely.
+- **v1.7.0 AsyncAPI Runtime Validation**: Extend the Breaching Detector to connect to live message brokers (Kafka/RabbitMQ) and validate message payloads in real time.
 
 ## License
 

@@ -2,19 +2,22 @@
 
 `smile` is built from the ground up for automated enterprise pipelines. It natively supports Git Hooks, GitHub Actions annotations, step summaries, and JUnit reports for seamless DevOps integration.
 
-For the 1.5.3 release candidate, the repository quality gate is:
+For the 1.5.4 release candidate, the repository quality gate is:
 
 ```bash
 npm ci
 npm run typecheck
 npm test
 npm run build
+npm run test:package
 ```
 
 The test suite covers the CLI discovery path and the runtime/reporting paths
-used by pipelines. There is no separate source-style lint script; the relevant
-quality checks are strict TypeScript checking, behavioral tests, and the
-production build.
+used by pipelines. `npm run test:package` additionally packs and installs the
+real npm artifact in a temporary consumer project, checking both library
+imports and CLI behavior. There is no separate source-style lint script; the
+relevant quality checks are strict TypeScript checking, behavioral tests,
+production build, and packaged-artifact validation.
 
 ---
 
@@ -81,6 +84,11 @@ npx @mrjacket/smile lint ./openapi.yaml --format junit --quiet > test-report.xml
 JUnit output is escaped for XML attributes and failure text, so messages,
 paths, and URLs containing `&`, `<`, or quotes remain consumable by GitLab,
 Jenkins, and SonarQube.
+
+Runtime requests have a 30-second upper bound. A timeout produces an
+`endpoint-timeout` error, allowing a pipeline to fail with a useful reason
+instead of hanging indefinitely. Webhook destinations that return `4xx` or
+`5xx` are also reported as warnings without blocking the main validation run.
 
 ### GitLab CI Example
 ```yaml

@@ -6,6 +6,24 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.5.4] - 2026-08-20 — Reliability Hardening
+
+### Added
+- **Bounded runtime requests:** OpenAPI, Postman, and GraphQL smoke-test requests now abort after 30 seconds instead of allowing a pipeline job to hang indefinitely.
+- **Timeout diagnostics:** Timed-out endpoints receive the distinct `endpoint-timeout` error rule ID, making CI reports actionable and distinguishable from unreachable endpoints.
+
+### Fixed
+- **AsyncAPI ESM distribution:** Fixed the packaged ESM entrypoint failing to import `@asyncapi/parser` because its CommonJS `parse` export was consumed as an ESM named export.
+
+### Changed
+- **Webhook diagnostics:** Configured webhooks now warn when a destination responds with an HTTP `4xx` or `5xx` status, while preserving the existing non-blocking notification behavior.
+- **Configurable timeout:** `requestTimeoutMs` can override the 30-second runtime request fallback through `config.smile.json` or the optional library runtime config argument.
+- **Scope:** This release adds no new specification format or rule family; it hardens the existing library, CLI, and CI/CD paths.
+
+### Tests
+- Added coverage for request abortion, timeout diagnostics, and unsuccessful webhook responses.
+- Added a packaged-artifact smoke test covering library imports, CLI versioning, valid/invalid lint exit codes, and AsyncAPI ESM/CJS interoperability. The test runs in the CI release gate through `npm run test:package`.
+
 ## [1.5.3] - 2026-08-20 — Runtime and CI/CD Stability
 
 ### Fixed

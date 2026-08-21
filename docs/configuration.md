@@ -46,6 +46,7 @@ You can set any valid rule to one of three severities:
     "Authorization": "Bearer xxxxx",
     "X-Api-Key": "12345"
   },
+  "requestTimeoutMs": 10000,
   "webhooks": [
     "https://hookSlackazo/services/blablabla"
   ],
@@ -63,6 +64,12 @@ An array of file paths or npm package names pointing to custom JavaScript/TypeSc
 
 ### `testHeaders` (optional)
 A key-value map of HTTP headers that will be automatically injected into every request made by the Breaching Detector (`smile test`). This saves you from having to type `-H "Authorization: ..."` in the CLI every time. Note that headers passed via the CLI will override these configuration headers.
+
+### `requestTimeoutMs` (optional)
+The maximum time in milliseconds allowed for each runtime request made by
+`smile test`. It must be a finite positive number. If it is missing or invalid,
+Smile falls back to `30000` milliseconds (30 seconds). A timeout is reported as
+an `endpoint-timeout` error.
 
 ### `webhooks` (optional)
 An array of webhook URLs (e.g. Slack, Discord, MS Teams). If `smile lint` or `smile test` detects a violation, it will automatically send a POST request to these URLs with a JSON summary of the failure.

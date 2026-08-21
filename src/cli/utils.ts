@@ -85,11 +85,14 @@ export async function fireWebhooks(webhooks: string[] | undefined, summary: unkn
 
   const promises = webhooks.map(async (url) => {
     try {
-      await fetch(new URL(url).toString(), {
+      const response = await fetch(new URL(url).toString(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: payload
       });
+      if (!response.ok) {
+        console.warn(`Webhook responded with HTTP ${response.status} for ${url}`);
+      }
     } catch (e) {
       console.warn(`Failed to fire webhook to ${url}: ${e}`);
     }

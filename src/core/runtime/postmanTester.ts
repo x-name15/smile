@@ -1,5 +1,6 @@
 import { parsePostmanSpec } from "../../parsers/postman.js";
 import { validateResponseAgainstSchema } from "./validateResponse.js";
+import { fetchWithTimeout, RequestTimeoutError } from "./request.js";
 import {
   ESeverity,
   ESpecFormat,
@@ -59,7 +60,8 @@ function extractPath(urlObj: any): string {
 async function testPostmanItem(
   baseUrl: string,
   item: IPostmanItem,
-  headers?: Record<string, string>
+  headers?: Record<string, string>,
+  requestTimeoutMs?: number,
 ): Promise<IEndpointTestResult | null> {
   if (!item.request || !item.response || item.response.length === 0) {
     return null; // Not testable, maybe a folder or lacks an example response
@@ -96,7 +98,7 @@ async function testPostmanItem(
 
   let response: Response;
   try {
-    response = await fetch(new URL(url).toString(), fetchOptions);
+    response = await fetchWithTimeout(new URL(url).toString(), fetchOptions);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return {
@@ -105,9 +107,11 @@ async function testPostmanItem(
       skipped: false,
       violations: [
         {
-          ruleId: "endpoint-unreachable",
+          ruleId: error instanceof RequestTimeoutError ? "endpoint-timeout" : "endpoint-unreachable",
           severity: ESeverity.Error,
-          message: `Could not reach ${url}: ${message}`,
+          message: error instanceof RequestTimeoutError
+            ? `Request to ${url} timed out: ${message}`
+            : `Could not reach ${url}: ${message}`,
           path: label,
         },
       ],
@@ -153,6 +157,7 @@ export async function runPostmanSmokeTest(
   sourcePath: string,
   baseUrl: string,
   headers?: Record<string, string>,
+  requestTimeoutMs?: number,
 ): Promise<ITestResult> {
   const parsed = await parsePostmanSpec(sourcePath);
   const doc = parsed.raw as IPostmanCollection;
@@ -161,7 +166,7 @@ export async function runPostmanSmokeTest(
   const allItems = gatherItems(doc.item ?? []);
   
   for (const item of allItems) {
-    const testResult = await testPostmanItem(baseUrl, item, headers);
+    const testResult = await testPostmanItem(baseUrl, item, headers, requestTimeoutMs);
     if (testResult) {
       endpoints.push(testResult);
     }

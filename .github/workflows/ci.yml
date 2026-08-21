@@ -31,3 +31,6 @@ jobs:
 
     - name: Build JS & Types
       run: npm run build
+
+    - name: Test packed npm package
+      run: npm run test:package
