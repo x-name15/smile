@@ -175,7 +175,6 @@ Full documentation is available in the [`docs/`](./docs) directory:
 ## Roadmap (Upcoming Features)
 
 We are keeping the roadmap deliberately small and focused on predictable behavior in libraries and CI/CD pipelines:
-- **v1.6.0 AsyncAPI Parser Modernization**: Upgraded to `@asyncapi/parser` v3, full dual-version support for AsyncAPI 2.x and 3.x specifications across all rules, and enhanced diagnostic error handling.
 - **v1.7.0 AsyncAPI Runtime Validation**: Extend the Breaching Detector to connect to live message brokers (Kafka/RabbitMQ) and validate message payloads in real time.
 
 ## License
