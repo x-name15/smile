@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from "node:child_process";
+import { execFileSync, execSync, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -7,24 +7,27 @@ import { fileURLToPath } from "node:url";
 const projectRoot = fileURLToPath(new URL("..", import.meta.url));
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const nodeCommand = process.execPath;
-const shell = process.platform === "win32";
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "smile-package-smoke-"));
 const consumerDirectory = join(temporaryDirectory, "consumer");
 mkdirSync(consumerDirectory);
 
 function run(command, args, options = {}) {
-  const commandShell = shell && command.toLowerCase().endsWith(".cmd");
   return execFileSync(command, args, {
     cwd: consumerDirectory,
     encoding: "utf8",
     stdio: "pipe",
-    shell: commandShell,
     ...options,
   });
 }
 
 function runNpm(args, cwd, options = {}) {
-  return execFileSync(npmCommand, args, { cwd, shell, ...options });
+  if (process.platform === "win32") {
+    const quotedArgs = args
+      .map((arg) => (arg.includes(" ") ? `"${arg}"` : arg))
+      .join(" ");
+    return execSync(`"${npmCommand}" ${quotedArgs}`, { cwd, encoding: "utf8", ...options });
+  }
+  return execFileSync(npmCommand, args, { cwd, ...options });
 }
 
 function assert(condition, message) {

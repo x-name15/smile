@@ -6,6 +6,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.6.1] - 2026-09-08 — CLI Ergonomics & Smoke Test Hardening
+
+### Added
+- **gRPC & Postman in `smile init`:** Extended the interactive repository initialization wizard to support gRPC (`.proto`) and Postman Collections, providing rule presets and sample boilerplates (`sample-service.proto` and `sample-collection.json`).
+- **AsyncAPI v3 & Message Descriptions in `smile deduce`:** Enhanced "El Mentalista" interactive deduction auto-fixer to assist with AsyncAPI v3 root operations (`operations.<opKey>`) and missing message descriptions across specifications.
+
+### Fixed
+- **Node 22 DEP0190 Warning in Smoke Test:** Eliminated the `DEP0190` child process argument deprecation warning on Windows in `scripts/package-smoke-test.mjs`, ensuring clean and silent CI runs.
+
+---
+
 ## [1.6.0] - 2026-09-07 — AsyncAPI v3 Migration & Dual-Version Support
 
 ### Added

@@ -7,14 +7,16 @@ import {
   SAMPLE_ASYNCAPI,
   SAMPLE_GRAPHQL,
   SAMPLE_JSONSCHEMA,
+  SAMPLE_GRPC,
+  SAMPLE_POSTMAN,
   RULES_BY_FORMAT,
 } from "../templates.js";
 
 /**
- * Executes the \`smile init\` CLI command.
+ * Executes the `smile init` CLI command.
  * 
  * This wizard guides the user through setting up their repository by:
- * 1. Generating a smart \`config.smile.json\` tailored to their API formats.
+ * 1. Generating a smart `config.smile.json` tailored to their API formats.
  * 2. Scaffolding a GitHub Actions workflow for CI.
  * 3. Dropping a boilerplate API specification to get started instantly.
  */
@@ -41,6 +43,8 @@ export async function runInitCommand(): Promise<void> {
         { value: "asyncapi", label: "AsyncAPI", hint: "Event-driven APIs" },
         { value: "graphql", label: "GraphQL", hint: "GraphQL APIs" },
         { value: "jsonschema", label: "JSON Schema", hint: "Raw JSON validation" },
+        { value: "grpc", label: "gRPC / Protobuf", hint: "Protocol Buffers (.proto)" },
+        { value: "postman", label: "Postman Collection", hint: "API collections (JSON)" },
       ],
       required: true,
     });
@@ -138,6 +142,8 @@ export async function runInitCommand(): Promise<void> {
       { value: "asyncapi", label: "AsyncAPI" },
       { value: "graphql", label: "GraphQL" },
       { value: "jsonschema", label: "JSON Schema" },
+      { value: "grpc", label: "gRPC (.proto)" },
+      { value: "postman", label: "Postman Collection (.json)" },
     ],
   });
 
@@ -166,6 +172,14 @@ export async function runInitCommand(): Promise<void> {
       case "jsonschema":
         specFileName = "sample-schema.json";
         specContent = SAMPLE_JSONSCHEMA;
+        break;
+      case "grpc":
+        specFileName = "sample-service.proto";
+        specContent = SAMPLE_GRPC;
+        break;
+      case "postman":
+        specFileName = "sample-collection.json";
+        specContent = SAMPLE_POSTMAN;
         break;
     }
 

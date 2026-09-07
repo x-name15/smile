@@ -101,9 +101,58 @@ export const SAMPLE_JSONSCHEMA = `{
   }
 }`;
 
+export const SAMPLE_GRPC = `syntax = "proto3";
+
+package sample;
+
+// Greeter service definition.
+service Greeter {
+  // Sends a greeting to a user.
+  rpc SayHello (HelloRequest) returns (HelloReply);
+}
+
+// Request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// Response message containing the greetings.
+message HelloReply {
+  string message = 1;
+}
+`;
+
+export const SAMPLE_POSTMAN = `{
+  "info": {
+    "name": "Sample API Collection",
+    "description": "A sample collection demonstrating valid Postman collection structure.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Users",
+      "request": {
+        "method": "GET",
+        "description": "Retrieves the list of active users.",
+        "url": "{{baseUrl}}/users"
+      },
+      "response": [
+        {
+          "name": "Successful Response",
+          "code": 200,
+          "body": "[{\\"id\\": \\"1\\", \\"name\\": \\"Ada Lovelace\\"}]"
+        }
+      ]
+    }
+  ]
+}
+`;
+
 export const RULES_BY_FORMAT: Record<string, string[]> = {
-  openapi: ["missing-summary", "missing-operation-id", "untyped-schema-property"],
-  asyncapi: ["missing-channel-description", "missing-message-description", "untyped-schema-property"],
+  openapi: ["missing-summary", "missing-operation-id", "untyped-schema-property", "valid-path-parameters"],
+  asyncapi: ["missing-operation-id", "missing-message", "missing-channel-description", "missing-message-description", "untyped-schema-property"],
   graphql: ["missing-type-description", "missing-field-description", "deprecated-without-reason", "missing-enum-value-description"],
-  jsonschema: ["missing-title", "missing-description", "untyped-property"],
+  jsonschema: ["missing-title", "missing-description", "untyped-property", "require-additional-properties"],
+  grpc: ["require-rpc-comments", "pascal-case-services", "pascal-case-messages"],
+  postman: ["valid-collection-schema", "require-request-description", "require-example-response"],
 };

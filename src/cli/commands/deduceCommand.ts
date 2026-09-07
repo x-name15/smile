@@ -77,6 +77,7 @@ export async function runDeduceCommand(specPath: string): Promise<void> {
       v.ruleId === "missing-summary" ||
       v.ruleId === "missing-operation-id" ||
       v.ruleId === "missing-channel-description" ||
+      v.ruleId === "missing-message-description" ||
       v.ruleId === "require-camel-case-fields" ||
       v.ruleId === "require-pascal-case-types"
   );
@@ -186,7 +187,58 @@ export async function runDeduceCommand(specPath: string): Promise<void> {
       continue;
     }
 
+    if (violation.ruleId === "missing-message-description") {
+      const desc = await p.text({
+        message: `Missing description for message (${violation.path}). What does this event represent?`,
+        placeholder: `e.g. "Event emitted when user signs up"`,
+      });
+      if (p.isCancel(desc)) {
+        p.cancel("Deduction session cancelled.");
+        process.exit(0);
+      }
+      if (desc) {
+        const pathSegments = violation.path.split(".");
+        if (isJson) {
+          let curr: any = jsonObj;
+          for (let i = 0; i < pathSegments.length - 1; i++) {
+            curr = curr?.[pathSegments[i]];
+          }
+          if (curr) {
+            curr[pathSegments[pathSegments.length - 1]] = desc;
+            changesMade++;
+          }
+        } else {
+          doc!.setIn(pathSegments, desc);
+          changesMade++;
+        }
+      }
+      continue;
+    }
+
     if (!route) {
+      if (violation.ruleId === "missing-operation-id" && violation.path.startsWith("operations.")) {
+        const opKey = violation.path.replace(/^operations\./, "");
+        const opId = await p.text({
+          message: `Missing operationId for AsyncAPI operation "${opKey}". What is it?`,
+          placeholder: `e.g. "onUserSignedUp"`,
+        });
+        if (p.isCancel(opId)) {
+          p.cancel("Deduction session cancelled.");
+          process.exit(0);
+        }
+        if (opId) {
+          if (isJson) {
+            if (jsonObj?.operations?.[opKey]) {
+              jsonObj.operations[opKey].operationId = opId;
+              changesMade++;
+            }
+          } else {
+            doc!.setIn(["operations", opKey, "operationId"], opId);
+            changesMade++;
+          }
+        }
+        continue;
+      }
       p.log.warn(`Could not parse route for violation: ${violation.message}`);
       continue;
     }
