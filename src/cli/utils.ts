@@ -20,11 +20,8 @@ export function findSpecFiles(basePath: string): string[] {
   if (!stat.isDirectory()) {
     return [basePath];
   }
-
-  // Load .smileignore
   const ig = ignore();
   
-  // Also ignore node_modules and .git by default for safety
   ig.add(["node_modules", ".git"]);
   
   const ignorePath = join(basePath, ".smileignore");
@@ -40,8 +37,6 @@ export function findSpecFiles(basePath: string): string[] {
     for (const file of files) {
       const fullPath = join(currentDir, file);
       const relPath = relative(basePath, fullPath);
-      
-      // We must pass POSIX paths to ignore
       const posixPath = relPath.split("\\").join("/");
 
       if (ig.ignores(posixPath)) {
@@ -53,8 +48,15 @@ export function findSpecFiles(basePath: string): string[] {
         traverse(fullPath);
       } else {
         if (validExtensions.some(ext => file.endsWith(ext))) {
-          // Additional check: exclude config.smile.json and package.json to avoid linting configs
-          if (file === "config.smile.json" || file === "smile.config.json" || file === "package.json" || file === "package-lock.json") {
+          // Exclude all known smile config filenames to avoid linting them as specs
+          if (
+            file === "config.smile.json" ||
+            file === "smile.config.json" ||
+            file === ".smilerc.json" ||
+            file === "smile.json" ||
+            file === "package.json" ||
+            file === "package-lock.json"
+          ) {
              continue;
           }
           results.push(fullPath);

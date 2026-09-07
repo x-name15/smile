@@ -1,13 +1,6 @@
 import Ajv from "ajv";
 import { ESeverity, type IViolation } from "../../models/index.js";
 
-// A single Ajv instance is reused across calls — compiling schemas has a
-// real cost and this library is meant to be called many times in a test suite.
-const ajv = new Ajv({
-  strict: false, // OpenAPI schemas use keywords (nullable, example, etc.) Ajv's strict mode rejects
-  allErrors: true,
-});
-
 /**
  * Validates an actual response body against an OpenAPI/JSON schema.
  * This is the "Breaching Detector": if the real payload doesn't match
@@ -60,6 +53,7 @@ export function validateResponseAgainstSchema(
   }
 
   let validate: ReturnType<typeof ajv.compile>;
+  const ajv = new Ajv({ strict: false, allErrors: true });
   try {
     validate = ajv.compile(schema as Record<string, unknown>);
   } catch (error) {

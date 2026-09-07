@@ -64,12 +64,11 @@ async function testPostmanItem(
   requestTimeoutMs?: number,
 ): Promise<IEndpointTestResult | null> {
   if (!item.request || !item.response || item.response.length === 0) {
-    return null; // Not testable, maybe a folder or lacks an example response
+    return null;
   }
 
   const method = (item.request.method || "GET").toUpperCase();
   const rawPath = extractPath(item.request.url);
-  // Remove Postman variables like {{baseUrl}} and replace with our baseUrl
   const cleanPath = rawPath.replace(/\{\{[^}]+\}\}/g, "").replace(/^\/+/, "");
   const url = /^https?:\/\//i.test(rawPath.trim())
     ? rawPath.trim()
@@ -98,7 +97,7 @@ async function testPostmanItem(
 
   let response: Response;
   try {
-    response = await fetchWithTimeout(new URL(url).toString(), fetchOptions);
+    response = await fetchWithTimeout(new URL(url).toString(), fetchOptions, requestTimeoutMs);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return {
@@ -142,10 +141,10 @@ async function testPostmanItem(
 }
 
 function gatherItems(items: IPostmanItem[]): IPostmanItem[] {
-  let result: IPostmanItem[] = [];
+  const result: IPostmanItem[] = [];
   for (const item of items) {
     if (item.item) {
-      result = result.concat(gatherItems(item.item));
+      result.push(...gatherItems(item.item));
     } else {
       result.push(item);
     }

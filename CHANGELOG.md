@@ -6,7 +6,29 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.5.5] - 2026-09-07 — Show me a Revival Session
+
+### Fixed
+- **Postman timeout never fired:** `requestTimeoutMs` was received by `runPostmanSmokeTest` but never forwarded to `fetchWithTimeout`, so Postman smoke-test requests could hang indefinitely despite user configuration. Fixed by passing the value through the call chain.
+- **OpenAPI `2XX` wildcard always failed:** Status code comparison used strict string equality (`"200" !== "2XX"`), causing all responses against endpoints documented with a `2XX` wildcard to always report `unexpected-status-code`. Fixed with a wildcard-aware check that matches any `2xx` status against a `2XX` pattern.
+- **Config files picked up by spec scanner:** `.smilerc.json` and `smile.json` (two of the four valid config filenames recognised by `loadConfig`) were missing from the exclusion list in `findSpecFiles`, so they could be discovered and linted as specs. All four config filenames are now excluded.
+- **AJV `$id` conflicts across multiple specs:** The shared `Ajv` singleton in `validateResponse` accumulated schemas with conflicting `$id` values when multiple spec files were validated in the same process. Moved instantiation inside `validateResponseAgainstSchema` so each call starts with a clean compiler.
+
+### Performance
+- **`gatherItems` O(n²) → O(n):** `postmanTester.ts` was using `Array.concat()` inside a recursive loop, creating a new array copy on every call. Replaced with `push(...spread)` for linear-time flattening of deeply nested Postman collections.
+- **`generateFakeData` combiner support:** `oneOf`, `anyOf`, and `allOf` schemas in request body generation previously fell through to an empty `{}`, potentially sending invalid bodies in POST/PUT smoke tests. `oneOf`/`anyOf` now pick the first subschema; `allOf` merges all subschema properties.
+
+### Docs
+- **Parser TSDocs:** Added comprehensive TSDoc documentation for `parseGrpcSpec` (`grpc.ts`) and `parsePostmanSpec` (`postman.ts`), explaining protobufjs parsing flags (`keepCase`, `alternateCommentMode`) and structural schema checks for Postman collections.
+
+### Tests
+- Added regression tests for runtime contract breaches: non-200 status codes (500/404), AJV response schema mismatches, GraphQL execution errors, and Postman timeout forwarding.
+- Added test coverage for CLI, Markdown, and JUnit reporters (`reporters.test.ts` and `junit.test.ts`), verifying correct output formatting for clean passes, warnings, skips, and breached contracts.
+
+---
+
 ## [1.5.4] - 2026-08-20 — Reliability Hardening
+
 
 ### Added
 - **Bounded runtime requests:** OpenAPI, Postman, and GraphQL smoke-test requests now abort after 30 seconds instead of allowing a pipeline job to hang indefinitely.

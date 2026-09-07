@@ -18,8 +18,6 @@ export async function parseAsyncApiSpec(
 ): Promise<IParsedSpec> {
   try {
     const source = readFileSync(sourcePath, "utf-8");
-
-    // v1.x: parse() throws on invalid docs and returns an AsyncAPIDocument on success.
     const document = await asyncApiParser.parse(source);
 
     return {

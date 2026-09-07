@@ -100,6 +100,18 @@ function generateFakeData(schema: any, doc: TOpenApi3Doc): any {
 
   if (schema.example !== undefined) return schema.example;
   if (schema.default !== undefined) return schema.default;
+  if (schema.oneOf?.length) return generateFakeData(schema.oneOf[0], doc);
+  if (schema.anyOf?.length) return generateFakeData(schema.anyOf[0], doc);
+  if (schema.allOf?.length) {
+    const merged: any = {};
+    for (const subSchema of schema.allOf) {
+      const sub = generateFakeData(subSchema, doc);
+      if (sub && typeof sub === "object" && !Array.isArray(sub)) {
+        Object.assign(merged, sub);
+      }
+    }
+    return merged;
+  }
 
   switch (schema.type) {
     case "string":
@@ -223,7 +235,15 @@ async function testOperation(
   }
 
   const violations: IViolation[] = [];
-  if (String(response.status) !== expected.statusCode) {
+  const actualStatus = String(response.status);
+  const statusMatches =
+    actualStatus === expected.statusCode ||
+    (expected.statusCode.length === 3 &&
+      expected.statusCode[1] === "X" &&
+      expected.statusCode[2] === "X" &&
+      actualStatus[0] === expected.statusCode[0]);
+
+  if (!statusMatches) {
     violations.push({
       ruleId: "unexpected-status-code",
       severity: ESeverity.Error,

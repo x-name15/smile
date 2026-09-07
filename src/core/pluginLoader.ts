@@ -28,8 +28,6 @@ export async function loadPlugins(pluginPaths: string[] = []): Promise<Record<st
       }
       
       const module = await import(importPath);
-      
-      // Support both CommonJS (module.exports) and ESM (export default) plugin structures
       const plugin: ISmilePlugin = module.default || module;
       
       if (!plugin.rules) {
@@ -63,7 +61,6 @@ export function evaluateCustomRules(
         const ruleViolations = rule.evaluate(doc);
         if (Array.isArray(ruleViolations)) {
           for (const v of ruleViolations) {
-            // Force the ruleId to match the one defined in the config mapping
             v.ruleId = ruleId;
             violations.push(v);
           }
