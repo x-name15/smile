@@ -6,6 +6,23 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [1.6.0] - 2026-09-07 — AsyncAPI v3 Migration & Dual-Version Support
+
+### Added
+- **AsyncAPI 3.x Native Support:** Upgraded `@asyncapi/parser` to `v3.6.3`. Smile now natively parses, dereferences, and validates both AsyncAPI 2.x and 3.x event-driven architectures.
+- **Dual-Version Rules Engine:** Refactored all 5 AsyncAPI rules (`missing-operation-id`, `missing-message`, `missing-channel-description`, `missing-message-description`, and `untyped-schema-property`) to seamlessly evaluate both AsyncAPI 2.x (channel operations) and 3.x (decoupled `operations` and `channels.messages`) specifications.
+- **AsyncAPI v3 Fixtures:** Added `sample-asyncapi-v3.yaml` (broken spec with contract breaches) and `sample-asyncapi-v3-clean.yaml` (100% compliant clean spec) for continuous regression testing.
+
+### Changed
+- **Parser Diagnostics:** `parseAsyncApiSpec` now captures `@asyncapi/parser` diagnostic severity errors and surfaces descriptive, actionable syntax and structural error messages instead of generic unhandled exceptions.
+- **Zero-Hardcoding Guarantee:** All rules evaluate dynamically against real spec models returned by the parser engine, ensuring rigorous validation across both version lines.
+
+### Tests
+- Expanded the AsyncAPI test suite to 18 tests, providing end-to-end coverage across broken and clean specs for both AsyncAPI 2.x and 3.x.
+- Re-validated the entire test suite (134 tests passing) and verified packaged distribution in clean consumer environments.
+
+---
+
 ## [1.5.5] - 2026-09-07 — Show me a Revival Session
 
 ### Fixed
