@@ -175,8 +175,7 @@ Full documentation is available in the [`docs/`](./docs) directory:
 ## Roadmap (Upcoming Features)
 
 We are keeping the roadmap deliberately small and focused on predictable behavior in libraries and CI/CD pipelines:
-- **v1.5.4 Reliability Hardening**: Bounded timeouts and clearer diagnostics for runtime requests, explicit reporting of non-successful webhook responses, packaged-artifact E2E coverage, and the AsyncAPI CJS/ESM distribution fix. No new specification format or rule family is planned for this release.
-- **v1.6.0 AsyncAPI Parser Compatibility**: Establish the supported `@asyncapi/parser` versions, complete the CJS/ESM compatibility work, and define the migration path for the parser's v3+ AST without claiming broker runtime support prematurely.
+- **v1.6.0 AsyncAPI Parser Modernization**: Upgraded to `@asyncapi/parser` v3, full dual-version support for AsyncAPI 2.x and 3.x specifications across all rules, and enhanced diagnostic error handling.
 - **v1.7.0 AsyncAPI Runtime Validation**: Extend the Breaching Detector to connect to live message brokers (Kafka/RabbitMQ) and validate message payloads in real time.
 
 ## License

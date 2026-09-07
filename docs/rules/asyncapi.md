@@ -1,7 +1,9 @@
 # AsyncAPI Rules Reference
 
-These rules run when `smile lint` detects an AsyncAPI 2.x spec
+These rules run when `smile lint` detects an AsyncAPI 2.x or 3.x specification
 (a file with a top-level `asyncapi:` key).
+
+Smile natively supports both the coupled channel operations of AsyncAPI 2.x and the decoupled `operations` / `channels.messages` architecture introduced in AsyncAPI 3.x.
 
 All rules are active by default.
 
@@ -11,10 +13,13 @@ All rules are active by default.
 
 **Severity:** Error
 
-Every channel operation (`subscribe` or `publish`) must have an `operationId`.
+Every operation must have a unique identifier.
+- In **AsyncAPI 2.x**: Every channel operation (`subscribe` or `publish`) must have an `operationId`.
+- In **AsyncAPI 3.x**: Every operation under `operations:` must have an operation identifier.
+
 Without it, code generators and SDK tools cannot produce meaningful method names.
 
-**Triggers on:**
+**Triggers on (AsyncAPI 2.x):**
 ```yaml
 channels:
   user/signedup:
@@ -25,11 +30,20 @@ channels:
       # no operationId
 ```
 
-**Clean:**
+**Clean (AsyncAPI 2.x):**
 ```yaml
     subscribe:
       operationId: onUserSignedUp
       message: ...
+```
+
+**Clean (AsyncAPI 3.x):**
+```yaml
+operations:
+  onUserSignedUp:
+    action: receive
+    channel:
+      $ref: '#/channels/userSignedUp'
 ```
 
 ---
