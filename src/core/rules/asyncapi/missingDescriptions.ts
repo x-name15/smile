@@ -1,6 +1,10 @@
 import { ESeverity, type IViolation } from "../../../models/index.js";
 
-type TAsyncApiDoc = { channels?: Record<string, unknown> };
+type TAsyncApiDoc = {
+  asyncapi?: string;
+  channels?: Record<string, unknown>;
+  operations?: Record<string, unknown>;
+};
 
 const OPERATION_KEYS = ["subscribe", "publish"] as const;
 
@@ -34,14 +38,39 @@ export function ruleAsyncApiMissingChannelDescription(
 }
 
 /**
- * Flags any channel operation whose message has no `description`.
+ * Flags any message that has no `description`.
  * Message descriptions explain the payload's business context — what
  * event happened and why, not just the shape of the data.
+ * - In AsyncAPI 2.x: checks `channels.<channel>.<publish|subscribe>.message.description`.
+ * - In AsyncAPI 3.x: checks `channels.<channel>.messages.<msg>.description`.
  */
 export function ruleAsyncApiMissingMessageDescription(
   doc: TAsyncApiDoc,
 ): IViolation[] {
   const violations: IViolation[] = [];
+  const isV3 = Boolean(doc.asyncapi && String(doc.asyncapi).startsWith("3")) || Boolean(doc.operations);
+
+  if (isV3 && doc.channels) {
+    for (const [channelName, channelItem] of Object.entries(doc.channels)) {
+      if (!channelItem || typeof channelItem !== "object") continue;
+      const channel = channelItem as { messages?: Record<string, { description?: string }> };
+      if (!channel.messages) continue;
+
+      for (const [msgName, msgItem] of Object.entries(channel.messages)) {
+        if (!msgItem || typeof msgItem !== "object") continue;
+        if (!msgItem.description?.trim()) {
+          violations.push({
+            ruleId: "missing-message-description",
+            severity: ESeverity.Error,
+            message: `Message "${msgName}" in channel "${channelName}" has no description`,
+            path: `channels.${channelName}.messages.${msgName}.description`,
+          });
+        }
+      }
+    }
+    return violations;
+  }
+
   const channels = doc.channels ?? {};
 
   for (const [channelName, channelItem] of Object.entries(channels)) {

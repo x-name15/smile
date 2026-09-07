@@ -1,8 +1,13 @@
 import { ESeverity, type IViolation } from "../../../models/index.js";
 
 type TAsyncApiDoc = {
+  asyncapi?: string;
   channels?: Record<string, unknown>;
-  components?: { schemas?: Record<string, unknown> };
+  operations?: Record<string, unknown>;
+  components?: {
+    schemas?: Record<string, unknown>;
+    messages?: Record<string, unknown>;
+  };
 };
 type TSchemaObject = Record<string, unknown>;
 
@@ -53,31 +58,51 @@ function findUntypedProperties(
 }
 
 /**
- * Flags untyped schema properties across every channel operation's
- * message payload, plus any reusable schemas under components.schemas.
+ * Flags untyped schema properties across message payloads and reusable components.
+ * - In AsyncAPI 2.x: walks `channels.<channel>.<publish|subscribe>.message.payload`.
+ * - In AsyncAPI 3.x: walks `channels.<channel>.messages.<msg>.payload`.
+ * - Both: walks `components.schemas` and `components.messages`.
  */
 export function ruleAsyncApiUntypedSchemaProperty(
   doc: TAsyncApiDoc,
 ): IViolation[] {
   const violations: IViolation[] = [];
-  const channels = doc.channels ?? {};
+  const isV3 = Boolean(doc.asyncapi && String(doc.asyncapi).startsWith("3")) || Boolean(doc.operations);
 
-  for (const [channelName, channelItem] of Object.entries(channels)) {
-    if (!channelItem) continue;
+  if (isV3 && doc.channels) {
+    for (const [channelName, channelItem] of Object.entries(doc.channels)) {
+      if (!channelItem || typeof channelItem !== "object") continue;
+      const channel = channelItem as { messages?: Record<string, { payload?: TSchemaObject }> };
+      if (!channel.messages) continue;
 
-    for (const operationKey of OPERATION_KEYS) {
-      const operation = (channelItem as Record<string, unknown>)[
-        operationKey
-      ] as { message?: { payload?: TSchemaObject } } | undefined;
+      for (const [msgName, msgItem] of Object.entries(channel.messages)) {
+        if (!msgItem?.payload) continue;
+        findUntypedProperties(
+          msgItem.payload,
+          `channels.${channelName}.messages.${msgName}.payload`,
+          violations,
+        );
+      }
+    }
+  } else {
+    const channels = doc.channels ?? {};
+    for (const [channelName, channelItem] of Object.entries(channels)) {
+      if (!channelItem) continue;
 
-      const payload = operation?.message?.payload;
-      if (!payload) continue;
+      for (const operationKey of OPERATION_KEYS) {
+        const operation = (channelItem as Record<string, unknown>)[
+          operationKey
+        ] as { message?: { payload?: TSchemaObject } } | undefined;
 
-      findUntypedProperties(
-        payload,
-        `channels.${channelName}.${operationKey}.message.payload`,
-        violations,
-      );
+        const payload = operation?.message?.payload;
+        if (!payload) continue;
+
+        findUntypedProperties(
+          payload,
+          `channels.${channelName}.${operationKey}.message.payload`,
+          violations,
+        );
+      }
     }
   }
 
@@ -88,6 +113,18 @@ export function ruleAsyncApiUntypedSchemaProperty(
       `components.schemas.${schemaName}`,
       violations,
     );
+  }
+
+  const componentMessages = doc.components?.messages ?? {};
+  for (const [msgName, msgItem] of Object.entries(componentMessages)) {
+    const payload = (msgItem as { payload?: TSchemaObject })?.payload;
+    if (payload) {
+      findUntypedProperties(
+        payload,
+        `components.messages.${msgName}.payload`,
+        violations,
+      );
+    }
   }
 
   return violations;
