@@ -12,7 +12,7 @@ npx @mrjacket/smile lint .
 if [ $? -ne 0 ]; then
   echo ""
   echo "❌ API contract violations found. Commit aborted."
-  echo "Please fix the errors or run 'npx @mrjacket/smile doctor' before committing."
+  echo "Please fix the errors or run 'npx @mrjacket/smile deduce <spec>' before committing."
   exit 1
 fi
 `;

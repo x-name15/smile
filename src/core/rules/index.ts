@@ -7,3 +7,5 @@ export { openApiRules } from "./openapi/index.js";
 export { asyncApiRules } from "./asyncapi/index.js";
 export { jsonSchemaRules } from "./jsonschema/index.js";
 export { graphqlRules } from "./graphql/index.js";
+export { grpcRules } from "./grpc/index.js";
+export { postmanRules } from "./postman/index.js";

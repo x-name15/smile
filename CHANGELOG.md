@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.2] - 2026-09-08 — Rule Parity & CLI Refinements
+
+### Added
+- **Full Rule Parity in `smile init`:** Synced `RULES_BY_FORMAT` with all 32 canonical lint rules across all 6 supported specification formats (OpenAPI, AsyncAPI, GraphQL, JSON Schema, gRPC, and Postman), correcting legacy rule IDs (`camel-case-fields` for gRPC, `no-empty-folders` and `require-response-example` for Postman).
+- **Comprehensive Configuration Display in `smile config`:** Enriched `smile config` output to display active reporter format (`config.format`), network request timeout (`config.requestTimeoutMs`), and configured smoke test headers (`config.testHeaders`).
+- **Complete Rules Barrel Export:** Re-exported `grpcRules` and `postmanRules` in `src/core/rules/index.ts`, unifying all format rule registries under a single entry point.
+
+### Fixed
+- **Pre-commit Hook Doctor Command:** Corrected the phantom `smile doctor` suggestion in `smile hook` (`hookCommand.ts`) to point to the interactive auto-fixer: `smile deduce <spec>`.
+
+### Tests
+- Added `src/cli/__tests__/config.test.ts` verifying rule ID parity across all 6 formats and validating clean `smile config` command rendering across empty and populated configurations.
+
 ---
 
 ## [1.6.1] - 2026-09-08 — CLI Ergonomics & Smoke Test Hardening

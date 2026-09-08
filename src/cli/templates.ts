@@ -149,10 +149,48 @@ export const SAMPLE_POSTMAN = `{
 `;
 
 export const RULES_BY_FORMAT: Record<string, string[]> = {
-  openapi: ["missing-summary", "missing-operation-id", "untyped-schema-property", "valid-path-parameters"],
-  asyncapi: ["missing-operation-id", "missing-message", "missing-channel-description", "missing-message-description", "untyped-schema-property"],
-  graphql: ["missing-type-description", "missing-field-description", "deprecated-without-reason", "missing-enum-value-description"],
-  jsonschema: ["missing-title", "missing-description", "untyped-property", "require-additional-properties"],
-  grpc: ["require-rpc-comments", "pascal-case-services", "pascal-case-messages"],
-  postman: ["valid-collection-schema", "require-request-description", "require-example-response"],
+  openapi: [
+    "missing-summary",
+    "missing-operation-id",
+    "missing-responses",
+    "no-2xx-response",
+    "untyped-schema-property",
+    "valid-examples",
+    "require-security",
+    "no-http-verbs-in-path",
+    "strict-hypermedia",
+    "valid-path-parameters",
+  ],
+  asyncapi: [
+    "missing-operation-id",
+    "missing-message",
+    "missing-channel-description",
+    "missing-message-description",
+    "untyped-schema-property",
+  ],
+  graphql: [
+    "missing-type-description",
+    "missing-field-description",
+    "deprecated-without-reason",
+    "missing-enum-value-description",
+    "require-pascal-case-types",
+    "require-camel-case-fields",
+  ],
+  jsonschema: [
+    "missing-title",
+    "missing-description",
+    "untyped-property",
+    "array-without-items",
+    "require-additional-properties",
+  ],
+  grpc: [
+    "require-rpc-comments",
+    "pascal-case-messages",
+    "camel-case-fields",
+  ],
+  postman: [
+    "require-request-description",
+    "no-empty-folders",
+    "require-response-example",
+  ],
 };

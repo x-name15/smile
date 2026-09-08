@@ -56,5 +56,20 @@ export async function runConfigCommand(): Promise<void> {
     p.note(`${webhooks.length} webhook(s) configured`, "Integrations");
   }
 
+  if (config.format) {
+    p.note(`Output format: ${pc.cyan(config.format)}`, "Display");
+  }
+
+  if (config.requestTimeoutMs !== undefined) {
+    p.note(`Request timeout: ${pc.cyan(`${config.requestTimeoutMs}ms`)}`, "Network");
+  }
+
+  const testHeaders = config.testHeaders || {};
+  const headerKeys = Object.keys(testHeaders);
+  if (headerKeys.length > 0) {
+    const headersText = headerKeys.map((key) => `• ${pc.cyan(key)}: ${testHeaders[key]}`).join("\n");
+    p.note(headersText, "Test Headers");
+  }
+
   p.outro("Observation complete.");
 }
