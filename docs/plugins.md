@@ -43,7 +43,7 @@ To build it yourself, create a file `smile-rules.mjs` in your repository:
 export default {
   rules: {
     "require-v1-prefix": {
-      // "openapi", "asyncapi", "json-schema", "graphql", or "all"
+      // "openapi", "asyncapi", "json-schema", "graphql", "grpc", "postman", or "all"
       format: "openapi",
       
       evaluate(doc) {

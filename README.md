@@ -18,7 +18,7 @@ It acts as both a static linter (checking your API specification for completenes
 
 ## Features
 
-- **Multi-format support:** Auto-detects and validates OpenAPI 3.x, AsyncAPI 2.x, JSON Schema, GraphQL SDL, gRPC (`.proto`), and Postman Collections.
+- **Multi-format support:** Auto-detects and validates OpenAPI 3.x, AsyncAPI 2.x & 3.x, JSON Schema, GraphQL SDL, gRPC (`.proto`), and Postman Collections.
 - **Zero dependencies for the CLI:** Run it via `npx` instantly in your CI pipelines.
 - **Library API:** Native Vitest/Jest integration. Import it directly into your tests with full TypeScript support (no subprocesses).
 - **The Breaching Detector (Runtime Smoke Test)**
@@ -55,7 +55,7 @@ npx @mrjacket/smile lint ./openapi.yaml
 npx @mrjacket/smile lint .
 ```
 
-> **Tip:** Create a `.smileignore` file in your root directory to tell `smile` which files or folders to skip (e.g. `node_modules`, `vendor/`), just like `.gitignore`!
+> **Tip:** `smile` automatically respects your repository's `.gitignore` as well as standard build directories (`dist/`, `build/`, `coverage/`). You can also create a `.smileignore` file in your root directory to define Smile-specific exclusions!
 
 You can optionally output the results as raw JSON, Markdown, or JUnit (for CI/CD dashboards):
 ```bash
@@ -140,14 +140,20 @@ It must be a positive finite number; invalid or missing values fall back to
 `30000` milliseconds.
 
 ### Inline Suppressions (YAML Only)
-If you need to bypass a rule on a single specific line without changing the global configuration, you can use the `# smile-ignore-next-line <ruleId>` comment directly in your `.yaml` or `.yml` specifications.
+If you need to bypass rules on specific lines without changing the global configuration, you can use inline comment directives directly in your `.yaml` or `.yml` specifications:
+- `# smile-ignore-next-line <ruleId>` — ignores the specified rule on the next line.
+- `# smile-ignore-next-line rule-1, rule-2` — ignores multiple comma- or space-separated rules on the next line.
+- `# smile-ignore-next-line all` — ignores all contract violations on the next line.
+- `# smile-ignore-line <ruleId>` — ignores the specified rule on the current line.
 
 ```yaml
 paths:
   /users:
+    # smile-ignore-next-line missing-summary, missing-operation-id
     get:
-      # smile-ignore-next-line missing-summary
-      operationId: getUsers
+      responses: {}
+    delete: # smile-ignore-line require-security
+      responses: {}
 ```
 
 ---

@@ -80,17 +80,41 @@ Forces the output format globally. Can be `"text"` (default), `"json"`, `"markdo
 ---
 
 ## Inline Suppressions (YAML Only)
-If you need to bypass a rule on a single specific line without changing the global configuration, you can use the `# smile-ignore-next-line <ruleId>` comment directly in your `.yaml` or `.yml` specifications.
+
+If you need to bypass rules on specific lines without changing the global configuration, you can use inline comment directives directly in your `.yaml` or `.yml` specifications:
+
+- **Single rule next line:** `# smile-ignore-next-line <ruleId>`
+- **Multiple rules next line:** `# smile-ignore-next-line rule-1, rule-2` (comma- or space-separated)
+- **All rules wildcard:** `# smile-ignore-next-line all`
+- **Same-line suppression:** `# smile-ignore-line <ruleId>`
 
 ```yaml
 paths:
   /users:
+    # smile-ignore-next-line missing-summary, missing-operation-id
     get:
-      # smile-ignore-next-line missing-summary
-      operationId: getUsers
+      responses: {}
+    delete: # smile-ignore-line require-security
+      responses: {}
 ```
 
-This functions exactly like ESLint or Prettier overrides.
+Smile's YAML engine traverses the AST hierarchy, correctly honoring directives placed on properties, operations, paths, or keys.
+
+---
+
+## Inspecting Active Configuration (`smile config`)
+
+Run `smile config` to view an elegant summary of your resolved configuration in the terminal:
+- Active rule overrides (global and format-specific)
+- Loaded plugins
+- Configured webhooks
+- Default output format (`format`)
+- Network request timeout (`requestTimeoutMs`)
+- Injected smoke test headers (`testHeaders`)
+
+```bash
+smile config
+```
 
 ---
 

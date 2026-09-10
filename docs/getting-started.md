@@ -112,9 +112,8 @@ smile lint ./collection.json   # Postman Collection
 
 | Code | Meaning |
 |------|---------|
-| `0` | Spec is clean — no violations |
-| `1` | One or more violations found |
-| `2` | Spec could not be parsed, or the format could not be detected (`unknown-spec-format`) |
+| `0` | Spec is clean — passes with zero errors (warnings tolerated) |
+| `1` | One or more contract violations found, spec could not be parsed, or format could not be detected |
 
 Exit codes make `smile lint` directly usable in CI pipelines — a non-zero exit
 will fail the pipeline automatically.
@@ -137,9 +136,9 @@ smile deduce ./openapi.yaml
 
 `smile` is strict by default. If you want to temporarily relax some rules to pass the CI, you can create a `config.smile.json` file.
 
-You can also run `npx @mrjacket/smile init` to automatically generate a boilerplate configuration file and a GitHub Actions workflow.
+You can also run `npx @mrjacket/smile init` to automatically generate a boilerplate configuration file and a GitHub Actions workflow, or use `smile config` to view your currently active configuration and rule overrides.
 
-[Read the full Configuration & Rules Guide](./configuration.md) to see the complete list of available rules for OpenAPI, AsyncAPI, GraphQL, and JSON Schema.
+[Read the full Configuration & Rules Guide](./configuration.md) to see the complete list of available rules for OpenAPI, AsyncAPI, GraphQL, JSON Schema, gRPC, and Postman.
 
 ---
 
@@ -158,7 +157,7 @@ smile test ./openapi.yaml https://api.staging.example.com
 
 **CLI Options:**
 - `-f, --format <type>`: Output format (`text`, `json`, `markdown`, `junit`). Defaults to `text`.
-- `-h, --header <header...>`: Custom headers to pass in every request (e.g., `-h 'Authorization: Bearer xyz'`).
+- `-H, --header <header...>`: Custom headers to pass in every request (e.g., `-H 'Authorization: Bearer xyz'`).
 - `-p, --plugin <path>`: Dynamically load a custom JavaScript/TypeScript plugin on the fly.
 - `-q, --quiet`: Quiet mode. Suppresses standard text output and only prints errors or formatted reports.
 
@@ -214,8 +213,8 @@ It also features native integrations for **GitHub Actions**, **GitLab CI**, **JU
 | Format | Detection | Rules |
 |--------|-----------|-------|
 | OpenAPI 3.x | `openapi:` or `swagger:` key in file | [Reference](./rules/openapi.md) |
-| AsyncAPI 2.x | `asyncapi:` key in file | [Reference](./rules/asyncapi.md) |
-| JSON Schema | `$schema:` key in file | [Reference](./rules/json-schema.md) |
+| AsyncAPI 2.x & 3.x | `asyncapi:` key in file | [Reference](./rules/asyncapi.md) |
+| JSON Schema | `$schema:` pointing to json-schema.org or `.schema.(json/yaml)` | [Reference](./rules/json-schema.md) |
 | GraphQL SDL | `.graphql` / `.gql` extension | [Reference](./rules/graphql.md) |
 | gRPC | `.proto` extension | [Reference](./rules/grpc.md) |
 | Postman Collection | `schema.getpostman.com` in JSON | [Reference](./rules/postman.md) |

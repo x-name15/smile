@@ -22,7 +22,7 @@ responses where runtime validation is supported.
 | Format | Document | Native Rules |
 |--------|----------|-------|
 | OpenAPI 3.x | [openapi.md](./rules/openapi.md) | See reference |
-| AsyncAPI 2.x | [asyncapi.md](./rules/asyncapi.md) | See reference |
+| AsyncAPI 2.x & 3.x | [asyncapi.md](./rules/asyncapi.md) | See reference |
 | JSON Schema | [json-schema.md](./rules/json-schema.md) | See reference |
 | GraphQL SDL | [graphql.md](./rules/graphql.md) | See reference |
 | gRPC (.proto) | [grpc.md](./rules/grpc.md) | See reference |

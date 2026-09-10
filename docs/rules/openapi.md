@@ -3,7 +3,7 @@
 These rules run when `smile lint` detects an OpenAPI 3.x spec
 (a file with a top-level `openapi:` key).
 
-All rules are active by default. Custom rule configuration is on the roadmap.
+All rules are active by default. You can customize rule severities (`error`, `warn`, `off`) via `config.smile.json` or inline `# smile-ignore-next-line` directives.
 
 ---
 

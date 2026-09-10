@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.3] - 2026-09-10 — New things yei!
+## [1.6.3] - 2026-09-10 — Zero-Bloat Stability, CLI Refinements & 1:1 Docs Alignment
 
 ### Added
 - **Automatic `.gitignore` Integration:** `findSpecFiles` now automatically reads and respects the repository root `.gitignore` in addition to `.smileignore`, preventing unintended traversal into ignored paths without duplicate configuration.
@@ -17,6 +17,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - **Immutable Configuration Handling:** Fixed `applyConfigToViolations` to avoid mutating the user-supplied `config` object when `config.rules` is undefined.
 - **Deduce Command Banner Typo:** Fixed trailing unbalanced parenthesis in `smile deduce` intro prompt.
 - **CLI Help Text Coverage:** Updated `smile` and `smile lint` descriptions to explicitly list support for gRPC and Postman Collections.
+
+### Docs
+- **1:1 Documentation Alignment:** Comprehensive update across `README.md` and `docs/` (`getting-started.md`, `configuration.md`, `ci-cd.md`, `plugins.md`, `rules/openapi.md`, `rules/asyncapi.md`):
+  - Updated AsyncAPI references to 2.x & 3.x dual-version support across all guide tables.
+  - Documented automatic `.gitignore` honoring and `.smileignore` overrides in directory scanning.
+  - Documented multi-rule, wildcard (`all`), and same-line (`# smile-ignore-line`) inline YAML comment directives.
+  - Documented `smile config` command and all inspected fields (formats, timeouts, test headers, rules, plugins, webhooks).
+  - Standardized exit codes (`0` for clean pass/warnings, `1` for violations/errors) and fixed CLI flags (`-H, --header`).
+  - Removed outdated roadmap notes in rules references and modernized CI/CD release quality gate documentation.
 
 ### Tests
 - Added test coverage in `utils.test.ts` for `.gitignore` discovery and non-spec file exclusion.

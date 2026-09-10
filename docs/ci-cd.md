@@ -2,7 +2,7 @@
 
 `smile` is built from the ground up for automated enterprise pipelines. It natively supports Git Hooks, GitHub Actions annotations, step summaries, and JUnit reports for seamless DevOps integration.
 
-For the 1.5.4 release candidate, the repository quality gate is:
+The standard repository quality gate for builds and CI releases is:
 
 ```bash
 npm ci
@@ -117,7 +117,7 @@ The cheapest bugs to fix are the ones that never make it into a commit. `smile` 
 npx @mrjacket/smile install-hook
 ```
 
-This will create a lightweight Bash script in `.git/hooks/pre-commit` that runs `smile lint .` every time a developer attempts to commit. If the contract is broken, the commit is aborted immediately.
+This will create a lightweight Bash script in `.git/hooks/pre-commit` that runs `smile lint .` every time a developer attempts to commit. If the contract is broken, the commit is aborted immediately, prompting the developer to fix the errors or run `smile deduce <spec>`.
 
 ---
 
