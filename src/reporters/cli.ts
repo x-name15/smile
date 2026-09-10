@@ -52,6 +52,45 @@ export function renderSmileReport(result: ILintResult): string {
 }
 
 /**
+ * Renders multiple lint results as an aggregate report:
+ * Individual breakdown per specification, followed by the Smile Signature once
+ * if all specifications passed cleanly.
+ */
+export function renderAggregateSmileReport(results: ILintResult[]): string {
+  if (results.length === 0) return "";
+  if (results.length === 1) return renderSmileReport(results[0]);
+
+  for (const r of results) {
+    emitCIAnnotations(r.violations, r.sourcePath);
+  }
+
+  const allPassed = results.every(r => r.passed);
+  const sections: string[] = [];
+
+  for (const result of results) {
+    if (!result.passed) {
+      sections.push(formatFailed(result).trimEnd());
+    } else if (result.violations.length > 0) {
+      const scenes = result.violations.map(formatViolation).join("\n\n");
+      sections.push(`🟡  ${result.format} spec (${result.sourcePath}) passed with ${result.violations.length} warning(s):\n\n${scenes}`);
+    } else {
+      sections.push(`✅  ${result.format} spec (${result.sourcePath}) signed clean.`);
+    }
+  }
+
+  let output = sections.join("\n\n");
+
+  if (allPassed) {
+    output += `\n\n${SMILE_SIGNATURE}\n\n All ${results.length} specifications signed clean — no errors.\n`;
+  } else {
+    const failedCount = results.filter(r => !r.passed).length;
+    output += `\n\n🚫  ${failedCount} of ${results.length} specification(s) broke contract.\n`;
+  }
+
+  return output;
+}
+
+/**
  * Formats one endpoint's runtime test outcome: skipped, clean, or breached.
  */
 function formatEndpointResult(endpoint: IEndpointTestResult): string {

@@ -2,10 +2,42 @@ import { statSync, readdirSync, readFileSync, existsSync } from "node:fs";
 import { join, relative } from "node:path";
 import ignore from "ignore";
 
+const EXCLUDED_FILENAMES = new Set([
+  // Smile config files
+  "config.smile.json",
+  "smile.config.json",
+  ".smilerc.json",
+  "smile.json",
+  // Package manifests & lockfiles
+  "package.json",
+  "package-lock.json",
+  "npm-shrinkwrap.json",
+  "pnpm-lock.yaml",
+  "yarn.lock",
+  "bun.lockb",
+  "bun.lock",
+  "composer.json",
+  "composer.lock",
+  // Tool and framework configurations
+  "turbo.json",
+  "nx.json",
+  "lerna.json",
+  "biome.json",
+  "deno.json",
+  "components.json",
+]);
+
+function isExcludedFile(filename: string): boolean {
+  if (filename.startsWith(".")) return true;
+  if (EXCLUDED_FILENAMES.has(filename)) return true;
+  if (/^(tsconfig|jsconfig)(\..+)?\.json$/i.test(filename)) return true;
+  return false;
+}
+
 /**
  * Recursively searches a directory for valid API specification files.
- * Automatically respects `.smileignore` (if present in the root),
- * as well as common ignore patterns like `node_modules` and `.git`.
+ * Automatically respects `.gitignore` and `.smileignore` (if present in the root),
+ * as well as common ignore patterns like `node_modules`, `.git`, `dist`, `build`, and `coverage`.
  * 
  * @param basePath The root directory to start searching from (or a single file path).
  * @returns An array of absolute paths to discovered specification files.
@@ -22,11 +54,24 @@ export function findSpecFiles(basePath: string): string[] {
   }
   const ig = ignore();
   
-  ig.add(["node_modules", ".git"]);
+  ig.add(["node_modules", ".git", "dist", "build", "coverage"]);
   
+  const gitignorePath = join(basePath, ".gitignore");
+  if (existsSync(gitignorePath)) {
+    try {
+      ig.add(readFileSync(gitignorePath, "utf-8"));
+    } catch {
+      // Gracefully ignore .gitignore read error
+    }
+  }
+
   const ignorePath = join(basePath, ".smileignore");
   if (existsSync(ignorePath)) {
-    ig.add(readFileSync(ignorePath, "utf-8"));
+    try {
+      ig.add(readFileSync(ignorePath, "utf-8"));
+    } catch {
+      // Gracefully ignore .smileignore read error
+    }
   }
 
   const results: string[] = [];
@@ -48,16 +93,8 @@ export function findSpecFiles(basePath: string): string[] {
         traverse(fullPath);
       } else {
         if (validExtensions.some(ext => file.endsWith(ext))) {
-          // Exclude all known smile config filenames to avoid linting them as specs
-          if (
-            file === "config.smile.json" ||
-            file === "smile.config.json" ||
-            file === ".smilerc.json" ||
-            file === "smile.json" ||
-            file === "package.json" ||
-            file === "package-lock.json"
-          ) {
-             continue;
+          if (isExcludedFile(file)) {
+            continue;
           }
           results.push(fullPath);
         }

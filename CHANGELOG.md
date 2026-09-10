@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.3] - 2026-09-10 — New things yei!
+
+### Added
+- **Automatic `.gitignore` Integration:** `findSpecFiles` now automatically reads and respects the repository root `.gitignore` in addition to `.smileignore`, preventing unintended traversal into ignored paths without duplicate configuration.
+- **Smart Directory Scanning & Non-Spec Filtering:** Built-in exclusions for build folders (`dist`, `build`, `coverage`), dotfiles, and non-spec configuration files/manifests (`tsconfig*.json`, `jsconfig*.json`, `pnpm-lock.yaml`, `yarn.lock`, `bun.lock*`, `turbo.json`, `nx.json`, `lerna.json`, `biome.json`, `deno.json`, `components.json`).
+- **Precise JSON Schema Detection:** Tightened `detectSpecFormat` to verify that `$schema` values point to official JSON Schema dialects (`json-schema.org`) or follow `.schema.(json|yaml)` file naming, preventing false positives on tool configs that point to JSON SchemaStore.
+- **Multi-Rule & Same-Line Inline Suppressions:** Enhanced `# smile-ignore-next-line` to support comma- or space-separated rule IDs as well as the `all` wildcard. Added `# smile-ignore-line` for same-line comment suppressions, with full AST hierarchy traversal for YAML mappings and pairs.
+- **Aggregate CLI Reporting:** Replaced repetitive 25-line ASCII Red John signatures on multi-file directory runs with a clean per-spec summary and a single signature upon overall success.
+
+### Fixed
+- **Immutable Configuration Handling:** Fixed `applyConfigToViolations` to avoid mutating the user-supplied `config` object when `config.rules` is undefined.
+- **Deduce Command Banner Typo:** Fixed trailing unbalanced parenthesis in `smile deduce` intro prompt.
+- **CLI Help Text Coverage:** Updated `smile` and `smile lint` descriptions to explicitly list support for gRPC and Postman Collections.
+
+### Tests
+- Added test coverage in `utils.test.ts` for `.gitignore` discovery and non-spec file exclusion.
+- Added test coverage in `detectSpecFormat.test.ts` verifying rejection of JSON SchemaStore tool configs.
+- Added test coverage in `config.test.ts` for multi-rule, wildcard, and same-line inline YAML suppressions.
+- Added test coverage in `reporters.test.ts` for `renderAggregateSmileReport` behavior across empty, single, clean multi-spec, and failing multi-spec runs.
+
+---
+
 ## [1.6.2] - 2026-09-08 — Rule Parity & CLI Refinements
 
 ### Added

@@ -30,8 +30,16 @@ export function detectSpecFormat(sourcePath: string): ESpecFormat {
     return ESpecFormat.AsyncApi;
   }
 
-  // JSON Schema: `$schema` field pointing to a JSON Schema URL
-  if (/"\$schema"\s*:/.test(contents) || /^\$schema\s*:/m.test(contents)) {
+  // JSON Schema: `$schema` field pointing to an official JSON Schema dialect URL,
+  // or a file explicitly named with a `.schema.json` / `.schema.yaml` pattern.
+  const jsonSchemaMatch = contents.match(/"\$schema"\s*:\s*"([^"]+)"/i) || contents.match(/^\$schema\s*:\s*["']?([^\s"']+)["']?/m);
+  if (jsonSchemaMatch) {
+    const schemaUrl = jsonSchemaMatch[1];
+    if (/^https?:\/\/json-schema\.org\//i.test(schemaUrl)) {
+      return ESpecFormat.JsonSchema;
+    }
+  }
+  if (/\.schema\.(json|ya?ml)$/i.test(sourcePath)) {
     return ESpecFormat.JsonSchema;
   }
 

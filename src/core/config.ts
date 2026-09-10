@@ -25,11 +25,41 @@ export function loadConfig(cwd: string = process.cwd()): ISmileConfig {
 }
 
 /**
+ * Checks if a comment string contains an inline suppression directive for the given ruleId.
+ * Supports:
+ * - `# smile-ignore-next-line <ruleId>`
+ * - `# smile-ignore-next-line rule-1, rule-2`
+ * - `# smile-ignore-next-line all`
+ * - `# smile-ignore-line <ruleId>`
+ * - `# smile-ignore-line rule-1, rule-2`
+ * - `# smile-ignore-line all`
+ */
+function isRuleSuppressedInComment(comment: string, ruleId: string): boolean {
+  const lines = comment.split("\n");
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    const match = line.match(/smile-ignore-(?:next-line|line)\s+(.+)$/i);
+    if (!match) continue;
+
+    const rawDirectives = match[1].trim();
+    const rules = rawDirectives
+      .split(/[,\s]+/)
+      .map((r) => r.trim())
+      .filter(Boolean);
+
+    if (rules.includes("all") || rules.includes(ruleId)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Applies the user's configuration to a list of raw violations.
  * - Drops violations where the rule is set to "off".
  * - Overrides the severity if the rule is set to "warn" or "error".
  * - Checks nested format configurations first, then falls back to flat configuration.
- * - Parses AST for YAML files to drop inline suppressed violations (# smile-ignore-next-line).
+ * - Parses AST for YAML files to drop inline suppressed violations (# smile-ignore-next-line / # smile-ignore-line).
  */
 export function applyConfigToViolations(
   violations: IViolation[],
@@ -37,16 +67,14 @@ export function applyConfigToViolations(
   format?: ESpecFormat,
   sourcePath?: string
 ): IViolation[] {
-  if (!config.rules || Object.keys(config.rules).length === 0) {
-    config.rules = {}; // ensure rules object exists for suppression check
-  }
+  const activeRules = config.rules || {};
 
   let yamlDoc: any = null;
   if (sourcePath && (sourcePath.endsWith(".yaml") || sourcePath.endsWith(".yml"))) {
     try {
       const fileStr = readFileSync(sourcePath, "utf-8");
       yamlDoc = YAML.parseDocument(fileStr);
-    } catch (e) {
+    } catch {
       // gracefully fail if file can't be parsed
     }
   }
@@ -57,13 +85,13 @@ export function applyConfigToViolations(
     let configuredSeverity: RuleSeverity | undefined;
 
     // Check nested format config first (if format is provided)
-    if (format && config.rules[format] && typeof config.rules[format] === "object") {
-      configuredSeverity = (config.rules[format] as Record<string, RuleSeverity>)[violation.ruleId];
+    if (format && activeRules[format] && typeof activeRules[format] === "object") {
+      configuredSeverity = (activeRules[format] as Record<string, RuleSeverity>)[violation.ruleId];
     }
 
     // Fallback to flat root config
-    if (!configuredSeverity && typeof config.rules[violation.ruleId] === "string") {
-      configuredSeverity = config.rules[violation.ruleId] as RuleSeverity;
+    if (!configuredSeverity && typeof activeRules[violation.ruleId] === "string") {
+      configuredSeverity = activeRules[violation.ruleId] as RuleSeverity;
     }
 
     if (configuredSeverity === "off") {
@@ -73,20 +101,56 @@ export function applyConfigToViolations(
     // Check inline AST suppression for YAML
     if (yamlDoc) {
       const pathSegments = violation.path.split(".");
-      let node = yamlDoc.getIn(pathSegments);
-      
-      // If node is undefined (e.g. missing property), check the parent node
-      if (node === undefined && pathSegments.length > 0) {
-        pathSegments.pop();
-        node = yamlDoc.getIn(pathSegments);
+      let isSuppressed = false;
+
+      let currentSegments: string[] = [...pathSegments];
+      while (currentSegments.length > 0) {
+        const node: any = yamlDoc.getIn(currentSegments);
+        if (node) {
+          const commentBefore = node.commentBefore ? String(node.commentBefore) : "";
+          const comment = node.comment ? String(node.comment) : "";
+          if (
+            (commentBefore && isRuleSuppressedInComment(commentBefore, violation.ruleId)) ||
+            (comment && isRuleSuppressedInComment(comment, violation.ruleId))
+          ) {
+            isSuppressed = true;
+            break;
+          }
+        }
+
+        // Also check Pair key and value comments if parent is a YAMLMap
+        if (currentSegments.length > 1) {
+          const parentSegments = currentSegments.slice(0, -1);
+          const lastKey = currentSegments[currentSegments.length - 1];
+          const parentMap: any = yamlDoc.getIn(parentSegments, true);
+          if (parentMap && Array.isArray(parentMap.items)) {
+            const pair = parentMap.items.find(
+              (item: any) => item?.key?.value === lastKey || String(item?.key) === lastKey
+            );
+            if (pair) {
+              const keyCommentBefore = pair.key?.commentBefore ? String(pair.key.commentBefore) : "";
+              const keyComment = pair.key?.comment ? String(pair.key.comment) : "";
+              const valCommentBefore = pair.value?.commentBefore ? String(pair.value.commentBefore) : "";
+              const valComment = pair.value?.comment ? String(pair.value.comment) : "";
+
+              if (
+                (keyCommentBefore && isRuleSuppressedInComment(keyCommentBefore, violation.ruleId)) ||
+                (keyComment && isRuleSuppressedInComment(keyComment, violation.ruleId)) ||
+                (valCommentBefore && isRuleSuppressedInComment(valCommentBefore, violation.ruleId)) ||
+                (valComment && isRuleSuppressedInComment(valComment, violation.ruleId))
+              ) {
+                isSuppressed = true;
+                break;
+              }
+            }
+          }
+        }
+
+        currentSegments.pop();
       }
 
-      if (node && node.commentBefore) {
-        const comment = String(node.commentBefore).trim();
-        const ignoreRegex = new RegExp(`smile-ignore-next-line\\s+${violation.ruleId}`);
-        if (ignoreRegex.test(comment)) {
-          continue; // Suppress via inline comment
-        }
+      if (isSuppressed) {
+        continue;
       }
     }
 

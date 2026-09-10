@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ESeverity, ESpecFormat, type ILintResult, type ITestResult } from "../../models/index.js";
-import { renderSmileReport, renderSmileTestReport } from "../cli.js";
+import { renderAggregateSmileReport, renderSmileReport, renderSmileTestReport } from "../cli.js";
 import { renderMarkdownReport, renderMarkdownTestReport } from "../markdown.js";
 
 describe("CLI and Markdown reporters", () => {
@@ -142,6 +142,45 @@ describe("CLI and Markdown reporters", () => {
       expect(md).toContain("### 🌐 Smile Smoke Test: http://localhost:3000");
       expect(md).toContain("| 🔴 Failed | **GET** `/users` | - unexpected-status-code: Expected status 200, got 500 (GET /users) |");
       expect(md).toContain("| ⏭️ Skipped | **DELETE** `/users/{id}` | Parameter id has no example |");
+    });
+  });
+
+  describe("renderAggregateSmileReport", () => {
+    it("returns empty string for empty results", () => {
+      expect(renderAggregateSmileReport([])).toBe("");
+    });
+
+    it("delegates to renderSmileReport for single result", () => {
+      const single = renderAggregateSmileReport([passingLintResult]);
+      expect(single).toContain("openapi spec signed clean — no errors.");
+      expect(single).toContain("⠿⢿⣿⣿");
+    });
+
+    it("prints clean per-spec summary and a single signature when all multiple specs pass", () => {
+      const passingAsyncApi: ILintResult = {
+        format: ESpecFormat.AsyncApi,
+        passed: true,
+        sourcePath: "asyncapi.yaml",
+        violations: [],
+      };
+
+      const output = renderAggregateSmileReport([passingLintResult, passingAsyncApi]);
+      expect(output).toContain("✅  openapi spec (openapi.yaml) signed clean.");
+      expect(output).toContain("✅  asyncapi spec (asyncapi.yaml) signed clean.");
+      expect(output).toContain("All 2 specifications signed clean — no errors.");
+      
+      // Signature should only appear once
+      const signatureOccurrences = output.split("⠿⢿⣿⣿").length - 1;
+      expect(signatureOccurrences).toBe(1);
+    });
+
+    it("prints failure details and count summary without smile signature when a spec fails", () => {
+      const output = renderAggregateSmileReport([passingLintResult, failingLintResult]);
+      expect(output).toContain("✅  openapi spec (openapi.yaml) signed clean.");
+      expect(output).toContain("🚫  openapi spec broke contract — 1 violation(s) found.");
+      expect(output).toContain("🔴 Scene 1 — paths./users.get");
+      expect(output).toContain("1 of 2 specification(s) broke contract.");
+      expect(output).not.toContain("⠿⢿⣿⣿");
     });
   });
 });

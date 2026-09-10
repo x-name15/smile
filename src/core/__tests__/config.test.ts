@@ -111,4 +111,82 @@ describe("Config Engine", () => {
     expect(resultAsyncApi.find((v) => v.ruleId === "rule-a")?.severity).toBe(ESeverity.Error);
     expect(resultAsyncApi.find((v) => v.ruleId === "rule-b")?.severity).toBe(ESeverity.Warning); // warned because we are in asyncapi format
   });
+
+  it("does not mutate the passed config object", () => {
+    const originalConfig: ISmileConfig = Object.freeze({});
+    const violations = [...dummyViolations];
+    expect(() => applyConfigToViolations(violations, originalConfig)).not.toThrow();
+  });
+
+  describe("Inline YAML Suppressions", () => {
+    const fs = require("node:fs");
+    const os = require("node:os");
+    const path = require("node:path");
+
+    let tempDir: string;
+
+    it("suppresses single, multiple, and wildcard rules via AST comments", () => {
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "smile-config-test-"));
+      const yamlFile = path.join(tempDir, "spec.yaml");
+
+      const yamlContent = `
+paths:
+  /users:
+    # smile-ignore-next-line missing-summary, missing-operation-id
+    get:
+      responses: {}
+    # smile-ignore-next-line all
+    post:
+      responses: {}
+    delete: # smile-ignore-line require-security
+      responses: {}
+`;
+      fs.writeFileSync(yamlFile, yamlContent, "utf-8");
+
+      const violations: IViolation[] = [
+        {
+          ruleId: "missing-summary",
+          severity: ESeverity.Error,
+          message: "Missing summary",
+          path: "paths./users.get.summary",
+        },
+        {
+          ruleId: "missing-operation-id",
+          severity: ESeverity.Error,
+          message: "Missing operationId",
+          path: "paths./users.get",
+        },
+        {
+          ruleId: "missing-summary",
+          severity: ESeverity.Error,
+          message: "Missing summary",
+          path: "paths./users.post.summary",
+        },
+        {
+          ruleId: "require-security",
+          severity: ESeverity.Error,
+          message: "Missing security",
+          path: "paths./users.delete",
+        },
+        {
+          ruleId: "other-rule",
+          severity: ESeverity.Error,
+          message: "Other violation",
+          path: "paths./users.get",
+        },
+      ];
+
+      const filtered = applyConfigToViolations(violations, {}, undefined, yamlFile);
+
+      // 'missing-summary' on GET was suppressed (comma list)
+      // 'missing-operation-id' on GET was suppressed (comma list)
+      // 'missing-summary' on POST was suppressed (all wildcard)
+      // 'require-security' on DELETE was suppressed (same-line smile-ignore-line)
+      // 'other-rule' on GET was NOT suppressed
+      expect(filtered).toHaveLength(1);
+      expect(filtered[0].ruleId).toBe("other-rule");
+
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    });
+  });
 });

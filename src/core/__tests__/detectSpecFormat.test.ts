@@ -32,7 +32,7 @@ describe("detectSpecFormat", () => {
     expect(result).toBe(ESpecFormat.AsyncApi);
   });
 
-  it("detects a JSON Schema by its $schema key", () => {
+  it("detects a JSON Schema by its $schema key pointing to json-schema.org", () => {
     const result = detectSpecFormat(
       path.join(fixturesDir, "sample-jsonschema.json"),
     );
@@ -44,6 +44,11 @@ describe("detectSpecFormat", () => {
       path.join(fixturesDir, "sample-jsonschema-clean.json"),
     );
     expect(result).toBe(ESpecFormat.JsonSchema);
+  });
+
+  it("does not falsely detect JSON SchemaStore configs as API specs", () => {
+    const tsconfigPath = path.resolve(__dirname, "../../../tsconfig.json");
+    expect(detectSpecFormat(tsconfigPath)).toBe(ESpecFormat.Unknown);
   });
 
   it("detects a GraphQL SDL by its .graphql extension", () => {

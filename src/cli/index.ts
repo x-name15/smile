@@ -12,12 +12,12 @@ const program = new Command();
 
 program
   .name("smile")
-  .description("Strict API contract validator for OpenAPI, AsyncAPI, JSON Schema, and GraphQL")
+  .description("Strict API contract validator for OpenAPI, AsyncAPI, JSON Schema, GraphQL, GRPC and Postman Collections")
   .version(VERSION);
 
 program
   .command("lint <specPath>")
-  .description("Statically lint a spec file or directory — auto-detects OpenAPI, AsyncAPI, JSON Schema, or GraphQL")
+  .description("Statically lint a spec file or directory — auto-detects OpenAPI, AsyncAPI, JSON Schema, GraphQL, gRPC, or Postman")
   .option("-f, --format <type>", "Output format (text, json, markdown, junit)", "text")
   .option("-p, --plugin <path>", "Load a custom plugin on the fly (overrides config)")
   .option("-q, --quiet", "Quiet mode (suppress text output, only print errors or format reports)", false)
@@ -27,7 +27,7 @@ program
       const { loadConfig } = await import("../core/index.js");
       const { lintSpec } = await import("../core/index.js");
       const { findSpecFiles, fireWebhooks } = await import("./utils.js");
-      const { renderJunitReport, renderMarkdownReport, renderSmileReport } = await import("../reporters/index.js");
+      const { renderJunitReport, renderMarkdownReport, renderAggregateSmileReport } = await import("../reporters/index.js");
       const { emitGithubStepSummary } = await import("../reporters/utils.js");
       
       const config = loadConfig();
@@ -70,9 +70,7 @@ program
       } else {
         // Aggregate rendering for text
         if (!options.quiet) {
-          for (const result of results) {
-            console.log(renderSmileReport(result));
-          }
+          console.log(renderAggregateSmileReport(results));
           const duration = Math.round(performance.now() - start);
           console.log(`\n⏱️  Done in ${duration}ms`);
         }

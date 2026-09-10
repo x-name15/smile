@@ -54,7 +54,7 @@ function toPascalCase(str: string): string {
  * @param specPath The path to the OpenAPI/AsyncAPI file.
  */
 export async function runDeduceCommand(specPath: string): Promise<void> {
-  p.intro("Welcome to Smile Deduce, Mentalist)");
+  p.intro("Welcome to Smile Deduce (The Mentalist)");
 
   const config = loadConfig();
   const result = await lintSpec(specPath, config);
