@@ -43,7 +43,7 @@ describe("CLI maxWarnings threshold & default specPath", () => {
 
     expect(totalWarnings).toBe(1);
 
-    const maxWarnings = 0;
+    const maxWarnings: number | undefined = 0;
     const warningsExceeded = maxWarnings !== undefined && maxWarnings >= 0 && totalWarnings > maxWarnings;
     expect(warningsExceeded).toBe(true);
 
@@ -61,7 +61,7 @@ describe("CLI maxWarnings threshold & default specPath", () => {
 
     expect(totalWarnings).toBe(1);
 
-    const maxWarnings = 1;
+    const maxWarnings: number | undefined = 1;
     const warningsExceeded = maxWarnings !== undefined && maxWarnings >= 0 && totalWarnings > maxWarnings;
     expect(warningsExceeded).toBe(false);
 

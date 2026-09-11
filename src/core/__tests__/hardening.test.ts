@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
-import { lintSpec, lintOpenApiSpec, lintAsyncApiSpec, lintGraphQLSpec, lintJsonSchemaSpec, applyConfigToViolations } from "../index.js";
+import { lintSpec, lintAsyncApiSpec, lintGraphQLSpec, lintJsonSchemaSpec, applyConfigToViolations } from "../index.js";
 import { ESeverity, ESpecFormat } from "../../models/index.js";
 
 const fixturesDir = path.resolve(__dirname, "../../../fixtures");
