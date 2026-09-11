@@ -1,11 +1,17 @@
 import { ESeverity, type ILintResult, type ITestResult } from "../models/index.js";
 import { emitCIAnnotations } from "./utils.js";
 
+export interface IRenderMarkdownOptions {
+  skipAnnotations?: boolean;
+}
+
 /**
  * Renders a lint result as a GitHub-friendly Markdown table.
  */
-export function renderMarkdownReport(result: ILintResult): string {
-  emitCIAnnotations(result.violations, result.sourcePath);
+export function renderMarkdownReport(result: ILintResult, options: IRenderMarkdownOptions = {}): string {
+  if (!options.skipAnnotations) {
+    emitCIAnnotations(result.violations, result.sourcePath);
+  }
   
   if (result.passed && result.violations.length === 0) {
     return `### ✅ Smile Report: ${result.format} spec signed clean — no errors.\n`;
@@ -26,9 +32,11 @@ export function renderMarkdownReport(result: ILintResult): string {
 /**
  * Renders a smoke test result as a Markdown table.
  */
-export function renderMarkdownTestReport(result: ITestResult): string {
+export function renderMarkdownTestReport(result: ITestResult, options: IRenderMarkdownOptions = {}): string {
   const allViolations = result.endpoints.flatMap(e => e.violations);
-  emitCIAnnotations(allViolations, result.sourcePath);
+  if (!options.skipAnnotations) {
+    emitCIAnnotations(allViolations, result.sourcePath);
+  }
   
   let md = `### 🌐 Smile Smoke Test: ${result.baseUrl}\n\n`;
   md += `| Status | Endpoint | Details |\n`;

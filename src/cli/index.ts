@@ -27,7 +27,7 @@ program
       const { loadConfig } = await import("../core/index.js");
       const { lintSpec } = await import("../core/index.js");
       const { findSpecFiles, fireWebhooks } = await import("./utils.js");
-      const { renderJunitReport, renderMarkdownReport, renderAggregateSmileReport } = await import("../reporters/index.js");
+      const { renderAggregateJunitReport, renderMarkdownReport, renderAggregateSmileReport } = await import("../reporters/index.js");
       const { emitGithubStepSummary } = await import("../reporters/utils.js");
       
       const config = loadConfig();
@@ -53,7 +53,7 @@ program
 
       // Always generate step summary in Github Actions if we're running tests
       if (process.env.GITHUB_ACTIONS === "true") {
-        const mdSummary = results.map(r => renderMarkdownReport(r)).join("\n---\n");
+        const mdSummary = results.map(r => renderMarkdownReport(r, { skipAnnotations: true })).join("\n---\n");
         emitGithubStepSummary(mdSummary);
       }
 
@@ -64,9 +64,7 @@ program
           console.log(renderMarkdownReport(result));
         }
       } else if (outputFormat === "junit") {
-        for (const result of results) {
-          console.log(renderJunitReport(result));
-        }
+        console.log(renderAggregateJunitReport(results));
       } else {
         // Aggregate rendering for text
         if (!options.quiet) {
@@ -136,7 +134,7 @@ program
       
       // Always generate step summary in Github Actions if we're running tests
       if (process.env.GITHUB_ACTIONS === "true") {
-        emitGithubStepSummary(renderMarkdownTestReport(result));
+        emitGithubStepSummary(renderMarkdownTestReport(result, { skipAnnotations: true }));
       }
 
       if (outputFormat === "json") {

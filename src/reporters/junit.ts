@@ -9,16 +9,11 @@ function escapeXml(value: unknown): string {
     .replace(/'/g, "&apos;");
 }
 
-/**
- * Renders a lint result as a JUnit XML report.
- */
-export function renderJunitReport(result: ILintResult): string {
+function renderLintTestSuite(result: ILintResult): string {
   const failuresCount = result.violations.filter(v => v.severity === ESeverity.Error).length;
   const testsCount = Math.max(result.violations.length, 1);
 
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-  xml += `<testsuites name="Smile Lint">\n`;
-  xml += `  <testsuite name="Spec Validation: ${escapeXml(result.sourcePath)}" tests="${testsCount}" failures="${failuresCount}" errors="0" skipped="0">\n`;
+  let xml = `  <testsuite name="Spec Validation: ${escapeXml(result.sourcePath)}" tests="${testsCount}" failures="${failuresCount}" errors="0" skipped="0">\n`;
 
   if (result.passed && result.violations.length === 0) {
     xml += `    <testcase classname="${escapeXml(result.format)}" name="Contract adheres to all rules" />\n`;
@@ -33,8 +28,33 @@ export function renderJunitReport(result: ILintResult): string {
   }
 
   xml += `  </testsuite>\n`;
+  return xml;
+}
+
+/**
+ * Renders a lint result as a JUnit XML report.
+ */
+export function renderJunitReport(result: ILintResult): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<testsuites name="Smile Lint">\n`;
+  xml += renderLintTestSuite(result);
   xml += `</testsuites>\n`;
   
+  return xml;
+}
+
+/**
+ * Renders multiple lint results as a single aggregated JUnit XML report
+ * containing a root <testsuites> and a <testsuite> for each specification.
+ */
+export function renderAggregateJunitReport(results: ILintResult[]): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<testsuites name="Smile Lint">\n`;
+  for (const result of results) {
+    xml += renderLintTestSuite(result);
+  }
+  xml += `</testsuites>\n`;
+
   return xml;
 }
 

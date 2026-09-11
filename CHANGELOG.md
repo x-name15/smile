@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.5] - 2026-09-11 — CI/CD Improvements: Aggregate JUnit & Clean JSON
+
+### Added
+- **Aggregate JUnit XML Reporter (`renderAggregateJunitReport`):** Added a dedicated multi-spec JUnit reporter that consolidates multiple lint results into a single, compliant XML document (`<testsuites>` wrapping individual `<testsuite>` entries). Eliminates corrupted XML output caused by duplicate declarations and root tags when linting directories with `-f junit`.
+
+### Fixed
+- **Clean JSON stdout in GitHub Actions:** Decoupled GitHub workflow annotations (`::error`, `::warning`) from step summary markdown generation via `skipAnnotations: true`. When `--format json` is selected, standard output is now guaranteed to remain 100% pure JSON without workflow command prefixes, restoring piping compatibility (`smile lint -f json | jq`).
+
+### Tests
+- Added test coverage in `src/reporters/__tests__/junit.test.ts` verifying that `renderAggregateJunitReport` emits a single XML declaration and root `<testsuites>` element containing multiple `<testsuite>` elements.
+- Added test coverage in `src/cli/__tests__/ciOutput.test.ts` verifying annotation suppression and clean stdout during GitHub Actions runs.
+
+---
+
 ## [1.6.4] - 2026-09-11 — Pipeline Hardening & AST Optimization
 
 ### Added
