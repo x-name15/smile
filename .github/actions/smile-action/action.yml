@@ -6,7 +6,7 @@ author: "Mr Jacket / x-name15 / Felix Manrique"
 
 branding:
   icon: "shield"
-  color: "blue"
+  color: "red"
 
 inputs:
   spec-path:
