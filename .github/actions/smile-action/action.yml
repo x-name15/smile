@@ -5,7 +5,7 @@ description: "Strict API contract validator for OpenAPI, AsyncAPI, GraphQL, gRPC
 author: "Mr Jacket / x-name15 / Felix Manrique"
 
 branding:
-  icon: "smile"
+  icon: "alert-triangle"
   color: "red"
 
 inputs:
