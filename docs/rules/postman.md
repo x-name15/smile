@@ -78,7 +78,7 @@ array. This rule exists for two reasons:
 
 1. **Documentation:** Examples are the clearest possible contract for what a
    successful response looks like.
-2. **Runtime Validation (v1.4.1):** The Breaching Detector will use these saved
+2. **Runtime Validation:** The Breaching Detector uses these saved
    examples to validate live HTTP responses against. Without examples, runtime
    validation cannot run.
 

@@ -1,7 +1,7 @@
 # JSON Schema Rules Reference
 
 These rules run when `smile lint` detects a JSON Schema document
-(a `.json` file containing a top-level `$schema` key).
+(a file with a `$schema` pointing to an official `json-schema.org` dialect, or named `.schema.json` / `.schema.yaml`).
 
 All rules are active by default.
 

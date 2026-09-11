@@ -26,11 +26,19 @@ production build, and packaged-artifact validation.
 `smile` detects when it runs inside a GitHub Actions environment (`$GITHUB_ACTIONS === "true"`) and automatically enhances your workflow.
 
 ### Inline Annotations
-Instead of forcing developers to dig through raw console logs, `smile` injects native `::error::` and `::warning::` workflow commands. GitHub reads these and attaches the violations as **inline comments directly on the Pull Request code diff**.
+Instead of forcing developers to dig through raw console logs, `smile` injects native `::error::` and `::warning::` workflow commands. GitHub reads these and attaches the violations as **inline comments directly on the Pull Request code diff**. When using `--format json`, annotations are automatically decoupled from standard output so tools like `jq` can parse the JSON stream cleanly.
 
 ### Step Summaries
 At the end of a `lint` or `test` run, `smile` automatically generates a beautiful Markdown dashboard and appends it to `$GITHUB_STEP_SUMMARY`. 
 When your pipeline finishes, developers will see a rich, visual breakdown of their API contract directly in the GitHub UI.
+
+### Enforcing Strict Warning Budgets
+By default, warnings do not fail the CI run. To enforce zero-tolerance quality gates where warnings block PR merges:
+
+```bash
+# Fail CI if there are any warnings (exit code 1)
+npx @mrjacket/smile lint --max-warnings 0
+```
 
 ```yaml
 # .github/workflows/smile.yml
@@ -57,7 +65,7 @@ jobs:
         run: npm ci
 
       - name: Lint API specifications
-        run: npx @mrjacket/smile lint ./specs/
+        run: npx @mrjacket/smile lint --max-warnings 0
 ```
 
 ---
@@ -65,11 +73,11 @@ jobs:
 ## 2. GitLab CI, Jenkins, and SonarQube (JUnit)
 
 Many enterprise dashboards rely on the standard JUnit XML format to display interactive metrics and graphs.
-You can use the `--format junit` flag to instruct `smile` to output a raw XML report.
+You can use the `--format junit` flag to instruct `smile` to output a raw XML report. When scanning a directory with multiple specifications, `smile` automatically aggregates all specs into a single, well-formed `<testsuites>` document.
 
 ```bash
-# Output XML for GitLab CI
-npx @mrjacket/smile lint ./openapi.yaml --format junit > test-report.xml
+# Output XML for GitLab CI (single spec or entire directory)
+npx @mrjacket/smile lint ./specs/ --format junit > test-report.xml
 
 # Output XML for the Breaching Detector
 npx @mrjacket/smile test ./openapi.yaml https://api.staging.example.com --format junit > smoke-report.xml
@@ -78,12 +86,12 @@ npx @mrjacket/smile test ./openapi.yaml https://api.staging.example.com --format
 To keep your logs completely clean while generating these reports, pair it with the Quiet flag:
 
 ```bash
-npx @mrjacket/smile lint ./openapi.yaml --format junit --quiet > test-report.xml
+npx @mrjacket/smile lint ./specs/ --format junit --quiet > test-report.xml
 ```
 
 JUnit output is escaped for XML attributes and failure text, so messages,
 paths, and URLs containing `&`, `<`, or quotes remain consumable by GitLab,
-Jenkins, and SonarQube.
+Jenkins, and SonarQube without duplicate XML declarations or root tags.
 
 Runtime requests have a 30-second upper bound. A timeout produces an
 `endpoint-timeout` error, allowing a pipeline to fail with a useful reason
@@ -100,7 +108,7 @@ smile_lint:
   stage: test
   image: node:22-alpine
   script:
-    - npx @mrjacket/smile lint ./openapi.yaml --format junit > smile-report.xml
+    - npx @mrjacket/smile lint ./specs/ --format junit --max-warnings 0 > smile-report.xml
   artifacts:
     when: always
     reports:

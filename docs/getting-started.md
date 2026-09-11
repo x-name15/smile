@@ -45,9 +45,13 @@ smile init
 ## Linting a spec file
 
 `smile lint` reads your spec, detects its format automatically, and reports any
-violations it finds.
+violations it finds. When run without arguments, `smile lint` defaults to scanning the current directory (`.`).
 
 ```bash
+# Lint current directory (defaults to .)
+smile lint
+
+# Lint a specific file or directory
 smile lint ./openapi.yaml
 smile lint ./asyncapi.yaml
 smile lint ./schema.json       # JSON Schema
@@ -60,6 +64,7 @@ smile lint ./collection.json   # Postman Collection
 - `-f, --format <type>`: Output format (`text`, `json`, `markdown`, `junit`). Defaults to `text`.
 - `-p, --plugin <path>`: Dynamically load a custom JavaScript/TypeScript plugin on the fly.
 - `-q, --quiet`: Quiet mode. Suppresses standard text output and only prints errors or formatted reports.
+- `-w, --max-warnings <number>`: Number of warnings to trigger non-zero exit code (`1`). Set to `0` for zero-tolerance CI quality gates.
 
 ### What you'll see on a passing spec
 

@@ -47,6 +47,7 @@ You can set any valid rule to one of three severities:
     "X-Api-Key": "12345"
   },
   "requestTimeoutMs": 10000,
+  "maxWarnings": 0,
   "webhooks": [
     "https://hookSlackazo/services/blablabla"
   ],
@@ -70,6 +71,9 @@ The maximum time in milliseconds allowed for each runtime request made by
 `smile test`. It must be a finite positive number. If it is missing or invalid,
 Smile falls back to `30000` milliseconds (30 seconds). A timeout is reported as
 an `endpoint-timeout` error.
+
+### `maxWarnings` (optional)
+A maximum number of warnings permitted across all specifications before `smile lint` fails with exit code `1`. Set to `0` to treat all warnings as errors in CI/CD quality gates without manually reconfiguring each rule to `"error"`. Can be overridden via CLI with `--max-warnings <number>`.
 
 ### `webhooks` (optional)
 An array of webhook URLs (e.g. Slack, Discord, MS Teams). If `smile lint` or `smile test` detects a violation, it will automatically send a POST request to these URLs with a JSON summary of the failure.
@@ -120,7 +124,7 @@ smile config
 
 ## The Rule Matrix
 
-If you have 0 errors but 3 warnings, `smile` will print the warnings natively, print the Smile Signature, and successfully exit with `0`.
+If you have 0 errors but 3 warnings, `smile` will print the warnings natively, print the Smile Signature, and successfully exit with `0` (unless a `maxWarnings` threshold is configured and exceeded).
 
 ---
 

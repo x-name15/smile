@@ -11,7 +11,7 @@ All rules are active by default.
 
 **Severity:** Error
 
-Every `rpc` method inside a `service` must have a block comment (`/* ... */`)
+Every `rpc` method inside a `service` must have a doc comment (`// ...` or `/* ... */`)
 describing what it does. Undocumented RPC methods leave consumers with no way
 to understand the contract without reading the source implementation.
 

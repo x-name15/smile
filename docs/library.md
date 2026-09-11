@@ -50,7 +50,13 @@ enum ESpecFormat {
 }
 
 interface ISmileConfig {
-  rules?: Record<string, "error" | "warn" | "off">;
+  plugins?: string[];
+  rules?: Record<string, "error" | "warn" | "off" | Record<string, "error" | "warn" | "off">>;
+  webhooks?: string[];
+  testHeaders?: Record<string, string>;
+  requestTimeoutMs?: number;
+  format?: "text" | "json" | "markdown" | "junit";
+  maxWarnings?: number;
 }
 ```
 
@@ -131,6 +137,43 @@ const format = detectSpecFormat("./openapi.yaml");
 
 const gqlFormat = detectSpecFormat("./schema.graphql");
 // → ESpecFormat.GraphQL
+```
+
+---
+
+## Directory scanning: `findSpecFiles`
+
+Recursively scan a directory for all supported API specifications, automatically respecting `.gitignore`, `.smileignore`, and excluding build artifacts or package manifests:
+
+```ts
+import { findSpecFiles, lintSpec, renderAggregateSmileReport } from "@mrjacket/smile";
+
+// Discovers .yaml, .json, .graphql, .proto files in ./specs
+const specPaths = findSpecFiles("./specs");
+
+const results = await Promise.all(specPaths.map(p => lintSpec(p)));
+console.log(renderAggregateSmileReport(results));
+```
+
+---
+
+## Low-level format parsers
+
+Smile exports its internal format parsers if you need to load and dereference specifications into raw JavaScript/TypeScript AST objects without running the rule engine:
+
+```ts
+import {
+  parseOpenApiSpec,
+  parseAsyncApiSpec,
+  parseJsonSchemaSpec,
+  parseGraphQLSpec,
+  parseGrpcSpec,
+  parsePostmanSpec,
+} from "@mrjacket/smile";
+
+// Parsed OpenAPI document with resolved $ref pointers
+const parsed = await parseOpenApiSpec("./openapi.yaml");
+console.log(parsed.raw.info.title);
 ```
 
 ---
@@ -332,6 +375,41 @@ import { writeFileSync } from "node:fs";
 
 const result = await lintSpec("./openapi.yaml");
 writeFileSync("lint-results.json", JSON.stringify(result, null, 2));
+```
+
+---
+
+## Reporters & Formatting
+
+All formatting reporters used by the CLI are exported directly from `@mrjacket/smile` so you can format validation results directly in your own scripts, CI bots, or PR comment integrations:
+
+```ts
+import {
+  lintSpec,
+  renderSmileReport,
+  renderAggregateSmileReport,
+  renderMarkdownReport,
+  renderJunitReport,
+  renderAggregateJunitReport,
+  renderSmileTestReport,
+  renderMarkdownTestReport,
+  renderJunitTestReport,
+} from "@mrjacket/smile";
+
+const result = await lintSpec("./openapi.yaml");
+
+// 1. Standard Smile CLI signature report
+console.log(renderSmileReport(result));
+
+// 2. GitHub-friendly Markdown table
+const markdown = renderMarkdownReport(result, { skipAnnotations: true });
+
+// 3. Single-spec JUnit XML report
+const xml = renderJunitReport(result);
+
+// 4. Multi-spec aggregated JUnit XML report (for test runners)
+const batch = await Promise.all(["./api.yaml", "./events.yaml"].map(f => lintSpec(f)));
+const aggregatedXml = renderAggregateJunitReport(batch);
 ```
 
 ---

@@ -48,25 +48,31 @@ npx @mrjacket/smile init
 Lint any specification file instantly. `smile` exits with code `1` if violations are found, making it perfect for CI/CD.
 
 ```bash
+# Lint current directory (defaults to .)
+npx @mrjacket/smile lint
+
 # Lint a specific file
 npx @mrjacket/smile lint ./openapi.yaml
 
 # Lint an entire directory (auto-discovers supported specification files)
-npx @mrjacket/smile lint .
+npx @mrjacket/smile lint ./specs/
+
+# Enforce strict warning limits in CI (exit code 1 if warnings > limit)
+npx @mrjacket/smile lint --max-warnings 0
 ```
 
 > **Tip:** `smile` automatically respects your repository's `.gitignore` as well as standard build directories (`dist/`, `build/`, `coverage/`). You can also create a `.smileignore` file in your root directory to define Smile-specific exclusions!
 
 You can optionally output the results as raw JSON, Markdown, or JUnit (for CI/CD dashboards):
 ```bash
-npx @mrjacket/smile lint . --format json
-npx @mrjacket/smile lint . --format markdown > report.md
-npx @mrjacket/smile lint . --format junit > junit.xml
+npx @mrjacket/smile lint --format json
+npx @mrjacket/smile lint --format markdown > report.md
+npx @mrjacket/smile lint --format junit > junit.xml
 ```
 
 To suppress all CLI menus and art in CI environments, use the `--quiet` or `-q` flag:
 ```bash
-npx @mrjacket/smile lint . --quiet
+npx @mrjacket/smile lint --quiet
 ```
 
 *Supported formats: `.yaml`, `.yml`, `.json`, `.graphql`, `.gql`, `.proto`*
@@ -105,7 +111,13 @@ npm install --save-dev @mrjacket/smile
 ```
 
 ```ts
-import { validateResponseAgainstSchema } from "@mrjacket/smile";
+import {
+  lintSpec,
+  validateResponseAgainstSchema,
+  renderSmileReport,
+  renderMarkdownReport,
+  renderAggregateJunitReport
+} from "@mrjacket/smile";
 
 it("GET /users returns a valid payload according to the spec", async () => {
   const response = await fetch("http://localhost:3000/users");
@@ -127,13 +139,14 @@ The CLI supports the following filenames: `config.smile.json`, `smile.config.jso
 ```json
 {
   "requestTimeoutMs": 10000,
+  "maxWarnings": 0,
   "rules": {
     "missing-operation-id": "warn",
     "untyped-property": "off"
   }
 }
 ```
-*Rules set to `"warn"` will print yellow alerts in the CLI but will exit with code `0` (Success).*
+*Rules set to `"warn"` will print yellow alerts in the CLI and will exit with code `0` unless `--max-warnings` threshold is exceeded.*
 
 `requestTimeoutMs` controls the maximum duration of each `smile test` request.
 It must be a positive finite number; invalid or missing values fall back to

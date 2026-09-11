@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.7] - 2026-09-11 — Library Reporter Exports & 1:1 Docs Alignment
+
+### Added
+- **Programmatic Reporter Exports:** Re-exported all CLI, Markdown, and JUnit reporters (`renderSmileReport`, `renderAggregateSmileReport`, `renderMarkdownReport`, `renderJunitReport`, `renderAggregateJunitReport`, `renderSmileTestReport`, `renderMarkdownTestReport`, `renderJunitTestReport`, `formatViolation`, `emitCIAnnotations`, `emitGithubStepSummary`) directly from the package entry point (`@mrjacket/smile`). Allows programmatic library users to format validation and smoke test results in custom scripts, bots, and CI workflows without parsing raw data structures.
+- **Directory Scanner & Helper Exports:** Re-exported `findSpecFiles` (smart directory scanner respecting `.gitignore` and `.smileignore`) and `VERSION` constant directly from `@mrjacket/smile`.
+- **Low-Level Spec Parsers:** Re-exported format parsers (`parseOpenApiSpec`, `parseAsyncApiSpec`, `parseJsonSchemaSpec`, `parseGraphQLSpec`, `parseGrpcSpec`, `parsePostmanSpec`) from package root for users who need to load and dereference specifications without executing lint rules.
+
+### Docs
+- **1:1 Documentation Alignment:** Comprehensive update across `README.md` and `docs/` (`library.md`, `getting-started.md`, `configuration.md`, `ci-cd.md`):
+  - Documented `Reporters & Formatting` section in `docs/library.md` with programmatic code examples.
+  - Documented `smile lint` current directory default (`.`) and `-w, --max-warnings <number>` in `docs/getting-started.md`.
+  - Documented `maxWarnings` configuration option under Advanced Options in `docs/configuration.md`.
+  - Documented multi-spec JUnit consolidation (`renderAggregateJunitReport`), GitHub Actions JSON piping cleanliness, and warning budget enforcement in `docs/ci-cd.md`.
+  - Updated CLI command tables, library snippets, and configuration samples in `README.md`.
+
+### Tests
+- Added test coverage in `src/core/__tests__/reporterExports.test.ts` verifying that all formatting reporters are exported from the library package root.
+
+---
+
 ## [1.6.6] - 2026-09-11 — CLI Ergonomics: Default specPath & Warning Thresholds
 
 ### Added
