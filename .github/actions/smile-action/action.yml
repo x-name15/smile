@@ -1,6 +1,9 @@
-name: "Run Smile API Linter"
-description: "Relentless gatekeeper for API specs (OpenAPI, AsyncAPI, GraphQL, gRPC, JSON Schema, Postman)"
-author: "Mr Jacket"
+name: "Smile API Linter"
+
+description: "smile is a strict API contract validator built for Node.js test suites and CI pipelines. (OpenAPI, AsyncAPI, GraphQL, gRPC, JSON Schema, Postman)"
+
+author: "Mr Jacket / x-name15 / Felix Manrique"
+
 inputs:
   spec-path:
     description: "Path to file or directory containing specs (defaults to current directory)"
