@@ -4,6 +4,10 @@ description: "Strict API contract validator for OpenAPI, AsyncAPI, GraphQL, gRPC
 
 author: "Mr Jacket / x-name15 / Felix Manrique"
 
+branding:
+  icon: "shield"
+  color: "blue"
+
 inputs:
   spec-path:
     description: "Path to file or directory containing specs (defaults to current directory)"
