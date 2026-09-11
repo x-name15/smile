@@ -6,6 +6,7 @@
 [![ci](https://github.com/x-name15/smile/actions/workflows/ci.yml/badge.svg)](https://github.com/x-name15/smile/actions/workflows/ci.yml)
 [![types](https://img.shields.io/npm/types/@mrjacket/smile.svg)](https://www.npmjs.com/package/@mrjacket/smile)
 [![license](https://img.shields.io/npm/l/@mrjacket/smile.svg)](https://github.com/x-name15/smile/blob/main/LICENSE)
+[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Smile%20API%20Linter-blue?logo=github)](https://github.com/marketplace/actions/smile-api-linter)
 
 **smile** is a strict API contract validator built for Node.js test suites and CI pipelines. 
 
@@ -184,7 +185,7 @@ Full documentation is available in the [`docs/`](./docs) directory:
 
 - [Getting Started](./docs/getting-started.md) — CLI usage, basic commands, and exit codes.
 - [CI/CD & DevOps](./docs/ci-cd.md) — GitHub Actions, GitLab CI, JUnit, and Webhooks.
-  - **Official GitHub Action:** [`x-name15/smile-action`](https://github.com/x-name15/smile-action) — drop-in composite action, zero setup required.
+  - **Official GitHub Action:** [smile-api-linter](https://github.com/marketplace/actions/smile-api-linter) on the GitHub Marketplace — drop-in composite action, zero setup required.
 - [Writing Plugins](./docs/plugins.md) — How to write and inject custom JavaScript/TypeScript rules.
 - [Library API](./docs/library.md) — Programmatic usage, Vitest integration, and working with violations.
 - [Configuration](./docs/configuration.md) — Complete guide to customizing rules, webhooks, and test headers in your config.smile.json.

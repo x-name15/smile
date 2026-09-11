@@ -31,21 +31,22 @@ jobs:
           path: smile-action-repo
           fetch-depth: 0
 
-      - name: Copy action.yml
+      - name: Copy action.yml and README.md
         run: |
           cp .github/actions/smile-action/action.yml smile-action-repo/action.yml
+          cp .github/actions/smile-action/README.md smile-action-repo/README.md
 
-      - name: Commit and push if action.yml changed
+      - name: Commit and push if files changed
         working-directory: smile-action-repo
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          if git diff --quiet action.yml; then
-            echo "action.yml unchanged — skipping commit."
+          if git diff --quiet action.yml README.md; then
+            echo "No changes — skipping commit."
           else
-            git add action.yml
-            git commit -m "chore: sync action.yml from x-name15/smile@${{ github.sha }}"
+            git add action.yml README.md
+            git commit -m "chore: sync from x-name15/smile@${{ github.sha }}"
             git push
           fi
 

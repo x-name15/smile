@@ -69,10 +69,12 @@ jobs:
 ```
 
 ### Official Composite Action (`smile-action`)
-Use the dedicated [`x-name15/smile-action`](https://github.com/x-name15/smile-action) repository to lint your API specs in 3 lines of YAML — no `npm install`, no `setup-node`, no configuration:
+[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Smile%20API%20Linter-blue?logo=github)](https://github.com/marketplace/actions/smile-api-linter)
+
+Available on the [GitHub Actions Marketplace](https://github.com/marketplace/actions/smile-api-linter). Lint your API specs in 3 lines of YAML — no `npm install`, no `setup-node`, no configuration:
 
 ```yaml
-      - name: Run Smile Action
+      - name: Lint API specs
         uses: x-name15/smile-action@v1
         with:
           spec-path: "."
