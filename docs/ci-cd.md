@@ -68,6 +68,36 @@ jobs:
         run: npx @mrjacket/smile lint --max-warnings 0
 ```
 
+### Official Composite Action (`smile-action`)
+Use the dedicated [`x-name15/smile-action`](https://github.com/x-name15/smile-action) repository to lint your API specs in 3 lines of YAML — no `npm install`, no `setup-node`, no configuration:
+
+```yaml
+      - name: Run Smile Action
+        uses: x-name15/smile-action@v1
+        with:
+          spec-path: "."
+          format: "text"
+          max-warnings: 0
+          sarif-file: "smile-results.sarif"
+          upload-sarif: "true"
+```
+
+> **Tip:** Pin to a specific version tag (e.g. `x-name15/smile-action@v1.7.0`) for reproducible builds, or use `@v1` to always get the latest stable release automatically.
+
+### GitHub Code Scanning & Security Tab (SARIF)
+`smile` natively outputs OASIS SARIF v2.1.0 (`-f sarif`). Uploading this output allows contract violations to appear directly in the **Security -> Code scanning** alerts tab of your repository, complete with rule descriptions and links to documentation.
+
+```yaml
+      - name: Generate SARIF Security Report
+        run: npx @mrjacket/smile lint --format sarif > smile-results.sarif
+        continue-on-error: true
+
+      - name: Upload SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: smile-results.sarif
+```
+
 ---
 
 ## 2. GitLab CI, Jenkins, and SonarQube (JUnit)

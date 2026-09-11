@@ -1,0 +1,61 @@
+name: "Run Smile API Linter"
+description: "Relentless gatekeeper for API specs (OpenAPI, AsyncAPI, GraphQL, gRPC, JSON Schema, Postman)"
+author: "Mr Jacket"
+inputs:
+  spec-path:
+    description: "Path to file or directory containing specs (defaults to current directory)"
+    required: false
+    default: "."
+  format:
+    description: "Output format: text, json, markdown, junit, sarif"
+    required: false
+    default: "text"
+  max-warnings:
+    description: "Maximum allowed warnings before failing (-1 for unlimited)"
+    required: false
+    default: "-1"
+  fix:
+    description: "Automatically apply safe non-breaking contract fixes before linting"
+    required: false
+    default: "false"
+  quiet:
+    description: "Suppress standard logs and only emit errors/reporters"
+    required: false
+    default: "false"
+  sarif-file:
+    description: "Optional file path to output SARIF report (e.g. smile-results.sarif)"
+    required: false
+    default: ""
+  upload-sarif:
+    description: "Automatically upload SARIF report to GitHub Code Scanning (requires sarif-file)"
+    required: false
+    default: "false"
+
+outputs:
+  sarif-file:
+    description: "Path to generated SARIF report (if requested)"
+    value: ${{ inputs.sarif-file }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Smile Linter
+      shell: bash
+      run: |
+        ARGS="${{ inputs.spec-path }} -f ${{ inputs.format }} --max-warnings ${{ inputs.max-warnings }}"
+        if [ "${{ inputs.fix }}" = "true" ]; then
+          ARGS="$ARGS --fix"
+        fi
+        if [ "${{ inputs.quiet }}" = "true" ]; then
+          ARGS="$ARGS --quiet"
+        fi
+        if [ -n "${{ inputs.sarif-file }}" ]; then
+          npx --yes @mrjacket/smile lint "${{ inputs.spec-path }}" -f sarif > "${{ inputs.sarif-file }}"
+        fi
+        npx --yes @mrjacket/smile lint $ARGS
+
+    - name: Upload SARIF to GitHub Code Scanning
+      if: ${{ inputs.upload-sarif == 'true' && inputs.sarif-file != '' }}
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ inputs.sarif-file }}

@@ -16,6 +16,10 @@ import {
   renderJunitReport,
   renderAggregateJunitReport,
   renderJunitTestReport,
+  renderSarifReport,
+  renderAggregateSarifReport,
+  validateAsyncApiMessage,
+  fixSpecFile,
   formatViolation,
   emitCIAnnotations,
   emitGithubStepSummary,
@@ -24,7 +28,7 @@ import {
 describe("Core library public API exports", () => {
   it("exports VERSION string matching package release", () => {
     expect(typeof VERSION).toBe("string");
-    expect(VERSION).toBe("1.6.7");
+    expect(VERSION).toBe("1.7.0");
   });
 
   it("exports findSpecFiles directory scanner", () => {
@@ -40,7 +44,7 @@ describe("Core library public API exports", () => {
     expect(typeof parsePostmanSpec).toBe("function");
   });
 
-  it("exports all CLI, Markdown, and JUnit reporters directly from core entry point", () => {
+  it("exports all CLI, Markdown, JUnit, and SARIF reporters directly from core entry point", () => {
     expect(typeof renderSmileReport).toBe("function");
     expect(typeof renderAggregateSmileReport).toBe("function");
     expect(typeof renderSmileTestReport).toBe("function");
@@ -49,8 +53,15 @@ describe("Core library public API exports", () => {
     expect(typeof renderJunitReport).toBe("function");
     expect(typeof renderAggregateJunitReport).toBe("function");
     expect(typeof renderJunitTestReport).toBe("function");
+    expect(typeof renderSarifReport).toBe("function");
+    expect(typeof renderAggregateSarifReport).toBe("function");
     expect(typeof formatViolation).toBe("function");
     expect(typeof emitCIAnnotations).toBe("function");
     expect(typeof emitGithubStepSummary).toBe("function");
+  });
+
+  it("exports AsyncAPI runtime message validator and safe autofix engine", () => {
+    expect(typeof validateAsyncApiMessage).toBe("function");
+    expect(typeof fixSpecFile).toBe("function");
   });
 });

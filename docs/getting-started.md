@@ -61,10 +61,11 @@ smile lint ./collection.json   # Postman Collection
 ```
 
 **CLI Options:**
-- `-f, --format <type>`: Output format (`text`, `json`, `markdown`, `junit`). Defaults to `text`.
+- `-f, --format <type>`: Output format (`text`, `json`, `markdown`, `junit`, `sarif`). Defaults to `text`.
 - `-p, --plugin <path>`: Dynamically load a custom JavaScript/TypeScript plugin on the fly.
 - `-q, --quiet`: Quiet mode. Suppresses standard text output and only prints errors or formatted reports.
 - `-w, --max-warnings <number>`: Number of warnings to trigger non-zero exit code (`1`). Set to `0` for zero-tolerance CI quality gates.
+- `--fix`: Automatically fix safe, non-breaking contract issues (e.g. missing `operationId`, `summary`) while preserving YAML comments and indentation.
 
 ### What you'll see on a passing spec
 
@@ -186,7 +187,18 @@ Testing against http://localhost:3000 — 2 endpoint(s) tested, 0 skipped
 
 > **Note:** The Breaching Detector currently supports `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` requests for OpenAPI specs, and full structural validation for Postman Collections. OpenAPI path parameters require an `example` or `default` value to be auto-tested; otherwise the endpoint is reported as skipped. Postman absolute request URLs are preserved.
 > Runtime requests are bounded to 30 seconds. A timeout is reported as `endpoint-timeout` so CI logs distinguish it from an unreachable endpoint.
-> Support for AsyncAPI runtime validation is on the roadmap.
+---
+
+### AsyncAPI Runtime Validation
+Validate live event payloads from Kafka, RabbitMQ, or MQTT subscribers directly against your AsyncAPI specification:
+
+```bash
+# Validate JSON string payload
+smile test-message ./asyncapi.yaml user/signedup -p '{"userId":"usr_123","email":"alice@example.com"}'
+
+# Validate from a payload file
+smile test-message ./asyncapi.yaml orderCreated -p ./event-payload.json
+```
 
 > **💡 Smart Hypermedia Validation:** If the target server responds with `application/vnd.api+json` (JSON:API) or `application/hal+json` (HAL), `smile test` automatically upgrades its checks to strictly enforce official hypermedia structural constraints on the payload, completely zero-config.
 

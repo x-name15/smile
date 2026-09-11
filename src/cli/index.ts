@@ -18,16 +18,17 @@ program
 program
   .command("lint [specPath]")
   .description("Statically lint a spec file or directory (defaults to current directory) — auto-detects OpenAPI, AsyncAPI, JSON Schema, GraphQL, gRPC, or Postman")
-  .option("-f, --format <type>", "Output format (text, json, markdown, junit)", "text")
+  .option("-f, --format <type>", "Output format (text, json, markdown, junit, sarif)", "text")
   .option("-p, --plugin <path>", "Load a custom plugin on the fly (overrides config)")
   .option("-q, --quiet", "Quiet mode (suppress text output, only print errors or format reports)", false)
   .option("-w, --max-warnings <number>", "Number of warnings to trigger non-zero exit code (-1 for unlimited)", parseInt)
-  .action(async (specPath: string = ".", options: { format: string, quiet: boolean, plugin?: string, maxWarnings?: number }) => {
+  .option("--fix", "Automatically fix safe, non-breaking contract issues (e.g. missing operationId, summary)", false)
+  .action(async (specPath: string = ".", options: { format: string, quiet: boolean, plugin?: string, maxWarnings?: number, fix?: boolean }) => {
     const start = performance.now();
     try {
       const { loadConfig, lintSpec, ESeverity } = await import("../core/index.js");
       const { findSpecFiles, fireWebhooks, isMaxWarningsExceeded } = await import("./utils.js");
-      const { renderAggregateJunitReport, renderMarkdownReport, renderAggregateSmileReport } = await import("../reporters/index.js");
+      const { renderAggregateJunitReport, renderAggregateSarifReport, renderMarkdownReport, renderAggregateSmileReport } = await import("../reporters/index.js");
       const { emitGithubStepSummary } = await import("../reporters/utils.js");
       
       const config = loadConfig();
@@ -48,6 +49,23 @@ program
         }
         process.exitCode = 0;
         return;
+      }
+
+      if (options.fix) {
+        const { fixSpecFile } = await import("../core/fixer/index.js");
+        let totalFixed = 0;
+        for (const file of files) {
+          const res = fixSpecFile(file);
+          totalFixed += res.fixedCount;
+          if (res.fixedCount > 0 && !options.quiet && outputFormat === "text") {
+            for (const change of res.changes) {
+              console.log(`✨ [autofix] ${change} (${file})`);
+            }
+          }
+        }
+        if (totalFixed > 0 && !options.quiet && outputFormat === "text") {
+          console.log(`\n✨ Fixed ${totalFixed} issue${totalFixed === 1 ? "" : "s"} across ${files.length} file${files.length === 1 ? "" : "s"}.\n`);
+        }
       }
 
       const results = await Promise.all(files.map(f => lintSpec(f, config)));
@@ -74,6 +92,8 @@ program
         }
       } else if (outputFormat === "junit") {
         console.log(renderAggregateJunitReport(results));
+      } else if (outputFormat === "sarif") {
+        console.log(renderAggregateSarifReport(results));
       } else {
         // Aggregate rendering for text
         if (!options.quiet) {
@@ -173,6 +193,49 @@ program
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.error(`Failed to run smoke test: ${message}`);
+      process.exitCode = 1;
+    }
+  });
+
+program
+  .command("test-message <specPath> <channel>")
+  .description("Validate a live message payload (JSON string or file path) against an AsyncAPI channel contract")
+  .requiredOption("-p, --payload <data>", "Raw JSON payload or path to a .json payload file")
+  .option("-f, --format <type>", "Output format (text, json)", "text")
+  .option("-q, --quiet", "Quiet mode", false)
+  .action(async (specPath: string, channel: string, options: { payload: string, format: string, quiet: boolean }) => {
+    try {
+      const { validateAsyncApiMessage, ESeverity } = await import("../core/index.js");
+      const { existsSync, readFileSync } = await import("node:fs");
+
+      let payloadData: unknown;
+      if (existsSync(options.payload)) {
+        payloadData = JSON.parse(readFileSync(options.payload, "utf-8"));
+      } else {
+        payloadData = JSON.parse(options.payload);
+      }
+
+      const violations = await validateAsyncApiMessage(specPath, channel, payloadData);
+      const passed = violations.length === 0;
+
+      if (options.format === "json") {
+        console.log(JSON.stringify({ channel, passed, violations }, null, 2));
+      } else if (!options.quiet) {
+        if (passed) {
+          console.log(`\n✅ Smile AsyncAPI Validator: Message payload for channel "${channel}" strictly satisfies the contract.\n`);
+        } else {
+          console.log(`\n🚫 Smile AsyncAPI Validator: Message payload for channel "${channel}" breached the contract:\n`);
+          for (const v of violations) {
+            console.log(`  🔴 ${v.ruleId}: ${v.message} (${v.path})`);
+          }
+          console.log("");
+        }
+      }
+
+      process.exitCode = passed ? 0 : 1;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`Failed to validate AsyncAPI message: ${message}`);
       process.exitCode = 1;
     }
   });

@@ -55,7 +55,7 @@ interface ISmileConfig {
   webhooks?: string[];
   testHeaders?: Record<string, string>;
   requestTimeoutMs?: number;
-  format?: "text" | "json" | "markdown" | "junit";
+  format?: "text" | "json" | "markdown" | "junit" | "sarif";
   maxWarnings?: number;
 }
 ```
@@ -410,6 +410,43 @@ const xml = renderJunitReport(result);
 // 4. Multi-spec aggregated JUnit XML report (for test runners)
 const batch = await Promise.all(["./api.yaml", "./events.yaml"].map(f => lintSpec(f)));
 const aggregatedXml = renderAggregateJunitReport(batch);
+
+// 5. OASIS SARIF v2.1.0 report (for GitHub Code Scanning)
+import { renderSarifReport, renderAggregateSarifReport } from "@mrjacket/smile";
+const sarifJson = renderAggregateSarifReport(batch);
+```
+
+---
+
+## AsyncAPI Runtime Validation: `validateAsyncApiMessage`
+
+Verify broker messages (Kafka, RabbitMQ, MQTT) against an AsyncAPI channel schema in real time:
+
+```ts
+import { validateAsyncApiMessage } from "@mrjacket/smile";
+
+const violations = await validateAsyncApiMessage(
+  "./asyncapi.yaml",
+  "user/signedup",
+  { userId: "usr_123", email: "alice@example.com" }
+);
+
+if (violations.length > 0) {
+  console.error("Broker payload breached contract:", violations);
+}
+```
+
+---
+
+## Safe Autofix: `fixSpecFile`
+
+Fix non-breaking contract issues (missing `operationId`, `summary`) while preserving YAML comments:
+
+```ts
+import { fixSpecFile } from "@mrjacket/smile";
+
+const { fixedCount, changes } = fixSpecFile("./openapi.yaml");
+console.log(`Fixed ${fixedCount} issues:`, changes);
 ```
 
 ---

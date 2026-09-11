@@ -34,7 +34,7 @@ export interface ISmileConfig {
   webhooks?: string[];
   testHeaders?: Record<string, string>;
   requestTimeoutMs?: number;
-  format?: "text" | "json" | "markdown" | "junit";
+  format?: "text" | "json" | "markdown" | "junit" | "sarif";
   maxWarnings?: number;
 }
 

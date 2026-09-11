@@ -59,15 +59,19 @@ npx @mrjacket/smile lint ./specs/
 
 # Enforce strict warning limits in CI (exit code 1 if warnings > limit)
 npx @mrjacket/smile lint --max-warnings 0
+
+# Automatically fix safe contract issues (missing operationId, summary)
+npx @mrjacket/smile lint --fix
 ```
 
 > **Tip:** `smile` automatically respects your repository's `.gitignore` as well as standard build directories (`dist/`, `build/`, `coverage/`). You can also create a `.smileignore` file in your root directory to define Smile-specific exclusions!
 
-You can optionally output the results as raw JSON, Markdown, or JUnit (for CI/CD dashboards):
+You can optionally output the results as raw JSON, Markdown, JUnit, or SARIF (for GitHub Code Scanning / Security tab):
 ```bash
 npx @mrjacket/smile lint --format json
 npx @mrjacket/smile lint --format markdown > report.md
 npx @mrjacket/smile lint --format junit > junit.xml
+npx @mrjacket/smile lint --format sarif > results.sarif
 ```
 
 To suppress all CLI menus and art in CI environments, use the `--quiet` or `-q` flag:
@@ -97,10 +101,13 @@ Verify that your live server actually honors the contract:
 # Smoke test against a live environment
 smile test ./openapi.yaml https://api.staging.myserver.com
 
+# Validate live broker message payload against AsyncAPI channel contract
+smile test-message ./asyncapi.yaml user/signedup -p '{"userId":"usr_123","email":"alice@example.com"}'
+
 # Bundle a modular spec into a single JSON file
 smile bundle ./openapi/main.yaml --out ./dist/api-bundle.json
 ```
-> Note: OpenAPI runtime tests support `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`. Path parameters need an `example` or `default` value to be auto-tested. Postman Collections are traversed recursively, and absolute request URLs are preserved.
+> Note: OpenAPI runtime tests support `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`. Path parameters need an `example` or `default` value to be auto-tested. Postman Collections are traversed recursively, and absolute request URLs are preserved. AsyncAPI runtime validation checks live JSON event payloads against channel schemas.
 
 ### 5. Programmatic Usage (Vitest / Jest)
 
@@ -177,6 +184,7 @@ Full documentation is available in the [`docs/`](./docs) directory:
 
 - [Getting Started](./docs/getting-started.md) — CLI usage, basic commands, and exit codes.
 - [CI/CD & DevOps](./docs/ci-cd.md) — GitHub Actions, GitLab CI, JUnit, and Webhooks.
+  - **Official GitHub Action:** [`x-name15/smile-action`](https://github.com/x-name15/smile-action) — drop-in composite action, zero setup required.
 - [Writing Plugins](./docs/plugins.md) — How to write and inject custom JavaScript/TypeScript rules.
 - [Library API](./docs/library.md) — Programmatic usage, Vitest integration, and working with violations.
 - [Configuration](./docs/configuration.md) — Complete guide to customizing rules, webhooks, and test headers in your config.smile.json.
@@ -194,7 +202,9 @@ Full documentation is available in the [`docs/`](./docs) directory:
 ## Roadmap (Upcoming Features)
 
 We are keeping the roadmap deliberately small and focused on predictable behavior in libraries and CI/CD pipelines:
-- **v1.7.0 AsyncAPI Runtime Validation**: Extend the Breaching Detector to connect to live message brokers (Kafka/RabbitMQ) and validate message payloads in real time.
+- **VS Code Extension (LSP):** Highlight contract violations inline in the editor as you write your OpenAPI/AsyncAPI spec.
+- **GitHub Actions Marketplace:** Publish [`x-name15/smile-action`](https://github.com/x-name15/smile-action) to the official Marketplace for 1-line discoverability.
+- **SARIF Autofix Suggestions:** Embed machine-readable fix hints inside the SARIF output so GitHub Code Scanning can offer one-click fixes.
 
 ## License
 

@@ -1,0 +1,67 @@
+name: Sync Composite Action to smile-action repo
+
+on:
+  push:
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: Sync action.yml and tags to x-name15/smile-action
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout smile (source)
+        uses: actions/checkout@v4
+
+      - name: Get version from package.json
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Checkout smile-action (target)
+        uses: actions/checkout@v4
+        with:
+          repository: x-name15/smile-action
+          token: ${{ secrets.SMILE_ACTION_SYNC_TOKEN }}
+          path: smile-action-repo
+          fetch-depth: 0
+
+      - name: Copy action.yml
+        run: |
+          cp .github/actions/smile-action/action.yml smile-action-repo/action.yml
+
+      - name: Commit and push if action.yml changed
+        working-directory: smile-action-repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet action.yml; then
+            echo "action.yml unchanged — skipping commit."
+          else
+            git add action.yml
+            git commit -m "chore: sync action.yml from x-name15/smile@${{ github.sha }}"
+            git push
+          fi
+
+      - name: Sync version tags to smile-action
+        working-directory: smile-action-repo
+        run: |
+          VERSION="v${{ steps.version.outputs.version }}"
+          MAJOR=$(echo "$VERSION" | cut -d. -f1)
+
+          # Specific semver tag (e.g. v1.7.1)
+          git tag "$VERSION" --force
+          git push origin "$VERSION" --force
+
+          # Floating major tag — always points to the latest within this major
+          # e.g. v1 tracks all 1.x.x; when 2.0.0 ships, v2 is created and v1 stays at last 1.x.x
+          git tag "$MAJOR" --force
+          git push origin "$MAJOR" --force
+
+          echo "Tagged smile-action as $VERSION and $MAJOR"

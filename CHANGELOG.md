@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-09-11 — SARIF Output, Safe Autofix, GitHub Action & AsyncAPI Runtime Validation
+
+### Added
+- **OASIS SARIF v2.1.0 Reporter (`-f sarif`):** Added native generation of OASIS SARIF v2.1.0 documents (`renderSarifReport` and `renderAggregateSarifReport`) conforming to `$schema: "https://json.schemastore.org/sarif-2.1.0.json"`. Enables direct, native upload to GitHub Code Scanning / Security tab (`github/codeql-action/upload-sarif`) without third-party converters.
+- **Conservative Autofix Engine (`smile lint --fix`):** Introduced a deterministic, non-destructive autofix engine (`fixSpecFile`, `fixOpenApiFile`). Automatically resolves missing `operationId` (using camelCase generation like `GET /users/{id}` → `getUsersById`) and missing `summary` placeholders while strictly preserving YAML comments, whitespace, and formatting via AST manipulation.
+- **Official GitHub Composite Action (`x-name15/smile-action`):** Published a dedicated composite action repository ([`x-name15/smile-action`](https://github.com/x-name15/smile-action)) for zero-setup CI integration. Supports `spec-path`, `format`, `max-warnings`, `fix`, `quiet`, automated SARIF generation, and one-step upload to GitHub Code Scanning. The action is automatically kept in sync with the main repository via `.github/workflows/sync-action.yml`.
+- **AsyncAPI Runtime Message Validation:** Added real-time message payload verification against AsyncAPI 2.x and 3.x channel schemas (`validateAsyncApiMessage`), enabling contract validation for Kafka, RabbitMQ, and MQTT event payloads.
+- **CLI Command `smile test-message`:** CLI command to validate raw or file-based JSON message payloads against documented AsyncAPI channels (`smile test-message <specPath> <channel> -p <payload>`).
+
+### Docs
+- Updated `docs/ci-cd.md` with SARIF upload recipes for GitHub Code Scanning and usage instructions for the official GitHub composite action.
+- Updated `docs/getting-started.md` and `README.md` with `--fix`, `-f sarif`, and `smile test-message`.
+- Updated `docs/library.md` with SARIF reporter exports and `validateAsyncApiMessage` programmatic signatures.
+
+---
+
 ## [1.6.7] - 2026-09-11 — Library Reporter Exports & 1:1 Docs Alignment
 
 ### Added
