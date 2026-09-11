@@ -8,7 +8,7 @@ on:
 
 jobs:
   sync:
-    name: Sync action.yml and tags to x-name15/smile-action
+    name: Sync action.yml, tags, and Release to x-name15/smile-action
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,6 +22,15 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Extract notes from CHANGELOG
+        id: notes
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          NOTES=$(awk "/## \[${VERSION}\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md)
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Checkout smile-action (target)
         uses: actions/checkout@v4
@@ -56,7 +65,7 @@ jobs:
           VERSION="v${{ steps.version.outputs.version }}"
           MAJOR=$(echo "$VERSION" | cut -d. -f1)
 
-          # Specific semver tag (e.g. v1.7.1)
+          # Specific semver tag (e.g. v1.7.0)
           git tag "$VERSION" --force
           git push origin "$VERSION" --force
 
@@ -66,3 +75,32 @@ jobs:
           git push origin "$MAJOR" --force
 
           echo "Tagged smile-action as $VERSION and $MAJOR"
+
+      - name: Create or Update GitHub Release in smile-action
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: x-name15/smile-action
+          token: ${{ secrets.SMILE_ACTION_SYNC_TOKEN }}
+          tag_name: v${{ steps.version.outputs.version }}
+          name: "v${{ steps.version.outputs.version }} — Smile API Linter"
+          body: |
+            ## 😊 Smile API Linter GitHub Action
+
+            Official composite action for [smile](https://github.com/x-name15/smile) — the relentless API contract validator for OpenAPI, AsyncAPI, GraphQL, gRPC, JSON Schema, and Postman collections.
+
+            ### Release Highlights from Smile v${{ steps.version.outputs.version }}
+
+            ${{ steps.notes.outputs.notes }}
+
+            ### Quick Usage
+
+            ```yaml
+            - name: Lint API specs
+              uses: x-name15/smile-action@v1
+              with:
+                spec-path: "."
+                format: "text"
+                max-warnings: 0
+            ```
+
+            View [Marketplace Listing](https://github.com/marketplace/actions/smile-api-linter) | [Full Documentation](https://github.com/x-name15/smile/blob/main/docs/ci-cd.md)
