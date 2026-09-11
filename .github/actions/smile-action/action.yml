@@ -1,6 +1,6 @@
 name: "Smile API Linter"
 
-description: "smile is a strict API contract validator built for Node.js test suites and CI pipelines. (OpenAPI, AsyncAPI, GraphQL, gRPC, JSON Schema, Postman)"
+description: "Strict API contract validator for OpenAPI, AsyncAPI, GraphQL, gRPC, JSON Schema and Postman"
 
 author: "Mr Jacket / x-name15 / Felix Manrique"
 
