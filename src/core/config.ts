@@ -67,6 +67,10 @@ export function applyConfigToViolations(
   format?: ESpecFormat,
   sourcePath?: string
 ): IViolation[] {
+  if (violations.length === 0) {
+    return [];
+  }
+
   const activeRules = config.rules || {};
 
   let yamlDoc: any = null;

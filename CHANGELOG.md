@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.4] - 2026-09-11 — Pipeline Hardening & AST Optimization
+
+### Added
+- **Engine Hardening & Crash Resilience:** Protected all format linters (`lintOpenApiSpec`, `lintAsyncApiSpec`, `lintJsonSchemaSpec`, `lintGraphQLSpec`, `lintGrpcSpec`, `lintPostmanSpec`) and the unified dispatcher `lintSpec` against unhandled syntax and parser exceptions. Corrupted files or unresolvable external pointers now emit a structured `malformed-spec` violation with `Error` severity and `passed: false` rather than crashing the Node.js process.
+- **Resilient Multi-Spec Directory Execution:** In multi-file linting (`smile lint <directory>`), an unparseable or corrupted specification will no longer abort `Promise.all` or prevent sibling files from being evaluated. Reports across all formats (Text, JSON, Markdown, JUnit XML, and GitHub Actions step summaries) render all specifications to completion with appropriate exit codes (`1`).
+
+### Performance
+- **Conditional YAML AST Parsing:** Added early exit in `applyConfigToViolations` when `violations.length === 0`, completely eliminating redundant disk reads (`readFileSync`) and YAML AST construction (`YAML.parseDocument`) on clean specifications.
+
+### Tests
+- **Hardening Test Suite:** Added `src/core/__tests__/hardening.test.ts` covering broken YAML syntax, corrupted JSON Schemas, invalid GraphQL SDL, corrupted AsyncAPI definitions, multi-file batch resilience, and AST skip verification.
+
+---
+
 ## [1.6.3] - 2026-09-10 — Zero-Bloat Stability, CLI Refinements & 1:1 Docs Alignment
 
 ### Added

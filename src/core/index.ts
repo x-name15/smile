@@ -34,23 +34,38 @@ export { lintOpenApiSpec, lintAsyncApiSpec, lintJsonSchemaSpec, lintGraphQLSpec,
  * against it and returning a structured result.
  */
 async function lintOpenApiSpec(sourcePath: string, config: ISmileConfig = {}): Promise<ILintResult> {
-  const parsed = await parseOpenApiSpec(sourcePath);
-  const doc = parsed.raw as OpenAPIV3.Document | OpenAPIV3_1.Document;
+  try {
+    const parsed = await parseOpenApiSpec(sourcePath);
+    const doc = parsed.raw as OpenAPIV3.Document | OpenAPIV3_1.Document;
 
-  const rawViolations = openApiRules.flatMap((rule) => rule(doc));
-  
-  const customRules = await loadPlugins(config.plugins);
-  rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.OpenApi, customRules));
+    const rawViolations = openApiRules.flatMap((rule) => rule(doc));
+    
+    const customRules = await loadPlugins(config.plugins);
+    rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.OpenApi, customRules));
 
-  const { applyConfigToViolations } = await import("./config.js");
-  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.OpenApi, sourcePath);
+    const { applyConfigToViolations } = await import("./config.js");
+    const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.OpenApi, sourcePath);
 
-  return {
-    format: ESpecFormat.OpenApi,
-    passed: !violations.some(v => v.severity === ESeverity.Error),
-    violations,
-    sourcePath,
-  };
+    return {
+      format: ESpecFormat.OpenApi,
+      passed: !violations.some(v => v.severity === ESeverity.Error),
+      violations,
+      sourcePath,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      format: ESpecFormat.OpenApi,
+      passed: false,
+      violations: [{
+        ruleId: "malformed-spec",
+        severity: ESeverity.Error,
+        message,
+        path: sourcePath,
+      }],
+      sourcePath,
+    };
+  }
 }
 
 /**
@@ -58,23 +73,38 @@ async function lintOpenApiSpec(sourcePath: string, config: ISmileConfig = {}): P
  * against it and returning a structured result.
  */
 async function lintAsyncApiSpec(sourcePath: string, config: ISmileConfig = {}): Promise<ILintResult> {
-  const parsed = await parseAsyncApiSpec(sourcePath);
-  const doc = parsed.raw as Record<string, unknown>;
+  try {
+    const parsed = await parseAsyncApiSpec(sourcePath);
+    const doc = parsed.raw as Record<string, unknown>;
 
-  const rawViolations = asyncApiRules.flatMap((rule) => rule(doc));
-  
-  const customRules = await loadPlugins(config.plugins);
-  rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.AsyncApi, customRules));
+    const rawViolations = asyncApiRules.flatMap((rule) => rule(doc));
+    
+    const customRules = await loadPlugins(config.plugins);
+    rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.AsyncApi, customRules));
 
-  const { applyConfigToViolations } = await import("./config.js");
-  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.AsyncApi, sourcePath);
+    const { applyConfigToViolations } = await import("./config.js");
+    const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.AsyncApi, sourcePath);
 
-  return {
-    format: ESpecFormat.AsyncApi,
-    passed: !violations.some(v => v.severity === ESeverity.Error),
-    violations,
-    sourcePath,
-  };
+    return {
+      format: ESpecFormat.AsyncApi,
+      passed: !violations.some(v => v.severity === ESeverity.Error),
+      violations,
+      sourcePath,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      format: ESpecFormat.AsyncApi,
+      passed: false,
+      violations: [{
+        ruleId: "malformed-spec",
+        severity: ESeverity.Error,
+        message,
+        path: sourcePath,
+      }],
+      sourcePath,
+    };
+  }
 }
 
 /**
@@ -82,23 +112,38 @@ async function lintAsyncApiSpec(sourcePath: string, config: ISmileConfig = {}): 
  * against it and returning a structured result.
  */
 async function lintJsonSchemaSpec(sourcePath: string, config: ISmileConfig = {}): Promise<ILintResult> {
-  const parsed = await parseJsonSchemaSpec(sourcePath);
-  const doc = parsed.raw as Record<string, unknown>;
+  try {
+    const parsed = await parseJsonSchemaSpec(sourcePath);
+    const doc = parsed.raw as Record<string, unknown>;
 
-  const rawViolations = jsonSchemaRules.flatMap((rule) => rule(doc));
-  
-  const customRules = await loadPlugins(config.plugins);
-  rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.JsonSchema, customRules));
+    const rawViolations = jsonSchemaRules.flatMap((rule) => rule(doc));
+    
+    const customRules = await loadPlugins(config.plugins);
+    rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.JsonSchema, customRules));
 
-  const { applyConfigToViolations } = await import("./config.js");
-  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.JsonSchema, sourcePath);
+    const { applyConfigToViolations } = await import("./config.js");
+    const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.JsonSchema, sourcePath);
 
-  return {
-    format: ESpecFormat.JsonSchema,
-    passed: !violations.some(v => v.severity === ESeverity.Error),
-    violations,
-    sourcePath,
-  };
+    return {
+      format: ESpecFormat.JsonSchema,
+      passed: !violations.some(v => v.severity === ESeverity.Error),
+      violations,
+      sourcePath,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      format: ESpecFormat.JsonSchema,
+      passed: false,
+      violations: [{
+        ruleId: "malformed-spec",
+        severity: ESeverity.Error,
+        message,
+        path: sourcePath,
+      }],
+      sourcePath,
+    };
+  }
 }
 
 /**
@@ -106,23 +151,38 @@ async function lintJsonSchemaSpec(sourcePath: string, config: ISmileConfig = {})
  * against it and returning a structured result.
  */
 async function lintGraphQLSpec(sourcePath: string, config: ISmileConfig = {}): Promise<ILintResult> {
-  const parsed = await parseGraphQLSpec(sourcePath);
-  const doc = parsed.raw as DocumentNode;
+  try {
+    const parsed = await parseGraphQLSpec(sourcePath);
+    const doc = parsed.raw as DocumentNode;
 
-  const rawViolations = graphqlRules.flatMap((rule) => rule(doc));
-  
-  const customRules = await loadPlugins(config.plugins);
-  rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.GraphQL, customRules));
+    const rawViolations = graphqlRules.flatMap((rule) => rule(doc));
+    
+    const customRules = await loadPlugins(config.plugins);
+    rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.GraphQL, customRules));
 
-  const { applyConfigToViolations } = await import("./config.js");
-  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.GraphQL, sourcePath);
+    const { applyConfigToViolations } = await import("./config.js");
+    const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.GraphQL, sourcePath);
 
-  return {
-    format: ESpecFormat.GraphQL,
-    passed: !violations.some(v => v.severity === ESeverity.Error),
-    violations,
-    sourcePath,
-  };
+    return {
+      format: ESpecFormat.GraphQL,
+      passed: !violations.some(v => v.severity === ESeverity.Error),
+      violations,
+      sourcePath,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      format: ESpecFormat.GraphQL,
+      passed: false,
+      violations: [{
+        ruleId: "malformed-spec",
+        severity: ESeverity.Error,
+        message,
+        path: sourcePath,
+      }],
+      sourcePath,
+    };
+  }
 }
 
 /**
@@ -131,33 +191,64 @@ async function lintGraphQLSpec(sourcePath: string, config: ISmileConfig = {}): P
  * This is what `smile lint <file>` uses — it just works for all formats.
  */
 async function lintSpec(sourcePath: string, config: ISmileConfig = {}): Promise<ILintResult> {
-  const format = detectSpecFormat(sourcePath);
+  let format: ESpecFormat;
+  try {
+    format = detectSpecFormat(sourcePath);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      format: ESpecFormat.Unknown,
+      passed: false,
+      violations: [{
+        ruleId: "malformed-spec",
+        severity: ESeverity.Error,
+        message: `Failed to read or parse spec file "${sourcePath}": ${message}`,
+        path: sourcePath,
+      }],
+      sourcePath,
+    };
+  }
 
-  switch (format) {
-    case ESpecFormat.AsyncApi:
-      return lintAsyncApiSpec(sourcePath, config);
-    case ESpecFormat.JsonSchema:
-      return lintJsonSchemaSpec(sourcePath, config);
-    case ESpecFormat.GraphQL:
-      return lintGraphQLSpec(sourcePath, config);
-    case ESpecFormat.Grpc:
-      return lintGrpcSpec(sourcePath, config);
-    case ESpecFormat.Postman:
-      return lintPostmanSpec(sourcePath, config);
-    case ESpecFormat.Unknown:
-      return {
-        format: ESpecFormat.Unknown,
-        passed: false,
-        violations: [{
-          ruleId: "unknown-spec-format",
-          severity: ESeverity.Error,
-          message: `Could not detect the spec format of "${sourcePath}". Supported formats: OpenAPI (.yaml/.json), AsyncAPI (.yaml/.json), JSON Schema (.json), GraphQL (.graphql/.gql), gRPC (.proto), Postman Collection (.json).`,
-          path: sourcePath,
-        }],
-        sourcePath,
-      };
-    default:
-      return lintOpenApiSpec(sourcePath, config);
+  try {
+    switch (format) {
+      case ESpecFormat.AsyncApi:
+        return await lintAsyncApiSpec(sourcePath, config);
+      case ESpecFormat.JsonSchema:
+        return await lintJsonSchemaSpec(sourcePath, config);
+      case ESpecFormat.GraphQL:
+        return await lintGraphQLSpec(sourcePath, config);
+      case ESpecFormat.Grpc:
+        return await lintGrpcSpec(sourcePath, config);
+      case ESpecFormat.Postman:
+        return await lintPostmanSpec(sourcePath, config);
+      case ESpecFormat.Unknown:
+        return {
+          format: ESpecFormat.Unknown,
+          passed: false,
+          violations: [{
+            ruleId: "unknown-spec-format",
+            severity: ESeverity.Error,
+            message: `Could not detect the spec format of "${sourcePath}". Supported formats: OpenAPI (.yaml/.json), AsyncAPI (.yaml/.json), JSON Schema (.json), GraphQL (.graphql/.gql), gRPC (.proto), Postman Collection (.json).`,
+            path: sourcePath,
+          }],
+          sourcePath,
+        };
+      default:
+        return await lintOpenApiSpec(sourcePath, config);
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      format,
+      passed: false,
+      violations: [{
+        ruleId: "malformed-spec",
+        severity: ESeverity.Error,
+        message,
+        path: sourcePath,
+      }],
+      sourcePath,
+    };
   }
 }
 
@@ -166,23 +257,38 @@ async function lintSpec(sourcePath: string, config: ISmileConfig = {}): Promise<
  * against it and returning a structured result.
  */
 async function lintGrpcSpec(sourcePath: string, config: ISmileConfig = {}): Promise<ILintResult> {
-  const parsed = await parseGrpcSpec(sourcePath);
-  const doc = parsed.raw as protobuf.Root;
+  try {
+    const parsed = await parseGrpcSpec(sourcePath);
+    const doc = parsed.raw as protobuf.Root;
 
-  const rawViolations = grpcRules.flatMap((rule) => rule(doc));
-  
-  const customRules = await loadPlugins(config.plugins);
-  rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.Grpc, customRules));
+    const rawViolations = grpcRules.flatMap((rule) => rule(doc));
+    
+    const customRules = await loadPlugins(config.plugins);
+    rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.Grpc, customRules));
 
-  const { applyConfigToViolations } = await import("./config.js");
-  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.Grpc, sourcePath);
+    const { applyConfigToViolations } = await import("./config.js");
+    const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.Grpc, sourcePath);
 
-  return {
-    format: ESpecFormat.Grpc,
-    passed: !violations.some(v => v.severity === ESeverity.Error),
-    violations,
-    sourcePath,
-  };
+    return {
+      format: ESpecFormat.Grpc,
+      passed: !violations.some(v => v.severity === ESeverity.Error),
+      violations,
+      sourcePath,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      format: ESpecFormat.Grpc,
+      passed: false,
+      violations: [{
+        ruleId: "malformed-spec",
+        severity: ESeverity.Error,
+        message,
+        path: sourcePath,
+      }],
+      sourcePath,
+    };
+  }
 }
 
 /**
@@ -190,21 +296,36 @@ async function lintGrpcSpec(sourcePath: string, config: ISmileConfig = {}): Prom
  * against it and returning a structured result.
  */
 async function lintPostmanSpec(sourcePath: string, config: ISmileConfig = {}): Promise<ILintResult> {
-  const parsed = await parsePostmanSpec(sourcePath);
-  const doc = parsed.raw as IPostmanCollection;
+  try {
+    const parsed = await parsePostmanSpec(sourcePath);
+    const doc = parsed.raw as IPostmanCollection;
 
-  const rawViolations = postmanRules.flatMap((rule) => rule(doc));
-  
-  const customRules = await loadPlugins(config.plugins);
-  rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.Postman, customRules));
+    const rawViolations = postmanRules.flatMap((rule) => rule(doc));
+    
+    const customRules = await loadPlugins(config.plugins);
+    rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.Postman, customRules));
 
-  const { applyConfigToViolations } = await import("./config.js");
-  const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.Postman, sourcePath);
+    const { applyConfigToViolations } = await import("./config.js");
+    const violations = applyConfigToViolations(rawViolations, config, ESpecFormat.Postman, sourcePath);
 
-  return {
-    format: ESpecFormat.Postman,
-    passed: !violations.some(v => v.severity === ESeverity.Error),
-    violations,
-    sourcePath,
-  };
+    return {
+      format: ESpecFormat.Postman,
+      passed: !violations.some(v => v.severity === ESeverity.Error),
+      violations,
+      sourcePath,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      format: ESpecFormat.Postman,
+      passed: false,
+      violations: [{
+        ruleId: "malformed-spec",
+        severity: ESeverity.Error,
+        message,
+        path: sourcePath,
+      }],
+      sourcePath,
+    };
+  }
 }

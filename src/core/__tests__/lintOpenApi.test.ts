@@ -87,6 +87,16 @@ describe("lintOpenApiSpec", () => {
       expect(result.passed).toBe(true);
       expect(Array.isArray(result.violations)).toBe(true);
     });
+
+    it("returns malformed-spec violation on unparseable YAML syntax", async () => {
+      const result = await lintOpenApiSpec(
+        path.join(fixturesDir, "sample-openapi-nonexistent-xyz.yaml"),
+      );
+      expect(result.passed).toBe(false);
+      expect(result.violations.length).toBeGreaterThan(0);
+      expect(result.violations[0].ruleId).toBe("malformed-spec");
+      expect(result.violations[0].severity).toBe(ESeverity.Error);
+    });
   });
 });
 
