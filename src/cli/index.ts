@@ -16,16 +16,16 @@ program
   .version(VERSION);
 
 program
-  .command("lint <specPath>")
-  .description("Statically lint a spec file or directory — auto-detects OpenAPI, AsyncAPI, JSON Schema, GraphQL, gRPC, or Postman")
+  .command("lint [specPath]")
+  .description("Statically lint a spec file or directory (defaults to current directory) — auto-detects OpenAPI, AsyncAPI, JSON Schema, GraphQL, gRPC, or Postman")
   .option("-f, --format <type>", "Output format (text, json, markdown, junit)", "text")
   .option("-p, --plugin <path>", "Load a custom plugin on the fly (overrides config)")
   .option("-q, --quiet", "Quiet mode (suppress text output, only print errors or format reports)", false)
-  .action(async (specPath: string, options: { format: string, quiet: boolean, plugin?: string }) => {
+  .option("-w, --max-warnings <number>", "Number of warnings to trigger non-zero exit code (-1 for unlimited)", parseInt)
+  .action(async (specPath: string = ".", options: { format: string, quiet: boolean, plugin?: string, maxWarnings?: number }) => {
     const start = performance.now();
     try {
-      const { loadConfig } = await import("../core/index.js");
-      const { lintSpec } = await import("../core/index.js");
+      const { loadConfig, lintSpec, ESeverity } = await import("../core/index.js");
       const { findSpecFiles, fireWebhooks } = await import("./utils.js");
       const { renderAggregateJunitReport, renderMarkdownReport, renderAggregateSmileReport } = await import("../reporters/index.js");
       const { emitGithubStepSummary } = await import("../reporters/utils.js");
@@ -50,6 +50,13 @@ program
 
       const results = await Promise.all(files.map(f => lintSpec(f, config)));
       const allPassed = results.every(r => r.passed);
+      const totalWarnings = results.reduce(
+        (sum, r) => sum + r.violations.filter(v => v.severity === ESeverity.Warning).length,
+        0
+      );
+
+      const effectiveMaxWarnings = options.maxWarnings !== undefined ? options.maxWarnings : config.maxWarnings;
+      const warningsExceeded = effectiveMaxWarnings !== undefined && effectiveMaxWarnings >= 0 && totalWarnings > effectiveMaxWarnings;
 
       // Always generate step summary in Github Actions if we're running tests
       if (process.env.GITHUB_ACTIONS === "true") {
@@ -74,7 +81,12 @@ program
         }
       }
 
-      process.exitCode = allPassed ? 0 : 1;
+      if (warningsExceeded && !options.quiet && outputFormat === "text") {
+        console.warn(`\n⚠️  Warning threshold exceeded: found ${totalWarnings} warning(s), max allowed is ${effectiveMaxWarnings}.`);
+      }
+
+      const overallSuccess = allPassed && !warningsExceeded;
+      process.exitCode = overallSuccess ? 0 : 1;
 
       if (!allPassed) {
         await fireWebhooks(config.webhooks, results.filter(r => !r.passed));

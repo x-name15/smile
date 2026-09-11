@@ -64,6 +64,10 @@ export async function runConfigCommand(): Promise<void> {
     p.note(`Request timeout: ${pc.cyan(`${config.requestTimeoutMs}ms`)}`, "Network");
   }
 
+  if (config.maxWarnings !== undefined) {
+    p.note(`Max warnings: ${pc.cyan(String(config.maxWarnings))}`, "Thresholds");
+  }
+
   const testHeaders = config.testHeaders || {};
   const headerKeys = Object.keys(testHeaders);
   if (headerKeys.length > 0) {

@@ -133,6 +133,7 @@ describe("runConfigCommand", () => {
       webhooks: ["https://example.com/webhook"],
       format: "json",
       requestTimeoutMs: 5000,
+      maxWarnings: 0,
       testHeaders: {
         Authorization: "Bearer token-xyz",
       },
@@ -170,6 +171,12 @@ describe("runConfigCommand", () => {
     expect(p.note).toHaveBeenCalledWith(
       expect.stringContaining("5000ms"),
       "Network"
+    );
+
+    // Verify Thresholds (maxWarnings)
+    expect(p.note).toHaveBeenCalledWith(
+      expect.stringContaining("0"),
+      "Thresholds"
     );
 
     // Verify Test Headers

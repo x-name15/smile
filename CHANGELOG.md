@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.6] - 2026-09-11 — CLI Ergonomics: Default specPath & Warning Thresholds
+
+### Added
+- **Optional Spec Path with Current Directory Default (`smile lint [specPath]`):** `specPath` is now optional and defaults to `.` (`process.cwd()`), allowing developers and npm scripts to run `smile lint` without specifying directory arguments.
+- **Configurable Warning Threshold (`--max-warnings <number>`):** Added `--max-warnings <n>` CLI flag (and `config.maxWarnings` option in `smile.json`) to enforce warning budgets in CI/CD pipelines. If the total number of warnings across all evaluated specifications exceeds the configured threshold, `smile lint` exits with a non-zero code (`1`).
+- **Configuration Display of `maxWarnings`:** Updated `smile config` to display active warning threshold configuration under the `Thresholds` section.
+
+### Tests
+- Added test coverage in `src/cli/__tests__/maxWarnings.test.ts` for default `specPath` resolution, warning threshold breach detection, and CLI option precedence over configuration files.
+- Updated `src/cli/__tests__/config.test.ts` verifying display of `maxWarnings` in `smile config`.
+
+---
+
 ## [1.6.5] - 2026-09-11 — CI/CD Improvements: Aggregate JUnit & Clean JSON
 
 ### Added

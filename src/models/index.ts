@@ -35,6 +35,7 @@ export interface ISmileConfig {
   testHeaders?: Record<string, string>;
   requestTimeoutMs?: number;
   format?: "text" | "json" | "markdown" | "junit";
+  maxWarnings?: number;
 }
 
 /**
