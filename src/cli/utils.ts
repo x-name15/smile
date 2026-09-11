@@ -139,3 +139,17 @@ export async function fireWebhooks(webhooks: string[] | undefined, summary: unkn
 
   await Promise.allSettled(promises);
 }
+
+/**
+ * Checks whether the total number of warnings exceeds the effective maxWarnings threshold.
+ *
+ * @param totalWarnings Number of warnings reported across all linted specs.
+ * @param effectiveMaxWarnings Configured or CLI limit for max allowed warnings.
+ * @returns True if effectiveMaxWarnings is set (>= 0) and totalWarnings is strictly greater.
+ */
+export function isMaxWarningsExceeded(
+  totalWarnings: number,
+  effectiveMaxWarnings: number | undefined
+): boolean {
+  return effectiveMaxWarnings !== undefined && effectiveMaxWarnings >= 0 && totalWarnings > effectiveMaxWarnings;
+}

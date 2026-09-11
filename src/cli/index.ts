@@ -26,7 +26,7 @@ program
     const start = performance.now();
     try {
       const { loadConfig, lintSpec, ESeverity } = await import("../core/index.js");
-      const { findSpecFiles, fireWebhooks } = await import("./utils.js");
+      const { findSpecFiles, fireWebhooks, isMaxWarningsExceeded } = await import("./utils.js");
       const { renderAggregateJunitReport, renderMarkdownReport, renderAggregateSmileReport } = await import("../reporters/index.js");
       const { emitGithubStepSummary } = await import("../reporters/utils.js");
       
@@ -43,7 +43,9 @@ program
 
       const files = findSpecFiles(specPath);
       if (files.length === 0) {
-        if (!options.quiet) console.warn(`No specification files found in ${specPath}`);
+        if (!options.quiet) {
+          console.warn(`No API specifications found in "${specPath}".`);
+        }
         process.exitCode = 0;
         return;
       }
@@ -56,7 +58,7 @@ program
       );
 
       const effectiveMaxWarnings = options.maxWarnings !== undefined ? options.maxWarnings : config.maxWarnings;
-      const warningsExceeded = effectiveMaxWarnings !== undefined && effectiveMaxWarnings >= 0 && totalWarnings > effectiveMaxWarnings;
+      const warningsExceeded = isMaxWarningsExceeded(totalWarnings, effectiveMaxWarnings);
 
       // Always generate step summary in Github Actions if we're running tests
       if (process.env.GITHUB_ACTIONS === "true") {

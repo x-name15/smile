@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { ESeverity, ESpecFormat, type ILintResult, type ISmileConfig } from "../../models/index.js";
+import { isMaxWarningsExceeded } from "../utils.js";
 
 describe("CLI maxWarnings threshold & default specPath", () => {
   const originalExitCode = process.exitCode;
@@ -43,8 +44,7 @@ describe("CLI maxWarnings threshold & default specPath", () => {
 
     expect(totalWarnings).toBe(1);
 
-    const maxWarnings: number | undefined = 0;
-    const warningsExceeded = maxWarnings !== undefined && maxWarnings >= 0 && totalWarnings > maxWarnings;
+    const warningsExceeded = isMaxWarningsExceeded(totalWarnings, 0);
     expect(warningsExceeded).toBe(true);
 
     const allPassed = results.every(r => r.passed);
@@ -61,8 +61,7 @@ describe("CLI maxWarnings threshold & default specPath", () => {
 
     expect(totalWarnings).toBe(1);
 
-    const maxWarnings: number | undefined = 1;
-    const warningsExceeded = maxWarnings !== undefined && maxWarnings >= 0 && totalWarnings > maxWarnings;
+    const warningsExceeded = isMaxWarningsExceeded(totalWarnings, 1);
     expect(warningsExceeded).toBe(false);
 
     const allPassed = results.every(r => r.passed);
