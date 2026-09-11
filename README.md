@@ -204,7 +204,6 @@ Full documentation is available in the [`docs/`](./docs) directory:
 
 We are keeping the roadmap deliberately small and focused on predictable behavior in libraries and CI/CD pipelines:
 - **VS Code Extension (LSP):** Highlight contract violations inline in the editor as you write your OpenAPI/AsyncAPI spec.
-- **GitHub Actions Marketplace:** Publish [`x-name15/smile-action`](https://github.com/x-name15/smile-action) to the official Marketplace for 1-line discoverability.
 - **SARIF Autofix Suggestions:** Embed machine-readable fix hints inside the SARIF output so GitHub Code Scanning can offer one-click fixes.
 
 ## License
@@ -212,4 +211,4 @@ We are keeping the roadmap deliberately small and focused on predictable behavio
 This project is licensed under the **GPL-3.0 License**. See the [LICENSE](./LICENSE) file for details.
 
 ### Credits
-**Author:** Mr Jacket 
+**Author:** Mr Jacket / Felix Manrique / x-name15 (we are all the same person)
