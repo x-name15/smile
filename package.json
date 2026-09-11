@@ -71,7 +71,7 @@
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^16.0.0",
-    "@apidevtools/swagger-parser": "^12.1.0",
+    "@apidevtools/swagger-parser": "^13.0.0",
     "@asyncapi/parser": "^3.6.3",
     "@clack/prompts": "^1.7.0",
     "ajv": "^8.20.0",
