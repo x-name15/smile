@@ -1,4 +1,4 @@
-# 😊 Smile API Linter
+# Smile API Linter
 
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Smile%20API%20Linter-blue?logo=github)](https://github.com/marketplace/actions/smile-api-linter)
 [![smile version](https://img.shields.io/npm/v/@mrjacket/smile.svg?label=smile&color=success)](https://www.npmjs.com/package/@mrjacket/smile)
