@@ -23,12 +23,17 @@ import {
   formatViolation,
   emitCIAnnotations,
   emitGithubStepSummary,
+  SMILE_RULES_METADATA,
 } from "../index.js";
 
 describe("Core library public API exports", () => {
+  it("exports canonical SMILE_RULES_METADATA registry with 42 rules", () => {
+    expect(Array.isArray(SMILE_RULES_METADATA)).toBe(true);
+    expect(SMILE_RULES_METADATA).toHaveLength(42);
+  });
   it("exports VERSION string matching package release", () => {
     expect(typeof VERSION).toBe("string");
-    expect(VERSION).toBe("1.7.0");
+    expect(VERSION).toBe("1.7.5");
   });
 
   it("exports findSpecFiles directory scanner", () => {

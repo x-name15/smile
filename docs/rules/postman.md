@@ -105,3 +105,66 @@ array. This rule exists for two reasons:
   ]
 }
 ```
+
+---
+
+## require-collection-description
+
+**Severity:** Error
+
+Every Postman collection must have an `info.description` field explaining the purpose
+of the collection, API target environments, or prerequisites. Collections without
+descriptions lack necessary context for team onboarding and documentation portals.
+
+**Triggers on:**
+```json
+{
+  "info": {
+    "name": "Billing API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  }
+}
+```
+
+**Clean:**
+```json
+{
+  "info": {
+    "name": "Billing API",
+    "description": "Endpoints and workflows for subscription billing, invoicing, and payment processing.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  }
+}
+```
+
+---
+
+## valid-request-urls
+
+**Severity:** Error
+
+Every request in the collection must define a non-empty, valid URL. Requests with missing
+or empty URLs cannot be executed by automated test runners or runtime verification tools.
+
+**Triggers on:**
+```json
+{
+  "name": "Get Status",
+  "request": {
+    "method": "GET",
+    "url": ""
+  }
+}
+```
+
+**Clean:**
+```json
+{
+  "name": "Get Status",
+  "request": {
+    "method": "GET",
+    "url": "{{baseUrl}}/health"
+  }
+}
+```
+

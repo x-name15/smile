@@ -63,6 +63,42 @@ describe("lintPostmanSpec", () => {
       const flaggedNames = descViolations.map(v => v.message);
       expect(flaggedNames.some(m => m.includes("Get Users"))).toBe(false);
     });
+
+    it("detects require-collection-description: sample-postman lacks info.description", async () => {
+      const result = await lintPostmanSpec(path.join(fixturesDir, "sample-postman.json"));
+      const violation = result.violations.find(v => v.ruleId === "require-collection-description");
+      expect(violation).toBeDefined();
+      expect(violation?.severity).toBe(ESeverity.Error);
+      expect(violation?.path).toBe("info.description");
+    });
+  });
+
+  describe("isolated Postman rule checks", () => {
+    it("detects valid-request-urls when request url is empty string or empty raw object", async () => {
+      const { validRequestUrls } = await import("../rules/postman/valid-request-urls.js");
+      const mockDoc = {
+        info: { name: "Test", schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+        item: [
+          {
+            name: "Empty String URL",
+            request: { method: "GET", url: "   " },
+          },
+          {
+            name: "Empty Raw URL",
+            request: { method: "POST", url: { raw: "" } },
+          },
+          {
+            name: "Valid URL",
+            request: { method: "GET", url: "https://example.com" },
+          },
+        ],
+      };
+      const violations = validRequestUrls.run(mockDoc as any);
+      expect(violations).toHaveLength(2);
+      expect(violations[0].ruleId).toBe("valid-request-urls");
+      expect(violations[0].message).toContain("Empty String URL");
+      expect(violations[1].message).toContain("Empty Raw URL");
+    });
   });
 
   describe("clean spec (sample-postman-clean.json)", () => {

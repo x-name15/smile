@@ -63,6 +63,30 @@ describe("lintOpenApiSpec", () => {
       const ruleIds = result.violations.map((v) => v.ruleId);
       expect(ruleIds).toContain("valid-path-parameters");
     });
+
+    it("detects require-error-responses violations when operation lacks 4xx/5xx/default", async () => {
+      const result = await lintOpenApiSpec(
+        path.join(fixturesDir, "sample-openapi.yaml"),
+      );
+      const ruleIds = result.violations.map((v) => v.ruleId);
+      expect(ruleIds).toContain("require-error-responses");
+    });
+
+    it("detects require-rate-limiting violations on mutating operations lacking 429", async () => {
+      const result = await lintOpenApiSpec(
+        path.join(fixturesDir, "sample-openapi.yaml"),
+      );
+      const ruleIds = result.violations.map((v) => v.ruleId);
+      expect(ruleIds).toContain("require-rate-limiting");
+    });
+
+    it("detects require-version-header violations when operations lack versioning strategy", async () => {
+      const result = await lintOpenApiSpec(
+        path.join(fixturesDir, "sample-openapi.yaml"),
+      );
+      const ruleIds = result.violations.map((v) => v.ruleId);
+      expect(ruleIds).toContain("require-version-header");
+    });
   });
 
   describe("clean spec (sample-openapi-clean.yaml)", () => {

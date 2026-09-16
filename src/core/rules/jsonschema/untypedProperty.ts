@@ -1,4 +1,4 @@
-import { ESeverity, type IViolation } from "../../../models/index.js";
+import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
 type TSchemaObject = Record<string, unknown>;
 
@@ -49,8 +49,17 @@ function findUntypedProperties(
 /**
  * Flags schema properties that have no `type` and no valid type alternative.
  */
-export function ruleJsonSchemaUntypedProperty(doc: TSchemaObject): IViolation[] {
-  const violations: IViolation[] = [];
-  findUntypedProperties(doc, "(root)", violations);
-  return violations;
-}
+export const ruleJsonSchemaUntypedProperty: ISmileRule = {
+  meta: {
+    id: "untyped-property",
+    title: "Untyped Property",
+    description: "Ensures all properties explicitly specify a primitive or complex type.",
+    format: ESpecFormat.JsonSchema,
+    defaultSeverity: "error",
+  },
+  run(doc): IViolation[] {
+    const violations: IViolation[] = [];
+    findUntypedProperties(doc as TSchemaObject, "(root)", violations);
+    return violations;
+  },
+};

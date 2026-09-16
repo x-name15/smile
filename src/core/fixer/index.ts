@@ -48,7 +48,7 @@ export function generateCanonicalOperationId(method: string, pathKey: string): s
  * Example: "get" and "/users" -> "Get users"
  */
 export function generateCanonicalSummary(method: string, pathKey: string): string {
-  const cleanPath = pathKey.replace(/\{([^}]+)\}/g, ":$1");
+  const cleanPath = pathKey.replace(/\{([^{}]+)\}/g, ":$1");
   const verb = method.charAt(0).toUpperCase() + method.slice(1).toLowerCase();
   return `${verb} ${cleanPath}`;
 }

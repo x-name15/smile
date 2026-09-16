@@ -1,4 +1,4 @@
-import { ESeverity, type IViolation } from "../../../models/index.js";
+import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
 type TSchemaObject = Record<string, unknown>;
 
@@ -42,21 +42,29 @@ function findArraysWithoutItems(
  * Flags array-typed properties missing an `items` schema.
  * An array without items is unvalidatable — you can't check the contents.
  */
-export function ruleJsonSchemaArrayWithoutItems(
-  doc: TSchemaObject,
-): IViolation[] {
-  const violations: IViolation[] = [];
+export const ruleJsonSchemaArrayWithoutItems: ISmileRule = {
+  meta: {
+    id: "array-without-items",
+    title: "Array Without Items",
+    description: "Guarantees array schemas specify an items schema defining element types.",
+    format: ESpecFormat.JsonSchema,
+    defaultSeverity: "error",
+  },
+  run(doc): IViolation[] {
+    const violations: IViolation[] = [];
+    const schema = doc as TSchemaObject;
 
-  // Check root-level type: array
-  if (doc.type === "array" && !doc.items) {
-    violations.push({
-      ruleId: "array-without-items",
-      severity: ESeverity.Error,
-      message: "Root schema is an array with no items definition",
-      path: "(root)",
-    });
-  }
+    // Check root-level type: array
+    if (schema.type === "array" && !schema.items) {
+      violations.push({
+        ruleId: "array-without-items",
+        severity: ESeverity.Error,
+        message: "Root schema is an array with no items definition",
+        path: "(root)",
+      });
+    }
 
-  findArraysWithoutItems(doc, "(root)", violations);
-  return violations;
-}
+    findArraysWithoutItems(schema, "(root)", violations);
+    return violations;
+  },
+};

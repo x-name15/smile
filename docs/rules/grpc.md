@@ -80,3 +80,80 @@ message User {
   string userName = 1;
 }
 ```
+
+---
+
+## pascal-case-services
+
+**Severity:** Error
+
+All `service` definitions must use `PascalCase` naming. This adheres to the official
+Google Protobuf Style Guide and industry linters (like Buf). It ensures that client
+stubs and server interfaces in target languages follow idiomatic class naming.
+
+**Triggers on:**
+```protobuf
+service user_service {
+  rpc GetUser (GetUserRequest) returns (User) {}
+}
+```
+
+**Clean:**
+```protobuf
+service UserService {
+  rpc GetUser (GetUserRequest) returns (User) {}
+}
+```
+
+---
+
+## require-service-comments
+
+**Severity:** Error
+
+Every `service` definition must have a documentation comment (`// ...` or `/* ... */`)
+describing its purpose. Documenting the service contract provides essential high-level
+context to consumers and API documentation portals.
+
+**Triggers on:**
+```protobuf
+service UserService {
+  rpc GetUser (GetUserRequest) returns (User) {}
+}
+```
+
+**Clean:**
+```protobuf
+/* Manages user accounts, authentication profiles, and identity lifecycle. */
+service UserService {
+  rpc GetUser (GetUserRequest) returns (User) {}
+}
+```
+
+---
+
+## require-package-name
+
+**Severity:** Error
+
+Every Protocol Buffer specification must declare an explicit `package` name.
+Omitting the package declaration places all definitions into the global namespace,
+leading to symbol collisions across imports and incompatible code generation across
+different target languages.
+
+**Triggers on:**
+```protobuf
+syntax = "proto3";
+
+service UserService {}
+```
+
+**Clean:**
+```protobuf
+syntax = "proto3";
+
+package com.company.users.v1;
+
+service UserService {}
+```
+

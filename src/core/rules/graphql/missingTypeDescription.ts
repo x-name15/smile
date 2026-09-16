@@ -6,7 +6,7 @@ import {
   type EnumTypeDefinitionNode,
   type InputObjectTypeDefinitionNode,
 } from "graphql";
-import { ESeverity, type IViolation } from "../../../models/index.js";
+import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
 type TDescribableTypeDef =
   | ObjectTypeDefinitionNode
@@ -26,25 +26,33 @@ const DESCRIBED_KINDS = new Set([
  * description. Undescribed types make auto-generated docs unreadable
  * and GraphQL introspection uninformative.
  */
-export function ruleGraphQLMissingTypeDescription(
-  doc: DocumentNode,
-): IViolation[] {
-  const violations: IViolation[] = [];
+export const ruleGraphQLMissingTypeDescription: ISmileRule = {
+  meta: {
+    id: "missing-type-description",
+    title: "Missing Type Description",
+    description:
+      "Requires GraphQL Object, Interface, and Union types to include documentation strings.",
+    format: ESpecFormat.GraphQL,
+    defaultSeverity: "warn",
+  },
+  run(doc): IViolation[] {
+    const violations: IViolation[] = [];
 
-  for (const def of doc.definitions) {
-    if (!DESCRIBED_KINDS.has(def.kind)) continue;
+    for (const def of (doc as DocumentNode).definitions) {
+      if (!DESCRIBED_KINDS.has(def.kind)) continue;
 
-    const typeDef = def as TDescribableTypeDef;
+      const typeDef = def as TDescribableTypeDef;
 
-    if (!typeDef.description?.value) {
-      violations.push({
-        ruleId: "missing-type-description",
-        severity: ESeverity.Error,
-        message: `Type "${typeDef.name.value}" has no description`,
-        path: typeDef.name.value,
-      });
+      if (!typeDef.description?.value) {
+        violations.push({
+          ruleId: "missing-type-description",
+          severity: ESeverity.Error,
+          message: `Type "${typeDef.name.value}" has no description`,
+          path: typeDef.name.value,
+        });
+      }
     }
-  }
 
-  return violations;
-}
+    return violations;
+  },
+};

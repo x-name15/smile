@@ -5,7 +5,7 @@ import {
   type InterfaceTypeDefinitionNode,
   type FieldDefinitionNode,
 } from "graphql";
-import { ESeverity, type IViolation } from "../../../models/index.js";
+import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
 const FIELD_HOLDER_KINDS = new Set([
   Kind.OBJECT_TYPE_DEFINITION,
@@ -47,22 +47,30 @@ function checkFieldsForDeprecated(
 /**
  * Flags `@deprecated` directives on fields that have no `reason` argument.
  */
-export function ruleGraphQLDeprecatedWithoutReason(
-  doc: DocumentNode,
-): IViolation[] {
-  const violations: IViolation[] = [];
+export const ruleGraphQLDeprecatedWithoutReason: ISmileRule = {
+  meta: {
+    id: "deprecated-without-reason",
+    title: "Deprecated Without Reason",
+    description:
+      "Flags fields using @deprecated without providing an explanatory reason string.",
+    format: ESpecFormat.GraphQL,
+    defaultSeverity: "warn",
+  },
+  run(doc): IViolation[] {
+    const violations: IViolation[] = [];
 
-  for (const def of doc.definitions) {
-    if (!FIELD_HOLDER_KINDS.has(def.kind)) continue;
+    for (const def of (doc as DocumentNode).definitions) {
+      if (!FIELD_HOLDER_KINDS.has(def.kind)) continue;
 
-    const typeDef = def as
-      | ObjectTypeDefinitionNode
-      | InterfaceTypeDefinitionNode;
+      const typeDef = def as
+        | ObjectTypeDefinitionNode
+        | InterfaceTypeDefinitionNode;
 
-    if (typeDef.fields) {
-      checkFieldsForDeprecated(typeDef.name.value, typeDef.fields, violations);
+      if (typeDef.fields) {
+        checkFieldsForDeprecated(typeDef.name.value, typeDef.fields, violations);
+      }
     }
-  }
 
-  return violations;
-}
+    return violations;
+  },
+};

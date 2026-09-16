@@ -1,5 +1,5 @@
 import type { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
-import { ESeverity, type IViolation } from "../../../models/index.js";
+import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
 type TOpenApi3Doc = OpenAPIV3.Document | OpenAPIV3_1.Document;
 
@@ -22,15 +22,23 @@ const HTTP_METHODS = [
  * Failing to document path parameters leads to broken SDK generation
  * and unvalidated inputs in the backend.
  */
-export function ruleOpenApiValidPathParameters(doc: TOpenApi3Doc): IViolation[] {
-  const violations: IViolation[] = [];
-  const paths = doc.paths ?? {};
+export const ruleOpenApiValidPathParameters: ISmileRule = {
+  meta: {
+    id: "valid-path-parameters",
+    title: "Valid Path Parameters",
+    description: "Ensures all {param} tokens in URI paths have corresponding parameter definitions.",
+    format: ESpecFormat.OpenApi,
+    defaultSeverity: "error",
+  },
+  run(doc): IViolation[] {
+    const violations: IViolation[] = [];
+    const paths = (doc as TOpenApi3Doc).paths ?? {};
 
-  for (const [pathKey, pathItem] of Object.entries(paths)) {
-    if (!pathItem) continue;
+    for (const [pathKey, pathItem] of Object.entries(paths)) {
+      if (!pathItem) continue;
 
-    // Extract all expected path parameters from the URL template (e.g. {id}, {org_id})
-    const paramMatches = [...pathKey.matchAll(/\{([^}]+)\}/g)];
+      // Extract all expected path parameters from the URL template (e.g. {id}, {org_id})
+      const paramMatches = [...pathKey.matchAll(/\{([^{}]+)\}/g)];
     const expectedParams = paramMatches.map(m => m[1]);
     
     if (expectedParams.length === 0) {
@@ -70,5 +78,6 @@ export function ruleOpenApiValidPathParameters(doc: TOpenApi3Doc): IViolation[] 
     }
   }
 
-  return violations;
-}
+    return violations;
+  },
+};

@@ -1,4 +1,4 @@
-import { ESeverity, type IViolation } from "../../../models/index.js";
+import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
 type TSchemaObject = Record<string, unknown>;
 
@@ -40,8 +40,17 @@ function findUndescribedProperties(
 /**
  * Flags schema properties missing a `description` field.
  */
-export function ruleJsonSchemaMissingDescription(doc: TSchemaObject): IViolation[] {
-  const violations: IViolation[] = [];
-  findUndescribedProperties(doc, "(root)", violations);
-  return violations;
-}
+export const ruleJsonSchemaMissingDescription: ISmileRule = {
+  meta: {
+    id: "missing-description",
+    title: "Missing Schema Description",
+    description: "Requires schema definitions and nested models to provide descriptive context.",
+    format: ESpecFormat.JsonSchema,
+    defaultSeverity: "warn",
+  },
+  run(doc): IViolation[] {
+    const violations: IViolation[] = [];
+    findUndescribedProperties(doc as TSchemaObject, "(root)", violations);
+    return violations;
+  },
+};

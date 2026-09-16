@@ -54,9 +54,17 @@ try {
   const packageApiCheck = run(nodeCommand, [
     "--input-type=module",
     "-e",
-    "import { lintSpec, runSmokeTest } from '@mrjacket/smile'; if (typeof lintSpec !== 'function' || typeof runSmokeTest !== 'function') process.exit(1);",
+    `import { lintSpec, runSmokeTest, getSmileRules, SMILE_RULES_METADATA } from '@mrjacket/smile';
+if (typeof lintSpec !== 'function') process.exit(1);
+if (typeof runSmokeTest !== 'function') process.exit(2);
+if (typeof getSmileRules !== 'function') process.exit(3);
+const rules = getSmileRules();
+if (!Array.isArray(rules) || rules.length < 40) process.exit(4);
+if (!Array.isArray(SMILE_RULES_METADATA) || SMILE_RULES_METADATA.length !== rules.length) process.exit(5);
+const rule = rules[0];
+if (!rule.meta || !rule.meta.id || typeof rule.run !== 'function') process.exit(6);`,
   ]);
-  assert(packageApiCheck === "", "The packaged library exports could not be imported");
+  assert(packageApiCheck === "", "The packaged library exports could not be imported or getSmileRules() is broken");
 
   const cliBinPath = join(
     consumerDirectory,

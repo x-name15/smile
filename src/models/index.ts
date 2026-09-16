@@ -26,6 +26,42 @@ export enum ESpecFormat {
 export type RuleSeverity = "error" | "warn" | "off";
 
 /**
+ * Metadata that every Smile rule carries alongside its implementation.
+ * Follows the ESLint self-describing rule pattern.
+ */
+export interface ISmileRuleMeta {
+  /** Unique identifier (e.g. 'missing-operation-id'). */
+  id: string;
+  /** Short human-readable label for UI display. */
+  title: string;
+  /** Detailed explanation of what the rule enforces. */
+  description: string;
+  /** Specification format this rule targets. */
+  format: ESpecFormat;
+  /** Built-in default severity when not overridden by config. */
+  defaultSeverity: "error" | "warn";
+  /** True when the rule violation can be auto-fixed by `smile lint --fix`. */
+  isFixable?: boolean;
+}
+
+/**
+ * Backward compatibility alias for ISmileRuleMeta.
+ */
+export type IRuleMetadata = ISmileRuleMeta;
+
+/**
+ * A self-describing Smile lint rule.
+ * Each rule carries its own metadata (id, title, description, severity) plus its run function.
+ * This eliminates the need for a separate metadata registry file.
+ */
+export interface ISmileRule {
+  /** Static metadata about this rule. */
+  meta: ISmileRuleMeta;
+  /** Execute the rule against a parsed spec document and return violations. */
+  run: (doc: unknown) => IViolation[];
+}
+
+/**
  * Smile configuration file interface.
  */
 export interface ISmileConfig {

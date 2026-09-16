@@ -205,7 +205,7 @@ program
   .option("-q, --quiet", "Quiet mode", false)
   .action(async (specPath: string, channel: string, options: { payload: string, format: string, quiet: boolean }) => {
     try {
-      const { validateAsyncApiMessage, ESeverity } = await import("../core/index.js");
+      const { validateAsyncApiMessage } = await import("../core/index.js");
       const { existsSync, readFileSync } = await import("node:fs");
 
       let payloadData: unknown;

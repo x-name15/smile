@@ -55,6 +55,53 @@ describe("lintGrpcSpec", () => {
       expect(camelViolation).toBeDefined();
       expect(camelViolation?.message).toContain("Name_bad");
     });
+
+    it("detects require-service-comments: Greeter has no doc comment", async () => {
+      const result = await lintGrpcSpec(path.join(fixturesDir, "sample-grpc.proto"));
+      const serviceCommentViolation = result.violations.find(v => v.ruleId === "require-service-comments");
+      expect(serviceCommentViolation).toBeDefined();
+      expect(serviceCommentViolation?.message).toContain("Greeter");
+    });
+  });
+
+  describe("isolated gRPC rule checks", () => {
+    it("detects pascal-case-services when a service name is snake_case or camelCase", async () => {
+      const protobuf = (await import("protobufjs")).default;
+      const { pascalCaseServices } = await import("../rules/grpc/pascal-case-services.js");
+      const root = protobuf.parse(`
+        syntax = "proto3";
+        package test;
+        service bad_service_name {}
+      `).root;
+      const violations = pascalCaseServices.run(root);
+      expect(violations).toHaveLength(1);
+      expect(violations[0].ruleId).toBe("pascal-case-services");
+      expect(violations[0].message).toContain("bad_service_name");
+    });
+
+    it("detects require-package-name when package declaration is missing", async () => {
+      const protobuf = (await import("protobufjs")).default;
+      const { requirePackageName } = await import("../rules/grpc/require-package-name.js");
+      const root = protobuf.parse(`
+        syntax = "proto3";
+        service Greeter {}
+      `).root;
+      const violations = requirePackageName.run(root);
+      expect(violations).toHaveLength(1);
+      expect(violations[0].ruleId).toBe("require-package-name");
+    });
+
+    it("passes require-package-name when package declaration is present", async () => {
+      const protobuf = (await import("protobufjs")).default;
+      const { requirePackageName } = await import("../rules/grpc/require-package-name.js");
+      const root = protobuf.parse(`
+        syntax = "proto3";
+        package com.example.api;
+        service Greeter {}
+      `).root;
+      const violations = requirePackageName.run(root);
+      expect(violations).toHaveLength(0);
+    });
   });
 
   describe("clean spec (sample-grpc-clean.proto)", () => {

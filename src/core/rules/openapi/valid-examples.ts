@@ -1,6 +1,6 @@
 import Ajv from "ajv";
 import type { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
-import { ESeverity, type IViolation } from "../../../models/index.js";
+import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
 type TOpenApi3Doc = OpenAPIV3.Document | OpenAPIV3_1.Document;
 
@@ -9,8 +9,17 @@ export const severity = ESeverity.Error;
 
 const ajv = new Ajv({ strict: false, allErrors: true });
 
-export function run(doc: TOpenApi3Doc): IViolation[] {
-  const violations: IViolation[] = [];
+export const ruleValidExamples: ISmileRule = {
+  meta: {
+    id: "valid-examples",
+    title: "Valid Schema Examples",
+    description: "Validates that inline and schema examples conform to their defined types.",
+    format: ESpecFormat.OpenApi,
+    defaultSeverity: "warn",
+  },
+  run(doc): IViolation[] {
+    const violations: IViolation[] = [];
+    const openapiDoc = doc as TOpenApi3Doc;
 
   // Helper to validate a schema against its example/default
   const validateSchema = (schema: any, pathLabel: string) => {
@@ -46,13 +55,13 @@ export function run(doc: TOpenApi3Doc): IViolation[] {
   };
 
   // Check schemas in components
-  const schemas = doc.components?.schemas ?? {};
+  const schemas = openapiDoc.components?.schemas ?? {};
   for (const [name, schema] of Object.entries(schemas)) {
     validateSchema(schema, `components.schemas.${name}`);
   }
 
   // Check parameters in components
-  const parameters = doc.components?.parameters ?? {};
+  const parameters = openapiDoc.components?.parameters ?? {};
   for (const [name, param] of Object.entries(parameters)) {
     if ("schema" in param && param.schema) {
       validateSchema(param.schema, `components.parameters.${name}`);
@@ -60,4 +69,5 @@ export function run(doc: TOpenApi3Doc): IViolation[] {
   }
 
   return violations;
-}
+  },
+};

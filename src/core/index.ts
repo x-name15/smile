@@ -41,6 +41,27 @@ export { detectSpecFormat } from "./detectSpecFormat.js";
 export { lintOpenApiSpec, lintAsyncApiSpec, lintJsonSchemaSpec, lintGraphQLSpec, lintGrpcSpec, lintPostmanSpec, lintSpec };
 
 /**
+ * Returns all registered Smile lint rules across all supported formats.
+ * Use this to enumerate rule IDs, titles, and descriptions without running the linter.
+ * Rules carry their own metadata (ESLint pattern) — no separate registry needed.
+ */
+export function getSmileRules() {
+  return [
+    ...openApiRules,
+    ...asyncApiRules,
+    ...jsonSchemaRules,
+    ...graphqlRules,
+    ...grpcRules,
+    ...postmanRules,
+  ] as const;
+}
+
+/**
+ * Canonical rules metadata derived dynamically from registered self-describing rules.
+ */
+export const SMILE_RULES_METADATA = getSmileRules().map((r) => r.meta);
+
+/**
  * Parses and lints an OpenAPI spec file, running all active rules
  * against it and returning a structured result.
  */
@@ -49,7 +70,7 @@ async function lintOpenApiSpec(sourcePath: string, config: ISmileConfig = {}): P
     const parsed = await parseOpenApiSpec(sourcePath);
     const doc = parsed.raw as OpenAPIV3.Document | OpenAPIV3_1.Document;
 
-    const rawViolations = openApiRules.flatMap((rule) => rule(doc));
+    const rawViolations = openApiRules.flatMap((rule) => rule.run(doc));
     
     const customRules = await loadPlugins(config.plugins);
     rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.OpenApi, customRules));
@@ -88,7 +109,7 @@ async function lintAsyncApiSpec(sourcePath: string, config: ISmileConfig = {}): 
     const parsed = await parseAsyncApiSpec(sourcePath);
     const doc = parsed.raw as Record<string, unknown>;
 
-    const rawViolations = asyncApiRules.flatMap((rule) => rule(doc));
+    const rawViolations = asyncApiRules.flatMap((rule) => rule.run(doc));
     
     const customRules = await loadPlugins(config.plugins);
     rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.AsyncApi, customRules));
@@ -127,7 +148,7 @@ async function lintJsonSchemaSpec(sourcePath: string, config: ISmileConfig = {})
     const parsed = await parseJsonSchemaSpec(sourcePath);
     const doc = parsed.raw as Record<string, unknown>;
 
-    const rawViolations = jsonSchemaRules.flatMap((rule) => rule(doc));
+    const rawViolations = jsonSchemaRules.flatMap((rule) => rule.run(doc));
     
     const customRules = await loadPlugins(config.plugins);
     rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.JsonSchema, customRules));
@@ -166,7 +187,7 @@ async function lintGraphQLSpec(sourcePath: string, config: ISmileConfig = {}): P
     const parsed = await parseGraphQLSpec(sourcePath);
     const doc = parsed.raw as DocumentNode;
 
-    const rawViolations = graphqlRules.flatMap((rule) => rule(doc));
+    const rawViolations = graphqlRules.flatMap((rule) => rule.run(doc));
     
     const customRules = await loadPlugins(config.plugins);
     rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.GraphQL, customRules));
@@ -272,7 +293,7 @@ async function lintGrpcSpec(sourcePath: string, config: ISmileConfig = {}): Prom
     const parsed = await parseGrpcSpec(sourcePath);
     const doc = parsed.raw as protobuf.Root;
 
-    const rawViolations = grpcRules.flatMap((rule) => rule(doc));
+    const rawViolations = grpcRules.flatMap((rule) => rule.run(doc));
     
     const customRules = await loadPlugins(config.plugins);
     rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.Grpc, customRules));
@@ -311,7 +332,7 @@ async function lintPostmanSpec(sourcePath: string, config: ISmileConfig = {}): P
     const parsed = await parsePostmanSpec(sourcePath);
     const doc = parsed.raw as IPostmanCollection;
 
-    const rawViolations = postmanRules.flatMap((rule) => rule(doc));
+    const rawViolations = postmanRules.flatMap((rule) => rule.run(doc));
     
     const customRules = await loadPlugins(config.plugins);
     rawViolations.push(...evaluateCustomRules(doc, ESpecFormat.Postman, customRules));

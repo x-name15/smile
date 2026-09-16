@@ -1,11 +1,14 @@
 import protobuf from "protobufjs";
 import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
-export const pascalCaseMessages: ISmileRule = {
+/**
+ * Requires all gRPC service declarations to include a documentation comment.
+ */
+export const requireServiceComments: ISmileRule = {
   meta: {
-    id: "pascal-case-messages",
-    title: "PascalCase Protobuf Messages",
-    description: "Enforces PascalCase naming on message definitions in .proto specifications.",
+    id: "require-service-comments",
+    title: "Documented Protobuf Services",
+    description: "Requires all protobuf service definitions to have documentation comments.",
     format: ESpecFormat.Grpc,
     defaultSeverity: "error",
   },
@@ -14,18 +17,17 @@ export const pascalCaseMessages: ISmileRule = {
     const violations: IViolation[] = [];
 
     function traverse(obj: protobuf.ReflectionObject) {
-      if (obj instanceof protobuf.Type) {
-        // PascalCase regex: Starts with capital letter, only alphanumeric
-        if (!/^[A-Z][a-zA-Z0-9]*$/.test(obj.name)) {
+      if (obj instanceof protobuf.Service) {
+        if (!obj.comment || obj.comment.trim() === "") {
           violations.push({
-            ruleId: "pascal-case-messages",
+            ruleId: "require-service-comments",
             severity: ESeverity.Error,
-            message: `Message "${obj.name}" should be PascalCase.`,
-            path: `Message.${obj.name}`,
+            message: `Service "${obj.name}" is missing a comment/description.`,
+            path: `Service.${obj.name}`,
           });
         }
       }
-      
+
       if ((obj as any).nestedArray) {
         for (const child of (obj as any).nestedArray) {
           traverse(child);

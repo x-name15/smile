@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.5] - 2026-09-14 — Self-Describing Rules Architecture (ESLint Pattern) & Governance Expansion
+
+### Added
+- **Self-Describing Rule Architecture (`ISmileRule`):**
+  - Refactored all 42 rules across 6 formats to the modern linter pattern (ESLint/Biome standard) where each rule file encapsulates its own metadata (`id`, `title`, `description`, `format`, `defaultSeverity`, `isFixable`) alongside its evaluation logic (`run(doc)`).
+  - Introduced `getSmileRules()` in the core library API, allowing programmatic clients and IDE extensions to discover all registered rules dynamically.
+  - Eliminated the separate 300-line static `rulesMetadata.ts` registry, preventing any possibility of metadata falling out of sync with actual rule code.
+  - Replaced static `RULES_BY_FORMAT` in CLI templates with dynamic generation directly from active rules via `buildRulesByFormat()`.
+- **OpenAPI Strict Governance Rules:**
+  - `require-error-responses`: Enforces that every HTTP operation defines at least one error response (`4xx`, `5xx`, or `default`) with schema definitions.
+  - `require-rate-limiting`: Enforces rate limiting governance on HTTP operations (`429` with `Retry-After` / `RateLimit-*` headers, and rate limiting coverage on mutating operations `POST`, `PUT`, `DELETE`, `PATCH`).
+  - `require-version-header`: Enforces an explicit API versioning strategy on operations via path prefix (e.g. `/v1/`) or version headers (`X-API-Version`, `Accept-Version`, `api-version`).
+- **AsyncAPI Strict Governance Rules:**
+  - `require-message-headers`: Enforces explicit transport `headers` schema definition on all event messages.
+  - `require-correlation-id`: Requires `correlationId` property or tracing headers (`x-correlation-id`, `correlationId`, `traceparent`) on messages for distributed tracing.
+- **gRPC Contract Governance Rules:**
+  - `pascal-case-services`: Enforces PascalCase naming on all Protobuf `service` definitions adhering to the Google Protobuf Style Guide and Buf standards.
+  - `require-service-comments`: Ensures all Protobuf `service` blocks include documentation comments describing their purpose.
+  - `require-package-name`: Enforces explicit `package` declarations on Protocol Buffer specifications to prevent symbol collisions and namespace pollution.
+- **Postman Collection Quality Rules:**
+  - `require-collection-description`: Requires top-level Postman collections to declare a meaningful `info.description` for API catalogs and developer onboarding.
+  - `valid-request-urls`: Guarantees that every request in a Postman collection specifies a valid, non-empty URL string or raw URL object.
+- **Security & Quality Hardening (CodeQL):**
+  - Resolved Polynomial ReDoS alert (`js/polynomial-redos`) in `src/core/fixer/index.ts` by hardening parameter regex to `/\{([^{}]+)\}/g`, preventing exponential backtracking on unmatched or nested braces.
+  - Removed unused variable import (`ESeverity`) in `src/cli/index.ts`.
+- **Format Detection Hardening:**
+  - Filtered non-spec file extensions (`.md`, `.ts`, `.js`, etc.) and configuration files (`package.json`, `tsconfig.json`, `config.smile.json`) in `detectSpecFormat` to eliminate false positives in Markdown documentation and config files.
+- **Documentation:**
+  - Updated `docs/rules/openapi.md`, `docs/rules/asyncapi.md`, `docs/rules/grpc.md`, and `docs/rules/postman.md` with descriptions and clean/violating examples.
+
+---
+
 ## [1.7.0] - 2026-09-11 — SARIF Output, Safe Autofix, GitHub Action & AsyncAPI Runtime Validation
 
 ### Added

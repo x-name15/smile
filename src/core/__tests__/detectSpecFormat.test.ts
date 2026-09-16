@@ -69,4 +69,14 @@ describe("detectSpecFormat", () => {
   it("should correctly identify a Postman Collection", () => {
     expect(detectSpecFormat(path.join(fixturesDir, "sample-postman.json"))).toBe(ESpecFormat.Postman);
   });
+
+  it("returns Unknown for non-spec markdown files (e.g. CHANGELOG.md)", () => {
+    const changelogPath = path.resolve(__dirname, "../../../CHANGELOG.md");
+    expect(detectSpecFormat(changelogPath)).toBe(ESpecFormat.Unknown);
+  });
+
+  it("returns Unknown for package.json manifests", () => {
+    const pkgPath = path.resolve(__dirname, "../../../package.json");
+    expect(detectSpecFormat(pkgPath)).toBe(ESpecFormat.Unknown);
+  });
 });

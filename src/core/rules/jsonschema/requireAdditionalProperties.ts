@@ -1,4 +1,4 @@
-import { ESeverity, type IViolation } from "../../../models/index.js";
+import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
 type TSchemaObject = Record<string, unknown>;
 
@@ -52,8 +52,17 @@ function findMissingAdditionalProperties(
 /**
  * Flags schema objects that do not explicitly disable additional properties.
  */
-export function ruleJsonSchemaRequireAdditionalProperties(doc: TSchemaObject): IViolation[] {
-  const violations: IViolation[] = [];
-  findMissingAdditionalProperties(doc, "(root)", violations);
-  return violations;
-}
+export const ruleJsonSchemaRequireAdditionalProperties: ISmileRule = {
+  meta: {
+    id: "require-additional-properties",
+    title: "Explicit Additional Properties",
+    description: "Encourages strict contracts by explicitly setting additionalProperties to false.",
+    format: ESpecFormat.JsonSchema,
+    defaultSeverity: "warn",
+  },
+  run(doc): IViolation[] {
+    const violations: IViolation[] = [];
+    findMissingAdditionalProperties(doc as TSchemaObject, "(root)", violations);
+    return violations;
+  },
+};

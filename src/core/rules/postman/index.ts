@@ -1,13 +1,14 @@
-import type { IPostmanCollection } from "../../../models/index.js";
+import { type ISmileRule } from "../../../models/index.js";
 import { requireRequestDescription } from "./require-request-description.js";
 import { noEmptyFolders } from "./no-empty-folders.js";
 import { requireResponseExample } from "./require-response-example.js";
-import type { IViolation } from "../../../models/index.js";
+import { requireCollectionDescription } from "./require-collection-description.js";
+import { validRequestUrls } from "./valid-request-urls.js";
 
-type PostmanRule = (doc: IPostmanCollection) => IViolation[];
-
-export const postmanRules: PostmanRule[] = [
+export const postmanRules: ISmileRule[] = [
   requireRequestDescription,
   noEmptyFolders,
   requireResponseExample,
+  requireCollectionDescription,
+  validRequestUrls,
 ];

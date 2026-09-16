@@ -31,11 +31,11 @@ describe("RULES_BY_FORMAT parity", () => {
     expect(Object.keys(RULES_BY_FORMAT).sort()).toEqual(EXPECTED_FORMATS.sort());
   });
 
-  it("has exactly 32 rule bindings across formats and 30 unique rule IDs", () => {
+  it("has exactly 42 rule bindings across formats and 40 unique rule IDs", () => {
     const allRules = Object.values(RULES_BY_FORMAT).flat();
-    expect(allRules).toHaveLength(32);
+    expect(allRules).toHaveLength(42);
     // 'missing-operation-id' and 'untyped-schema-property' are shared between openapi and asyncapi
-    expect(new Set(allRules).size).toBe(30);
+    expect(new Set(allRules).size).toBe(40);
   });
 
   it("contains all expected OpenAPI rules", () => {
@@ -50,6 +50,9 @@ describe("RULES_BY_FORMAT parity", () => {
       "no-http-verbs-in-path",
       "strict-hypermedia",
       "valid-path-parameters",
+      "require-error-responses",
+      "require-rate-limiting",
+      "require-version-header",
     ]);
   });
 
@@ -60,6 +63,8 @@ describe("RULES_BY_FORMAT parity", () => {
       "missing-channel-description",
       "missing-message-description",
       "untyped-schema-property",
+      "require-message-headers",
+      "require-correlation-id",
     ]);
   });
 
@@ -89,6 +94,9 @@ describe("RULES_BY_FORMAT parity", () => {
       "require-rpc-comments",
       "pascal-case-messages",
       "camel-case-fields",
+      "pascal-case-services",
+      "require-service-comments",
+      "require-package-name",
     ]);
   });
 
@@ -97,6 +105,8 @@ describe("RULES_BY_FORMAT parity", () => {
       "require-request-description",
       "no-empty-folders",
       "require-response-example",
+      "require-collection-description",
+      "valid-request-urls",
     ]);
   });
 });

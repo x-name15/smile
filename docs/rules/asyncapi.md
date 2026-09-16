@@ -138,3 +138,78 @@ subscribe:
     payload:
       type: object
 ```
+
+---
+
+## require-message-headers
+
+**Severity:** Warning
+
+Requires AsyncAPI messages to define a `headers` schema for transport-level metadata (such as routing keys, content-types, timestamps, or authorization tokens).
+
+**Triggers on:**
+```yaml
+channels:
+  user/signedup:
+    subscribe:
+      operationId: onUserSignedUp
+      message:
+        payload:
+          type: object
+        # 🚫 Missing headers schema definition
+```
+
+**Clean:**
+```yaml
+channels:
+  user/signedup:
+    subscribe:
+      operationId: onUserSignedUp
+      message:
+        headers:
+          type: object
+          properties:
+            correlationId:
+              type: string
+        payload:
+          type: object
+```
+
+---
+
+## require-correlation-id
+
+**Severity:** Warning
+
+Requires AsyncAPI messages to specify a `correlationId` property or an `x-correlation-id` / `correlationId` / `traceparent` header to guarantee end-to-end distributed tracing across event-driven systems.
+
+**Triggers on:**
+```yaml
+channels:
+  user/signedup:
+    subscribe:
+      operationId: onUserSignedUp
+      message:
+        payload:
+          type: object
+        # 🚫 Neither correlationId property nor x-correlation-id header defined
+```
+
+**Clean:**
+```yaml
+channels:
+  user/signedup:
+    subscribe:
+      operationId: onUserSignedUp
+      message:
+        correlationId:
+          location: "$message.header#/correlationId"
+        headers:
+          type: object
+          properties:
+            correlationId:
+              type: string
+        payload:
+          type: object
+```
+

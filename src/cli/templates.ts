@@ -2,6 +2,8 @@
  * This module contains all the string templates and default values used by the \`smile init\` command.
  * By extracting these massive strings here, we keep the main initialization logic clean and readable.
  */
+import { getSmileRules } from "../core/index.js";
+
 export const GITHUB_WORKFLOW = `name: "Smile API Contract Validation"
 
 on:
@@ -148,49 +150,23 @@ export const SAMPLE_POSTMAN = `{
 }
 `;
 
-export const RULES_BY_FORMAT: Record<string, string[]> = {
-  openapi: [
-    "missing-summary",
-    "missing-operation-id",
-    "missing-responses",
-    "no-2xx-response",
-    "untyped-schema-property",
-    "valid-examples",
-    "require-security",
-    "no-http-verbs-in-path",
-    "strict-hypermedia",
-    "valid-path-parameters",
-  ],
-  asyncapi: [
-    "missing-operation-id",
-    "missing-message",
-    "missing-channel-description",
-    "missing-message-description",
-    "untyped-schema-property",
-  ],
-  graphql: [
-    "missing-type-description",
-    "missing-field-description",
-    "deprecated-without-reason",
-    "missing-enum-value-description",
-    "require-pascal-case-types",
-    "require-camel-case-fields",
-  ],
-  jsonschema: [
-    "missing-title",
-    "missing-description",
-    "untyped-property",
-    "array-without-items",
-    "require-additional-properties",
-  ],
-  grpc: [
-    "require-rpc-comments",
-    "pascal-case-messages",
-    "camel-case-fields",
-  ],
-  postman: [
-    "require-request-description",
-    "no-empty-folders",
-    "require-response-example",
-  ],
-};
+/**
+ * Dynamically builds a record mapping each specification format to its active rule IDs.
+ * Sourced directly from the self-describing rule definitions.
+ */
+export function buildRulesByFormat(): Record<string, string[]> {
+  const map: Record<string, string[]> = {};
+  for (const rule of getSmileRules()) {
+    let fmt = rule.meta.format as string;
+    if (fmt === "json-schema") {
+      fmt = "jsonschema";
+    }
+    if (!map[fmt]) {
+      map[fmt] = [];
+    }
+    map[fmt].push(rule.meta.id);
+  }
+  return map;
+}
+
+export const RULES_BY_FORMAT: Record<string, string[]> = buildRulesByFormat();

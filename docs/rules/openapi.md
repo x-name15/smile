@@ -306,3 +306,110 @@ paths:
         '200':
           description: ok
 ```
+
+---
+
+## require-error-responses
+
+**Severity:** Warning
+
+Every HTTP operation must define at least one error response (`4xx`, `5xx`, or `default`). API contracts should not only document the happy path; defining error responses ensures client SDKs and consumers know how failures and edge cases are represented.
+
+**Triggers on:**
+```yaml
+paths:
+  /users:
+    get:
+      operationId: listUsers
+      responses:
+        '200':
+          description: ok
+        # 🚫 No 4xx, 5xx, or default error response defined
+```
+
+**Clean:**
+```yaml
+paths:
+  /users:
+    get:
+      operationId: listUsers
+      responses:
+        '200':
+          description: ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+```
+
+---
+
+## require-rate-limiting
+
+**Severity:** Warning
+
+Enforces rate limiting governance on HTTP operations. Operations defining a `429` (Too Many Requests) response must define `Retry-After` or `RateLimit-*` headers, and mutating operations (`POST`, `PUT`, `DELETE`, `PATCH`) must document rate limiting handling.
+
+**Triggers on:**
+```yaml
+paths:
+  /users:
+    post:
+      operationId: createUser
+      responses:
+        '201':
+          description: created
+        # 🚫 Mutating operation lacks 429 response or RateLimit headers
+```
+
+**Clean:**
+```yaml
+paths:
+  /users:
+    post:
+      operationId: createUser
+      responses:
+        '201':
+          description: created
+        '429':
+          description: Rate limit exceeded
+          headers:
+            Retry-After:
+              description: Seconds before retry
+              schema:
+                type: integer
+```
+
+---
+
+## require-version-header
+
+**Severity:** Warning
+
+Validates that HTTP operations define an explicit API versioning strategy, either via a version prefix in the path (e.g., `/v1/`, `/v2/`) or through a version header parameter (such as `X-API-Version`, `Accept-Version`, `api-version`, or `version`).
+
+**Triggers on:**
+```yaml
+paths:
+  /users:
+    get:
+      operationId: listUsers
+      responses:
+        '200':
+          description: ok
+        # 🚫 Path has no /v1/ prefix and no version header parameter is defined
+```
+
+**Clean:**
+```yaml
+paths:
+  /v1/users:
+    get:
+      operationId: listUsers
+      responses:
+        '200':
+          description: ok
+```
+

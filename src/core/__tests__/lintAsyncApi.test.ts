@@ -64,6 +64,22 @@ describe("lintAsyncApiSpec", () => {
       const ruleIds = result.violations.map((v) => v.ruleId);
       expect(ruleIds).toContain("missing-message-description");
     });
+
+    it("detects require-message-headers violations when message lacks headers schema", async () => {
+      const result = await lintAsyncApiSpec(
+        path.join(fixturesDir, "sample-asyncapi.yaml"),
+      );
+      const ruleIds = result.violations.map((v) => v.ruleId);
+      expect(ruleIds).toContain("require-message-headers");
+    });
+
+    it("detects require-correlation-id violations when message lacks correlationId", async () => {
+      const result = await lintAsyncApiSpec(
+        path.join(fixturesDir, "sample-asyncapi.yaml"),
+      );
+      const ruleIds = result.violations.map((v) => v.ruleId);
+      expect(ruleIds).toContain("require-correlation-id");
+    });
   });
 
   describe("clean spec (sample-asyncapi-clean.yaml)", () => {

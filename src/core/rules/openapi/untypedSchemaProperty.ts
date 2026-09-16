@@ -1,5 +1,5 @@
 import type { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
-import { ESeverity, type IViolation } from "../../../models/index.js";
+import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
 type TOpenApi3Doc = OpenAPIV3.Document | OpenAPIV3_1.Document;
 type TSchemaObject = Record<string, unknown>;
@@ -52,20 +52,29 @@ function findUntypedProperties(
  * Flags schema properties (in components.schemas) that have no `type`
  * and no valid alternative ($ref/oneOf/anyOf/allOf).
  */
-export function ruleUntypedSchemaProperty(doc: TOpenApi3Doc): IViolation[] {
-  const violations: IViolation[] = [];
-  const schemas = (doc.components?.schemas ?? {}) as Record<
-    string,
-    TSchemaObject
-  >;
+export const ruleUntypedSchemaProperty: ISmileRule = {
+  meta: {
+    id: "untyped-schema-property",
+    title: "Untyped Schema Property",
+    description: "Flags schema properties that lack an explicit data type declaration.",
+    format: ESpecFormat.OpenApi,
+    defaultSeverity: "error",
+  },
+  run(doc): IViolation[] {
+    const violations: IViolation[] = [];
+    const schemas = ((doc as TOpenApi3Doc).components?.schemas ?? {}) as Record<
+      string,
+      TSchemaObject
+    >;
 
-  for (const [schemaName, schema] of Object.entries(schemas)) {
-    findUntypedProperties(
-      schema,
-      `components.schemas.${schemaName}`,
-      violations,
-    );
-  }
+    for (const [schemaName, schema] of Object.entries(schemas)) {
+      findUntypedProperties(
+        schema,
+        `components.schemas.${schemaName}`,
+        violations,
+      );
+    }
 
-  return violations;
-}
+    return violations;
+  },
+};

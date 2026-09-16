@@ -7,7 +7,7 @@ import {
   type InputObjectTypeDefinitionNode,
   type UnionTypeDefinitionNode,
 } from "graphql";
-import { ESeverity, type IViolation } from "../../../models/index.js";
+import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
 const TYPE_KINDS = new Set([
   Kind.OBJECT_TYPE_DEFINITION,
@@ -20,32 +20,40 @@ const TYPE_KINDS = new Set([
 /**
  * Flags any type names that do not start with a capital letter (PascalCase).
  */
-export function ruleGraphQLRequirePascalCaseTypes(
-  doc: DocumentNode,
-): IViolation[] {
-  const violations: IViolation[] = [];
+export const ruleGraphQLRequirePascalCaseTypes: ISmileRule = {
+  meta: {
+    id: "require-pascal-case-types",
+    title: "PascalCase Type Names",
+    description:
+      "Enforces standard PascalCase naming conventions on all GraphQL type definitions.",
+    format: ESpecFormat.GraphQL,
+    defaultSeverity: "error",
+  },
+  run(doc): IViolation[] {
+    const violations: IViolation[] = [];
 
-  for (const def of doc.definitions) {
-    if (!TYPE_KINDS.has(def.kind)) continue;
+    for (const def of (doc as DocumentNode).definitions) {
+      if (!TYPE_KINDS.has(def.kind)) continue;
 
-    const typeDef = def as
-      | ObjectTypeDefinitionNode
-      | InterfaceTypeDefinitionNode
-      | EnumTypeDefinitionNode
-      | InputObjectTypeDefinitionNode
-      | UnionTypeDefinitionNode;
-      
-    const name = typeDef.name.value;
-    // Check if the first character is lowercase
-    if (name.length > 0 && name[0] !== name[0].toUpperCase()) {
-      violations.push({
-        ruleId: "require-pascal-case-types",
-        severity: ESeverity.Error,
-        message: `Type "${name}" should use PascalCase (start with a capital letter)`,
-        path: name,
-      });
+      const typeDef = def as
+        | ObjectTypeDefinitionNode
+        | InterfaceTypeDefinitionNode
+        | EnumTypeDefinitionNode
+        | InputObjectTypeDefinitionNode
+        | UnionTypeDefinitionNode;
+        
+      const name = typeDef.name.value;
+      // Check if the first character is lowercase
+      if (name.length > 0 && name[0] !== name[0].toUpperCase()) {
+        violations.push({
+          ruleId: "require-pascal-case-types",
+          severity: ESeverity.Error,
+          message: `Type "${name}" should use PascalCase (start with a capital letter)`,
+          path: name,
+        });
+      }
     }
-  }
 
-  return violations;
-}
+    return violations;
+  },
+};

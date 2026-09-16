@@ -1,4 +1,4 @@
-import { ESeverity, type IViolation } from "../../../models/index.js";
+import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
 type TJsonSchema = Record<string, unknown>;
 
@@ -7,15 +7,25 @@ type TJsonSchema = Record<string, unknown>;
  * A schema without a title is hard to document, reference in UI tooling,
  * and display meaningfully in generated forms or API documentation.
  */
-export function ruleJsonSchemaMissingTitle(doc: TJsonSchema): IViolation[] {
-  if (doc.title) return [];
+export const ruleJsonSchemaMissingTitle: ISmileRule = {
+  meta: {
+    id: "missing-title",
+    title: "Missing Schema Title",
+    description: "Requires top-level JSON Schemas to define a meaningful title attribute.",
+    format: ESpecFormat.JsonSchema,
+    defaultSeverity: "warn",
+  },
+  run(doc): IViolation[] {
+    const schema = doc as TJsonSchema;
+    if (schema.title) return [];
 
-  return [
-    {
-      ruleId: "missing-title",
-      severity: ESeverity.Error,
-      message: "Root schema has no title",
-      path: "(root)",
-    },
-  ];
-}
+    return [
+      {
+        ruleId: "missing-title",
+        severity: ESeverity.Error,
+        message: "Root schema has no title",
+        path: "(root)",
+      },
+    ];
+  },
+};

@@ -25,7 +25,7 @@ describe("ruleStrictHypermedia", () => {
       }
     };
     
-    const violations = ruleStrictHypermedia(doc);
+    const violations = ruleStrictHypermedia.run(doc);
     expect(violations).toHaveLength(0);
   });
 
@@ -51,7 +51,7 @@ describe("ruleStrictHypermedia", () => {
       }
     };
     
-    const violations = ruleStrictHypermedia(doc);
+    const violations = ruleStrictHypermedia.run(doc);
     expect(violations).toHaveLength(1);
     expect(violations[0].ruleId).toBe("strict-hypermedia");
     expect(violations[0].message).toContain("JSON:API");
@@ -79,7 +79,7 @@ describe("ruleStrictHypermedia", () => {
       }
     };
     
-    const violations = ruleStrictHypermedia(doc);
+    const violations = ruleStrictHypermedia.run(doc);
     expect(violations).toHaveLength(0);
   });
 
@@ -105,7 +105,7 @@ describe("ruleStrictHypermedia", () => {
       }
     };
     
-    const violations = ruleStrictHypermedia(doc);
+    const violations = ruleStrictHypermedia.run(doc);
     expect(violations).toHaveLength(1);
     expect(violations[0].ruleId).toBe("strict-hypermedia");
     expect(violations[0].message).toContain("HAL");
@@ -133,7 +133,7 @@ describe("ruleStrictHypermedia", () => {
       }
     };
     
-    const violations = ruleStrictHypermedia(doc);
+    const violations = ruleStrictHypermedia.run(doc);
     expect(violations).toHaveLength(0);
   });
 });

@@ -1,5 +1,5 @@
 import type { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
-import { ESeverity, type IViolation } from "../../../models/index.js";
+import { ESpecFormat, ESeverity, type IViolation, type ISmileRule } from "../../../models/index.js";
 
 type TOpenApi3Doc = OpenAPIV3.Document | OpenAPIV3_1.Document;
 
@@ -27,33 +27,42 @@ function is2xx(code: string): boolean {
  * A contract with no declared success shape is impossible to validate
  * at runtime and leaves consumers guessing about the happy path.
  */
-export function ruleOpenApiNo2xxResponse(doc: TOpenApi3Doc): IViolation[] {
-  const violations: IViolation[] = [];
-  const paths = doc.paths ?? {};
+export const ruleOpenApiNo2xxResponse: ISmileRule = {
+  meta: {
+    id: "no-2xx-response",
+    title: "Missing 2xx Success Response",
+    description: "Requires at least one 2xx success response code per operation.",
+    format: ESpecFormat.OpenApi,
+    defaultSeverity: "error",
+  },
+  run(doc): IViolation[] {
+    const violations: IViolation[] = [];
+    const paths = (doc as TOpenApi3Doc).paths ?? {};
 
-  for (const [pathKey, pathItem] of Object.entries(paths)) {
-    if (!pathItem) continue;
+    for (const [pathKey, pathItem] of Object.entries(paths)) {
+      if (!pathItem) continue;
 
-    for (const method of HTTP_METHODS) {
-      const operation = (pathItem as Record<string, unknown>)[method] as
-        | { responses?: Record<string, unknown> }
-        | undefined;
+      for (const method of HTTP_METHODS) {
+        const operation = (pathItem as Record<string, unknown>)[method] as
+          | { responses?: Record<string, unknown> }
+          | undefined;
 
-      if (!operation) continue;
+        if (!operation) continue;
 
-      const responseCodes = Object.keys(operation.responses ?? {});
-      const has2xx = responseCodes.some(is2xx);
+        const responseCodes = Object.keys(operation.responses ?? {});
+        const has2xx = responseCodes.some(is2xx);
 
-      if (!has2xx) {
-        violations.push({
-          ruleId: "no-2xx-response",
-          severity: ESeverity.Error,
-          message: `Operation "${method.toUpperCase()} ${pathKey}" defines no 2xx success response`,
-          path: `paths.${pathKey}.${method}.responses`,
-        });
+        if (!has2xx) {
+          violations.push({
+            ruleId: "no-2xx-response",
+            severity: ESeverity.Error,
+            message: `Operation "${method.toUpperCase()} ${pathKey}" defines no 2xx success response`,
+            path: `paths.${pathKey}.${method}.responses`,
+          });
+        }
       }
     }
-  }
 
-  return violations;
-}
+    return violations;
+  },
+};

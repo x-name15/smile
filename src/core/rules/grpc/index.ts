@@ -1,13 +1,16 @@
-import type protobuf from "protobufjs";
+import { type ISmileRule } from "../../../models/index.js";
 import { requireRpcComments } from "./require-rpc-comments.js";
 import { pascalCaseMessages } from "./pascal-case-messages.js";
 import { camelCaseFields } from "./camel-case-fields.js";
-import type { IViolation } from "../../../models/index.js";
+import { pascalCaseServices } from "./pascal-case-services.js";
+import { requireServiceComments } from "./require-service-comments.js";
+import { requirePackageName } from "./require-package-name.js";
 
-type GrpcRule = (root: protobuf.Root) => IViolation[];
-
-export const grpcRules: GrpcRule[] = [
+export const grpcRules: ISmileRule[] = [
   requireRpcComments,
   pascalCaseMessages,
   camelCaseFields,
+  pascalCaseServices,
+  requireServiceComments,
+  requirePackageName,
 ];

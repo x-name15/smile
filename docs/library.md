@@ -141,6 +141,47 @@ const gqlFormat = detectSpecFormat("./schema.graphql");
 
 ---
 
+## Rule introspection: `getSmileRules`
+
+Returns all 42 registered Smile rules across all 6 formats. Each rule carries its own metadata (`id`, `title`, `description`, `format`, `defaultSeverity`, `isFixable`) alongside its `run` function. This is the ESLint/Biome self-describing rule pattern — no separate registry needed.
+
+```ts
+import { getSmileRules, ESpecFormat } from "@mrjacket/smile";
+
+// Get all 42 rules
+const allRules = getSmileRules();
+
+// Filter by format
+const openApiRules = allRules.filter(r => r.meta.format === ESpecFormat.OpenApi);
+
+// Build a rule catalogue for a UI or config wizard
+for (const rule of allRules) {
+  console.log(`[${rule.meta.format}] ${rule.meta.id}: ${rule.meta.title}`);
+  // → [openapi] missing-summary: Missing Operation Summary
+}
+
+// Check which rules are auto-fixable
+const fixableRules = allRules.filter(r => r.meta.isFixable);
+```
+
+### `ISmileRule` interface
+
+```ts
+interface ISmileRule {
+  meta: {
+    id: string;                   // Rule identifier, e.g. "missing-operation-id"
+    title: string;                // Short display label
+    description: string;          // Full explanation of the contract requirement
+    format: ESpecFormat;          // Which format this rule targets
+    defaultSeverity: "error" | "warn";
+    isFixable?: boolean;          // True if `smile lint --fix` can auto-resolve
+  };
+  run: (doc: unknown) => IViolation[];
+}
+```
+
+---
+
 ## Directory scanning: `findSpecFiles`
 
 Recursively scan a directory for all supported API specifications, automatically respecting `.gitignore`, `.smileignore`, and excluding build artifacts or package manifests:
