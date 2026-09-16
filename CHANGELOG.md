@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.6] - 2026-09-16 — CLI Hook Uninstallation & CI Workspace Hardening
+
+### Added
+- **Native Git Hook Uninstaller (`smile uninstall-hook`):** Added a CLI command and programmatic method (`uninstallHook()`) to cleanly remove the native pre-commit contract hook from `.git/hooks/pre-commit`.
+- **Pre-Commit Hook Fallback Resolution:** Hardened the hook script template to detect local or global `smile` binary in `PATH` before gracefully falling back to `npx --yes @mrjacket/smile lint .`.
+
+### Fixed
+- **CI & GitHub Workflows False Positives:** Updated directory traversal in `findSpecFiles()` to ignore `.github/` by default, preventing CI workflow `.yml` files from being evaluated as unknown specification contracts.
+
+---
+
 ## [1.7.5] - 2026-09-14 — Self-Describing Rules Architecture (ESLint Pattern) & Governance Expansion
 
 ### Added

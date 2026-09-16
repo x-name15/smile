@@ -33,7 +33,7 @@ describe("Core library public API exports", () => {
   });
   it("exports VERSION string matching package release", () => {
     expect(typeof VERSION).toBe("string");
-    expect(VERSION).toBe("1.7.5");
+    expect(VERSION).toBe("1.7.6");
   });
 
   it("exports findSpecFiles directory scanner", () => {
