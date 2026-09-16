@@ -54,7 +54,7 @@ export function findSpecFiles(basePath: string): string[] {
   }
   const ig = ignore();
   
-  ig.add(["node_modules", ".git", "dist", "build", "coverage"]);
+  ig.add(["node_modules", ".git", ".github", "dist", "build", "coverage"]);
   
   const gitignorePath = join(basePath, ".gitignore");
   if (existsSync(gitignorePath)) {

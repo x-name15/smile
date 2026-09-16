@@ -7,7 +7,12 @@ const HOOK_SCRIPT = `#!/bin/sh
 # smile pre-commit hook
 
 echo "🩺 Running smile contract linter..."
-npx @mrjacket/smile lint .
+
+if command -v smile >/dev/null 2>&1; then
+  smile lint .
+else
+  npx --yes @mrjacket/smile lint .
+fi
 
 if [ $? -ne 0 ]; then
   echo ""
