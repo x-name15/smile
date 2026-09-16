@@ -86,3 +86,34 @@ export async function installHook(): Promise<void> {
     process.exit(1);
   }
 }
+
+/**
+ * Removes the native git pre-commit hook from the current repository.
+ */
+export async function uninstallHook(): Promise<void> {
+  p.intro("Hook Uninstaller");
+
+  const gitDir = path.resolve(process.cwd(), ".git");
+  if (!existsSync(gitDir)) {
+    p.log.error("Not a git repository. Cannot find pre-commit hook.");
+    p.outro("Aborted.");
+    process.exit(1);
+  }
+
+  const hookPath = path.resolve(gitDir, "hooks", "pre-commit");
+  if (!existsSync(hookPath)) {
+    p.log.info("No pre-commit hook found in this repository.");
+    p.outro("Nothing to do.");
+    return;
+  }
+
+  try {
+    const { unlink } = await import("node:fs/promises");
+    await unlink(hookPath);
+    p.log.success("Successfully removed smile pre-commit hook.");
+    p.outro("Git hook removed. 🛡️");
+  } catch (error) {
+    p.log.error(`Failed to remove hook: ${error}`);
+    process.exit(1);
+  }
+}

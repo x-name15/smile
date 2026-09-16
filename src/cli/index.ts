@@ -303,6 +303,20 @@ program
   });
 
 program
+  .command("uninstall-hook")
+  .description("Remove the native git pre-commit hook from the repository")
+  .action(async () => {
+    try {
+      const { uninstallHook } = await import("./commands/hookCommand.js");
+      await uninstallHook();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`Failed to uninstall git hook: ${message}`);
+      process.exitCode = 1;
+    }
+  });
+
+program
   .command("config")
   .description("Smile Config: View your currently active configuration and rule overrides")
   .action(async () => {
