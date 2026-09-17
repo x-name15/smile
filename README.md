@@ -1,4 +1,4 @@
-# smile 
+<h1><img src=".github/images/red-jhon.signature.png" width="40" height="40"> Smile</h1>
 
 [![npm version](https://img.shields.io/npm/v/@mrjacket/smile.svg?color=success)](https://www.npmjs.com/package/@mrjacket/smile)
 [![npm downloads](https://img.shields.io/npm/dm/@mrjacket/smile.svg)](https://www.npmjs.com/package/@mrjacket/smile)
@@ -7,6 +7,7 @@
 [![types](https://img.shields.io/npm/types/@mrjacket/smile.svg)](https://www.npmjs.com/package/@mrjacket/smile)
 [![license](https://img.shields.io/npm/l/@mrjacket/smile.svg)](https://github.com/x-name15/smile/blob/main/LICENSE)
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Smile%20API%20Linter-blue?logo=github)](https://github.com/marketplace/actions/smile-api-linter)
+[![VS Code Extension](https://img.shields.io/badge/VS%20Code-Smile-blue?logo=visualstudiocode)](https://github.com/x-name15/vscode-smile)
 
 **smile** is a strict API contract validator built for Node.js test suites and CI pipelines. 
 
@@ -20,6 +21,7 @@ It acts as both a static linter (checking your API specification for completenes
 ## Features
 
 - **Multi-format support:** Auto-detects and validates OpenAPI 3.x, AsyncAPI 2.x & 3.x, JSON Schema, GraphQL SDL, gRPC (`.proto`), and Postman Collections.
+- **Official Integrations:** Drop-in [GitHub Action](https://github.com/marketplace/actions/smile-api-linter) (`x-name15/smile-action@v1`) and real-time [VS Code Extension](https://github.com/x-name15/vscode-smile) with inline contract diagnostics and autofixing.
 - **Zero dependencies for the CLI:** Run it via `npx` instantly in your CI pipelines.
 - **Library API:** Native Vitest/Jest integration. Import it directly into your tests with full TypeScript support (no subprocesses).
 - **The Breaching Detector (Runtime Smoke Test)**
@@ -185,7 +187,8 @@ Full documentation is available in the [`docs/`](./docs) directory:
 
 - [Getting Started](./docs/getting-started.md) — CLI usage, basic commands, and exit codes.
 - [CI/CD & DevOps](./docs/ci-cd.md) — GitHub Actions, GitLab CI, JUnit, and Webhooks.
-  - **Official GitHub Action:** [smile-api-linter](https://github.com/marketplace/actions/smile-api-linter) on the GitHub Marketplace — drop-in composite action, zero setup required.
+  - **GitHub Action:** [smile-api-linter](https://github.com/marketplace/actions/smile-api-linter) on GitHub Marketplace (`x-name15/smile-action@v1`).
+- **VS Code Extension:** [vscode-smile](https://github.com/x-name15/vscode-smile) — Real-time editor diagnostics, Visual Rules Manager, and contract inspection.
 - [Writing Plugins](./docs/plugins.md) — How to write and inject custom JavaScript/TypeScript rules.
 - [Library API](./docs/library.md) — Programmatic usage, Vitest integration, and working with violations.
 - [Configuration](./docs/configuration.md) — Complete guide to customizing rules, webhooks, and test headers in your config.smile.json.
@@ -200,10 +203,14 @@ Full documentation is available in the [`docs/`](./docs) directory:
 * Use at least Node.js v22.12.0+.
 * This tool assumes you are parsing JSON or YAML.
 
+## Ecosystem & Tools
+
+- **[GitHub Action](https://github.com/marketplace/actions/smile-api-linter):** Drop-in composite action (`x-name15/smile-action@v1`) for CI pipelines and GitHub Code Scanning.
+- **[VS Code Extension](https://github.com/x-name15/vscode-smile):** Official extension with inline diagnostics, AST autofixing, and Visual Rules Manager.
+
 ## Roadmap (Upcoming Features)
 
 We are keeping the roadmap deliberately small and focused on predictable behavior in libraries and CI/CD pipelines:
-- **VS Code Extension (LSP):** Highlight contract violations inline in the editor as you write your OpenAPI/AsyncAPI spec.
 - **SARIF Autofix Suggestions:** Embed machine-readable fix hints inside the SARIF output so GitHub Code Scanning can offer one-click fixes.
 
 ## License
