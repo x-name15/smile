@@ -89,7 +89,7 @@ Available on the [GitHub Actions Marketplace](https://github.com/marketplace/act
 ### GitHub Code Scanning & Security Tab (SARIF)
 `smile` natively outputs OASIS SARIF v2.1.0 (`-f sarif`). Uploading this output allows contract violations to appear directly in the **Security -> Code scanning** alerts tab of your repository, complete with rule descriptions and links to documentation.
 
-Starting in **v1.7.6**, SARIF reports embed standard `fixes` objects with replacement diffs for safe autofixable rules (such as `missing-operation-id` and `missing-summary`). GitHub Code Scanning will display interactive **"Suggested fix"** buttons directly inside Pull Request code reviews and Security alerts, allowing reviewers to apply canonical fixes with one click!
+Starting in **v1.7.7**, SARIF reports embed standard `fixes` objects with replacement diffs for safe autofixable rules (such as `missing-operation-id` and `missing-summary`). GitHub Code Scanning will display interactive **"Suggested fix"** buttons directly inside Pull Request code reviews and Security alerts, allowing reviewers to apply canonical fixes with one click!
 
 ```yaml
       - name: Generate SARIF Security Report
