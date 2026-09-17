@@ -146,7 +146,23 @@ const result = await lintSpec("./api.yaml", {
 
 ---
 
-## 5. Error Handling & Safety
+## 5. Scaffolding Custom Rules via CLI (`smile create-rule`)
+
+Instead of writing boilerplate manually, `smile` provides an interactive scaffolder to generate strictly-typed rule files:
+
+```bash
+# Launch interactive wizard
+smile create-rule
+
+# Or specify parameters non-interactively:
+smile create-rule require-team-owner --format openapi --lang ts --out ./rules/require-team-owner.ts
+```
+
+This generates a ready-to-use template adhering to the `ISmileCustomRule` interface, complete with example AST logic, severity defaults, and registration hints.
+
+---
+
+## 6. Error Handling & Safety
 
 The plugin system is strictly sandboxed inside a `try/catch` block.
 If your custom rule code contains a bug or throws a fatal runtime exception, it will **not** crash the CLI or stop your CI pipeline. `smile` will catch the error, print a safe warning to the console, and gracefully continue linting the rest of your API contract.

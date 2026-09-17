@@ -4,9 +4,11 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.7.6] - 2026-09-16 — CLI Hook Uninstallation & CI Workspace Hardening
+## [1.7.6] - 2026-09-17 — Custom Rule Scaffolder, SARIF Autofixes & Hook Management
 
 ### Added
+- **Custom Rule CLI Scaffolder (`smile create-rule [ruleId]`):** Interactive assistant to scaffold custom contract rule templates in TypeScript (`.ts`) or JavaScript ESM (`.mjs`) targeting any format (`openapi`, `asyncapi`, `graphql`, `grpc`, `json-schema`, `postman`, or `all`).
+- **Interactive SARIF Autofix Suggestions (OASIS SARIF v2.1.0):** Enhanced the SARIF reporter (`renderSarifReport` / `renderAggregateSarifReport`) to embed standard `fixes` objects for safe autofixable rules (`missing-operation-id`, `missing-summary`). Enables one-click "Suggested fix" and "Commit suggestion" buttons directly in GitHub Code Scanning alerts and Pull Request review comments.
 - **Native Git Hook Uninstaller (`smile uninstall-hook`):** Added a CLI command and programmatic method (`uninstallHook()`) to cleanly remove the native pre-commit contract hook from `.git/hooks/pre-commit`.
 - **Pre-Commit Hook Fallback Resolution:** Hardened the hook script template to detect local or global `smile` binary in `PATH` before gracefully falling back to `npx --yes @mrjacket/smile lint .`.
 

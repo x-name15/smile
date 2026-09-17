@@ -3,8 +3,9 @@
  * Generates valid SARIF JSON documents suitable for GitHub Code Scanning / Security tab ingestion.
  */
 
-import { ESeverity, type ILintResult } from "../models/index.js";
+import { ESeverity, type ILintResult, type IViolation } from "../models/index.js";
 import { VERSION } from "../version.js";
+import { generateCanonicalOperationId, generateCanonicalSummary } from "../core/fixer/index.js";
 
 interface ISarifRule {
   id: string;
@@ -15,6 +16,30 @@ interface ISarifRule {
   defaultConfiguration: {
     level: "error" | "warning" | "note";
   };
+}
+
+interface ISarifReplacement {
+  deletedRegion?: {
+    startLine?: number;
+    startColumn?: number;
+    endLine?: number;
+    endColumn?: number;
+  };
+  insertedContent?: {
+    text: string;
+  };
+}
+
+interface ISarifFix {
+  description: {
+    text: string;
+  };
+  fileChanges: Array<{
+    artifactLocation: {
+      uri: string;
+    };
+    replacements: ISarifReplacement[];
+  }>;
 }
 
 interface ISarifResult {
@@ -31,6 +56,7 @@ interface ISarifResult {
       };
     };
   }>;
+  fixes?: ISarifFix[];
 }
 
 interface ISarifRun {
@@ -62,6 +88,62 @@ function mapSeverityToSarifLevel(severity: ESeverity): "error" | "warning" | "no
   }
 }
 
+function generateSarifFix(v: IViolation, normalizedUri: string): ISarifFix | undefined {
+  if (v.ruleId === "missing-operation-id") {
+    const match = v.path.match(/paths\.(.*?)\.([a-z]+)/i);
+    if (match) {
+      const pathKey = match[1];
+      const method = match[2];
+      const opId = generateCanonicalOperationId(method, pathKey);
+      return {
+        description: {
+          text: `Add canonical operationId: "${opId}"`,
+        },
+        fileChanges: [
+          {
+            artifactLocation: { uri: normalizedUri },
+            replacements: [
+              {
+                insertedContent: {
+                  text: `operationId: ${opId}\n`,
+                },
+              },
+            ],
+          },
+        ],
+      };
+    }
+  }
+
+  if (v.ruleId === "missing-summary") {
+    const match = v.path.match(/paths\.(.*?)\.([a-z]+)/i);
+    if (match) {
+      const pathKey = match[1];
+      const method = match[2];
+      const summary = generateCanonicalSummary(method, pathKey);
+      return {
+        description: {
+          text: `Add canonical summary: "${summary}"`,
+        },
+        fileChanges: [
+          {
+            artifactLocation: { uri: normalizedUri },
+            replacements: [
+              {
+                insertedContent: {
+                  text: `summary: "${summary}"\n`,
+                },
+              },
+            ],
+          },
+        ],
+      };
+    }
+  }
+
+  return undefined;
+}
+
 function buildSarifDocument(results: ILintResult[]): ISarifDocument {
   const rulesMap = new Map<string, ISarifRule>();
   const sarifResults: ISarifResult[] = [];
@@ -83,7 +165,7 @@ function buildSarifDocument(results: ILintResult[]): ISarifDocument {
 
       const normalizedUri = lintResult.sourcePath.replace(/\\/g, "/");
 
-      sarifResults.push({
+      const sarifResult: ISarifResult = {
         ruleId: v.ruleId,
         level: mapSeverityToSarifLevel(v.severity),
         message: {
@@ -98,7 +180,14 @@ function buildSarifDocument(results: ILintResult[]): ISarifDocument {
             },
           },
         ],
-      });
+      };
+
+      const fix = generateSarifFix(v, normalizedUri);
+      if (fix) {
+        sarifResult.fixes = [fix];
+      }
+
+      sarifResults.push(sarifResult);
     }
   }
 

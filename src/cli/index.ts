@@ -317,6 +317,23 @@ program
   });
 
 program
+  .command("create-rule [ruleId]")
+  .description("Scaffold a new custom contract rule template for TypeScript or JavaScript")
+  .option("-f, --format <format>", "Target specification format (openapi, asyncapi, graphql, grpc, json-schema, postman, all)")
+  .option("-l, --lang <language>", "Template language: ts or js", "ts")
+  .option("-o, --out <path>", "Output file path")
+  .action(async (ruleId: string | undefined, options: { format?: string; lang?: "ts" | "js"; out?: string }) => {
+    try {
+      const { runCreateRuleCommand } = await import("./commands/createRuleCommand.js");
+      await runCreateRuleCommand(ruleId, options);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`Failed to create rule: ${message}`);
+      process.exitCode = 1;
+    }
+  });
+
+program
   .command("config")
   .description("Smile Config: View your currently active configuration and rule overrides")
   .action(async () => {

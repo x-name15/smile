@@ -52,9 +52,14 @@ describe("SARIF OASIS v2.1.0 Reporter", () => {
     expect(run.results[0].ruleId).toBe("missing-operation-id");
     expect(run.results[0].level).toBe("error");
     expect(run.results[0].locations[0].physicalLocation.artifactLocation.uri).toBe("specs/petstore.yaml");
+    expect(run.results[0].fixes).toBeDefined();
+    expect(run.results[0].fixes).toHaveLength(1);
+    expect(run.results[0].fixes[0].description.text).toContain("getPets");
 
     expect(run.results[1].ruleId).toBe("missing-summary");
     expect(run.results[1].level).toBe("warning");
+    expect(run.results[1].fixes).toBeDefined();
+    expect(run.results[1].fixes[0].description.text).toContain("Get /pets");
   });
 
   it("renders empty results array for completely clean specs", () => {

@@ -138,6 +138,30 @@ it("GET /users returns a valid payload according to the spec", async () => {
 });
 ```
 
+### 6. Custom Rules Scaffolder
+
+Extend `smile` with custom organizational rules using the interactive rule generator:
+
+```bash
+# Interactive wizard
+npx @mrjacket/smile create-rule
+
+# Non-interactive CLI flags
+npx @mrjacket/smile create-rule require-team-tag --format openapi --lang ts
+```
+
+### 7. Git Pre-Commit Hook Management
+
+Protect your repository from broken contracts before bad code is committed:
+
+```bash
+# Install native pre-commit hook
+npx @mrjacket/smile install-hook
+
+# Remove pre-commit hook
+npx @mrjacket/smile uninstall-hook
+```
+
 ---
 
 ## Configuration (`config.smile.json`)
