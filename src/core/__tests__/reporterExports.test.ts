@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, it, expect } from "vitest";
 import {
   VERSION,
@@ -33,7 +35,10 @@ describe("Core library public API exports", () => {
   });
   it("exports VERSION string matching package release", () => {
     expect(typeof VERSION).toBe("string");
-    expect(VERSION).toBe("1.7.7");
+    const pkg = JSON.parse(
+      readFileSync(path.resolve(process.cwd(), "package.json"), "utf-8")
+    );
+    expect(VERSION).toBe(pkg.version);
   });
 
   it("exports findSpecFiles directory scanner", () => {
