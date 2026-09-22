@@ -1,15 +1,41 @@
-<h1><img src=".github/images/red-jhon.signature.png" width="40" height="40"> Smile</h1>
+<p align="center">
+  <img src=".github/images/red-jhon.signature.png" width="100" height="100" alt="smile logo">
+</p>
 
-[![npm version](https://img.shields.io/npm/v/@mrjacket/smile.svg?color=success)](https://www.npmjs.com/package/@mrjacket/smile)
-[![npm downloads](https://img.shields.io/npm/dm/@mrjacket/smile.svg)](https://www.npmjs.com/package/@mrjacket/smile)
-[![node](https://img.shields.io/node/v/@mrjacket/smile.svg)](https://www.npmjs.com/package/@mrjacket/smile)
-[![ci](https://github.com/x-name15/smile/actions/workflows/ci.yml/badge.svg)](https://github.com/x-name15/smile/actions/workflows/ci.yml)
-[![types](https://img.shields.io/npm/types/@mrjacket/smile.svg)](https://www.npmjs.com/package/@mrjacket/smile)
-[![license](https://img.shields.io/npm/l/@mrjacket/smile.svg)](https://github.com/x-name15/smile/blob/main/LICENSE)
-[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Smile%20API%20Linter-blue?logo=github)](https://github.com/marketplace/actions/smile-api-linter)
-[![VS Code Extension](https://img.shields.io/badge/VS%20Code-Smile-blue?logo=visualstudiocode)](https://github.com/x-name15/vscode-smile)
+<h1 align="center">smile</h1>
 
-**smile** is a strict API contract validator built for Node.js test suites and CI pipelines. 
+<p align="center">
+  <strong>Strict API contract validator built for Node.js test suites and CI pipelines.</strong>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@mrjacket/smile">
+    <img src="https://img.shields.io/npm/v/@mrjacket/smile.svg?color=success" alt="npm version">
+  </a>
+  <a href="https://www.npmjs.com/package/@mrjacket/smile">
+    <img src="https://img.shields.io/npm/dm/@mrjacket/smile.svg" alt="npm downloads">
+  </a>
+  <a href="https://www.npmjs.com/package/@mrjacket/smile">
+    <img src="https://img.shields.io/node/v/@mrjacket/smile.svg" alt="node">
+  </a>
+  <a href="https://github.com/x-name15/smile/actions/workflows/ci.yml">
+    <img src="https://github.com/x-name15/smile/actions/workflows/ci.yml/badge.svg" alt="ci">
+  </a>
+  <a href="https://www.npmjs.com/package/@mrjacket/smile">
+    <img src="https://img.shields.io/npm/types/@mrjacket/smile.svg" alt="types">
+  </a>
+  <a href="https://github.com/x-name15/smile/blob/main/LICENSE">
+    <img src="https://img.shields.io/npm/l/@mrjacket/smile.svg" alt="license">
+  </a>
+  <a href="https://github.com/marketplace/actions/smile-api-linter">
+    <img src="https://img.shields.io/badge/Marketplace-Smile%20API%20Linter-blue?logo=github" alt="GitHub Marketplace">
+  </a>
+  <a href="https://github.com/x-name15/vscode-smile">
+    <img src="https://img.shields.io/badge/VS%20Code-Smile-blue?logo=visualstudiocode" alt="VS Code Extension">
+  </a>
+</p>
+
+---
 
 ### Why the name "smile"?
 > Named after [Red John](https://en.wikipedia.org/wiki/Red_John) from [The Mentalist](https://en.wikipedia.org/wiki/The_Mentalist) (A show you absolutely must watch... and beware, the links has spoilers!). 

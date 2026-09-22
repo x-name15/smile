@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.9] - 2026-09-17 — Revamped README
+
+### Documentation
+- Converted header and badges layout to standard HTML for clean centered alignment on npm.
+
+---
+
 ## [1.7.8] - 2026-09-17 — Lil Fix
 
 ### Fixed
