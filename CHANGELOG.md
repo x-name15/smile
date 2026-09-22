@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.8] - 2026-09-17 — Lil Fix
+
+### Fixed
+- **Security Hardening (CodeQL TOCTOU Race Condition):** Resolved CWE-367 potential file system race condition (`js/file-system-race`) in `smile create-rule` and hook installer by eliminating redundant `existsSync` pre-checks and using atomic file descriptor creation (`open(..., "wx")`) with `FileHandle.writeFile`.
+
+---
+
 ## [1.7.7] - 2026-09-17 — Custom Rule Scaffolder & Interactive SARIF Autofixes
 
 ### Added

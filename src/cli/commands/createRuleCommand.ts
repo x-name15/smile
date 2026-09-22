@@ -1,5 +1,5 @@
-import { existsSync } from "node:fs";
-import { writeFile, mkdir } from "node:fs/promises";
+import { open, mkdir } from "node:fs/promises";
+import type { FileHandle } from "node:fs/promises";
 import path from "node:path";
 import * as p from "@clack/prompts";
 
@@ -85,20 +85,7 @@ export async function runCreateRuleCommand(
     : path.resolve(defaultDir, `${ruleId}.${ext}`);
 
   const targetDir = path.dirname(targetPath);
-  if (!existsSync(targetDir)) {
-    await mkdir(targetDir, { recursive: true });
-  }
-
-  if (existsSync(targetPath)) {
-    const overwrite = await p.confirm({
-      message: `File already exists at "${path.relative(process.cwd(), targetPath)}". Overwrite?`,
-      initialValue: false,
-    });
-    if (!overwrite || p.isCancel(overwrite)) {
-      p.cancel("Operation cancelled.");
-      process.exit(0);
-    }
-  }
+  await mkdir(targetDir, { recursive: true });
 
   const camelId = toCamelCase(ruleId);
   const relativeRelPath = path.relative(process.cwd(), targetPath).replace(/\\/g, "/");
@@ -164,7 +151,30 @@ export default {
 };
 `;
 
-  await writeFile(targetPath, templateContent, "utf-8");
+  let fileHandle: FileHandle;
+  try {
+    fileHandle = await open(targetPath, "wx");
+  } catch (error: any) {
+    if (error?.code === "EEXIST") {
+      const overwrite = await p.confirm({
+        message: `File already exists at "${path.relative(process.cwd(), targetPath)}". Overwrite?`,
+        initialValue: false,
+      });
+      if (!overwrite || p.isCancel(overwrite)) {
+        p.cancel("Operation cancelled.");
+        process.exit(0);
+      }
+      fileHandle = await open(targetPath, "w");
+    } else {
+      throw error;
+    }
+  }
+
+  try {
+    await fileHandle.writeFile(templateContent, "utf-8");
+  } finally {
+    await fileHandle.close();
+  }
 
   p.log.success(`Generated custom rule at "${relativeRelPath}"`);
   p.note(

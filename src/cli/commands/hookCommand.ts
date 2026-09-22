@@ -42,9 +42,7 @@ export async function installHook(): Promise<void> {
   const hooksDir = path.resolve(gitDir, "hooks");
   const hookPath = path.resolve(hooksDir, "pre-commit");
 
-  if (!existsSync(hooksDir)) {
-    await mkdir(hooksDir, { recursive: true });
-  }
+  await mkdir(hooksDir, { recursive: true });
 
   let shouldOverwrite = false;
   try {
