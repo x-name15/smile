@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [1.7.8] - 2026-09-17 — Lil Fix
 
 ### Fixed
-- **Security Hardening (CodeQL TOCTOU Race Condition):** Resolved CWE-367 potential file system race condition (`js/file-system-race`) in `smile create-rule` and hook installer by eliminating redundant `existsSync` pre-checks and using atomic file descriptor creation (`open(..., "wx")`) with `FileHandle.writeFile`.
+- **Security Hardening (CodeQL TOCTOU Race Condition):** Resolved CWE-367 potential file system race condition (`js/file-system-race`) in `smile create-rule` and hook installer by eliminating redundant `existsSync` pre-checks and using single atomic file creation (`writeFile(..., { flag: "wx" })`).
 - **Dynamic Package Version Test Assertion:** Refactored `reporterExports.test.ts` to assert `VERSION` dynamically against `package.json` instead of comparing against a hardcoded version string that breaks on bumps.
 
 ---

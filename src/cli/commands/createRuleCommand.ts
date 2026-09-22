@@ -1,5 +1,4 @@
-import { open, mkdir } from "node:fs/promises";
-import type { FileHandle } from "node:fs/promises";
+import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import * as p from "@clack/prompts";
 
@@ -151,29 +150,17 @@ export default {
 };
 `;
 
-  let fileHandle: FileHandle;
   try {
-    fileHandle = await open(targetPath, "wx");
+    await writeFile(targetPath, templateContent, { encoding: "utf-8", flag: "wx" });
   } catch (error: any) {
     if (error?.code === "EEXIST") {
-      const overwrite = await p.confirm({
-        message: `File already exists at "${path.relative(process.cwd(), targetPath)}". Overwrite?`,
-        initialValue: false,
-      });
-      if (!overwrite || p.isCancel(overwrite)) {
-        p.cancel("Operation cancelled.");
-        process.exit(0);
-      }
-      fileHandle = await open(targetPath, "w");
-    } else {
-      throw error;
+      p.log.error(
+        `File already exists at "${relativeRelPath}". Please choose a different rule identifier or delete the existing file.`
+      );
+      p.cancel("Operation cancelled.");
+      process.exit(1);
     }
-  }
-
-  try {
-    await fileHandle.writeFile(templateContent, "utf-8");
-  } finally {
-    await fileHandle.close();
+    throw error;
   }
 
   p.log.success(`Generated custom rule at "${relativeRelPath}"`);
