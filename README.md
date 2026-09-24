@@ -33,6 +33,9 @@
   <a href="https://github.com/x-name15/vscode-smile">
     <img src="https://img.shields.io/badge/VS%20Code-Smile-blue?logo=visualstudiocode" alt="VS Code Extension">
   </a>
+  <a href="https://buymeacoffee.com/mrjacket">
+    <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee">
+  </a>
 </p>
 
 ---
@@ -262,6 +265,16 @@ Full documentation is available in the [`docs/`](./docs) directory:
 
 We are keeping the roadmap deliberately small and focused on predictable behavior in libraries and CI/CD pipelines:
 - **SARIF Autofix Suggestions:** Embed machine-readable fix hints inside the SARIF output so GitHub Code Scanning can offer one-click fixes.
+
+## Support & Sponsoring
+
+If you liked this library or want to support my work, I'd be eternally grateful for a warm coffee! ☕ <3
+
+<a href="https://buymeacoffee.com/mrjacket" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="180">
+</a>
+
+---
 
 ## License
 
